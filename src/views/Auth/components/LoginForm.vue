@@ -126,6 +126,17 @@
           type="submit"
         >
         </BaseButton>
+
+        <div>
+          <p class="text-center text-sm sm:text-base mt-4">
+            Don't have an account?
+            <router-link
+              to="/register"
+              class="text-tegbale-blue hover:underline"
+              >Sign Up</router-link
+            >
+          </p>
+        </div>
       </div>
     </div>
   </form>
@@ -133,8 +144,8 @@
 
 <script setup>
 import { reactive, ref } from "vue";
-import BaseInput from "./BaseComponents/BaseInput.vue";
-import BaseButton from "./BaseComponents/BaseButton.vue";
+import BaseInput from "../../../components/BaseComponents/BaseInput.vue";
+import BaseButton from "../../../components/BaseComponents/BaseButton.vue";
 import { useVuelidate } from "@vuelidate/core";
 import { required, email, minLength, helpers } from "@vuelidate/validators";
 

@@ -14,9 +14,7 @@
     <div class="absolute w-10 block ml-2 mr-2">
       <slot name="icon" v-if="withIcon"></slot>
     </div>
-    <div class="absolute w-10 block ml-2 mr-2">
-      <slot name="icon" v-if="withIcon"></slot>
-    </div>
+    
     <div class="flex absolute right-0 mr-3" v-if="isPassword">
       <slot name="password"></slot>
     </div>
@@ -42,8 +40,6 @@ defineProps({
     default: false,
   },
 });
-
-
 </script>
 
 <style scoped>
