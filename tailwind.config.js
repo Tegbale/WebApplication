@@ -9,6 +9,10 @@ module.exports = {
         extend: {
             colors: {
                 "tegbale-blue": "#408ED5",
+                "tegbale-purple": "#6A10DD",
+                "tegbale-green": "#18A40C",
+                "tegbale-text-gray": "#A9A9A9",
+                "tegbale-navy-blue": "#171D53",
             },
             boxShadow: {
                 "3xl": "0 35px 60px -15px rgba(0, 0, 0, 0.3)",
@@ -20,5 +24,8 @@ module.exports = {
             },
         },
     },
-    plugins: [require("flowbite/plugin")],
+    plugins: [
+        require("flowbite/plugin"),
+        require("@shrutibalasa/tailwind-grid-auto-fit"),
+    ],
 };

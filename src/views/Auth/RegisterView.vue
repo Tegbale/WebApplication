@@ -7,7 +7,7 @@
 
       <div class="">
         <!-- <BaseInput v-model="email" type="email" id="email"> </BaseInput> -->
-        <Loginform />
+       <ResisterForm />
       </div>
     </BaseCard>
   </div>
@@ -16,7 +16,8 @@
 <script setup>
 import BaseLogo from "../../components/BaseComponents/BaseLogo.vue";
 import BaseCard from "../../components/BaseComponents/BaseCard.vue";
-import Loginform from "./components/loginform.vue";
+import ResisterForm from "./components/ResisterForm.vue";
+
 </script>
 
 <style lang="scss" scoped></style>
