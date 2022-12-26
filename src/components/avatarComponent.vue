@@ -1,24 +1,24 @@
 <template>
-  <div class="flex items-center space-x-6 font-roboto text-base font-normal text-tegbale-text-gray">
+  <div class="flex items-center space-x-2 font-roboto text-tegbale-text-gray">
     <div
       v-if="noPicture"
-      class="inline-flex overflow-hidden relative justify-center items-center w-10 h-10 bg-gray-100 rounded-full dark:bg-gray-600"
+      class="inline-flex overflow-hidden relative justify-center items-center w-8 h-8 md:w-10 md:h-10 bg-gray-100 rounded-full"
     >
-      <span class="font-medium text-gray-600 dark:text-gray-300">{{
+      <span class="font-medium text-gray-600">{{
         getInitials
       }}</span>
     </div>
     <img
-      class="w-10 h-10 rounded-full"
+      class="w-8 h-8 md:w-10 md:h-10 rounded-full"
       src="../assets/staticImages/adminAvatar.jpg"
       alt=""
       v-else
     />
-    <div class="font-medium dark:text-white">
-      <div class="text-sm text-gray-500 dark:text-gray-400 pr-6">
+    
+      <div class="text-xs text-gray-500">
         {{ user.fullName }} ({{ user.role }})
       </div>
-    </div>
+    
   </div>
 </template>
 

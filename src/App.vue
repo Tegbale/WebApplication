@@ -1,11 +1,20 @@
 <script setup>
 import { RouterView } from "vue-router";
-import ApplayoutView from "./views/ApplayoutView.vue";
 </script>
 
 <template>
-  <ApplayoutView />
+  <div>
+    
   <RouterView />
+  </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+
+</style>

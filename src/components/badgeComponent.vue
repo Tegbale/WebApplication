@@ -1,12 +1,13 @@
 <template>
-  <button type="button">
+ <div class=" rounded-full hover:bg-gray-100 w-6 h-6">
+  <button type="button" class="">
     <svg
       xmlns="http://www.w3.org/2000/svg"
       fill="none"
       viewBox="0 0 24 24"
       stroke-width="1.5"
       stroke="currentColor"
-      class="w-10 h-10"
+      class="w-5 h-5 md:w-6 md:h-6"
     >
       <path
         stroke-linecap="round"
@@ -17,11 +18,12 @@
 
     <!-- <span class="sr-only">Notifications</span> -->
     <div
-      class="inline-flex absolute -top-2 -right-2 justify-center items-center w-6 h-6 text-xs font-bold text-white bg-red-500 rounded-full border-2 border-white dark:border-gray-900"
+      class="inline-flex absolute p-2 md:p-0 -top-2 -right-2 justify-center items-center w-4 h-4 md:w-5 md:h-5 text-xs font-bold text-white bg-red-500 rounded-full border-2 border-white"
     >
       {{Notifications}}
     </div>
   </button>
+ </div>
 </template>
 
 <script setup>
