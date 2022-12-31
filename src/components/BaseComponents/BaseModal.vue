@@ -8,10 +8,18 @@
         <transition name="modal-inner">
           <div
             v-if="modalActive"
-            class="bg-white p-4 self-start mt-32 w-2/3 max-w-screen-lg rounded-lg"
+            class="bg-white p-10 self-start mt-32 w-full max-w-screen-lg rounded-lg"
+            v-on-click-outside="closeMode"
           >
-            <slot />
-          
+            <div class="w-full pb-8">
+              <slot name="title" />
+            </div>
+            <div class="w-full">
+              <slot name="form" />
+            </div>
+            <div class="w-full">
+              <slot name="button" />
+            </div>
           </div>
         </transition>
       </div>
@@ -20,11 +28,18 @@
 </template>
 
 <script setup>
-defineEmits(["close-modal"]);
+import { vOnClickOutside } from "@vueuse/components";
+
+// defineEmits(["close-modal"]);
 defineProps({
   modalActive: {
     type: Boolean,
     default: false,
+  },
+
+  closeMode: {
+    type: Function,
+    default: () => {},
   },
 });
 </script>
