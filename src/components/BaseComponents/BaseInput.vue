@@ -1,7 +1,5 @@
 <template>
-  <label v-if="label" :class="{ 'text-xs': modalInput }">{{
-    label
-  }}</label>
+  <label v-if="label" :class="{ 'text-xs': modalInput }">{{ label }}</label>
 
   <div
     class="relative flex items-center text-gray-300 focus-within:text-tegbale-blue"

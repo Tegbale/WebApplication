@@ -1,11 +1,11 @@
 <template>
   <form @submit.prevent="HandleRegistration">
     <h3
-      class="text-tegbale-blue font-bold font-roboto text-center text-4xl py-8"
+      class="text-tegbale-blue font-bold font-roboto text-center text-4xl py-4"
     >
       Register
     </h3>
-    <div class="px-4 sm:px-[4.5rem]">
+    <div class="px-4 sm:px-[2.5rem]">
       <div class="mt-6">
         <BaseInput
           v-model="Register.username"
@@ -31,14 +31,14 @@
             </svg>
           </template>
         </BaseInput>
+
         <span
-          v-for="error in v$.username.$errors"
-          :key="error.$uid"
+          v-if="v$.username.$errors.length > 0"
           class="text-red-500 text-sm pl-4"
-          >{{ error.$message }}</span
+          >{{ v$.username.$errors[0].$message }}</span
         >
       </div>
-      <div class="mt-6">
+      <div class="mt-3">
         <BaseInput
           v-model="Register.email"
           type="email"
@@ -63,13 +63,12 @@
           </template>
         </BaseInput>
         <span
-          v-for="error in v$.email.$errors"
-          :key="error.$uid"
+          v-if="v$.email.$errors.length > 0"
           class="text-red-500 text-sm pl-4"
-          >{{ error.$message }}</span
+          >{{ v$.email.$errors[0].$message }}</span
         >
       </div>
-      <div class="mt-3 sm:mt-6 md:mt-6">
+      <div class="mt-3">
         <BaseInput
           v-model="Register.password"
           :type="passwordFieldType"
@@ -133,15 +132,13 @@
             </button>
           </template>
         </BaseInput>
-        <div
-          v-for="error in v$.password.$errors"
-          :key="error.$uid"
+        <span
+          v-if="v$.password.$errors.length > 0"
           class="text-red-500 text-sm pl-4"
+          >{{ v$.password.$errors[0].$message }}</span
         >
-          {{ error.$message }}
-        </div>
       </div>
-      <div class="mt-3 sm:mt-6 md:mt-6">
+      <div class="mt-3">
         <BaseInput
           v-model="Register.confirmPassword"
           :type="passwordFieldType"
@@ -205,13 +202,11 @@
             </button>
           </template>
         </BaseInput>
-        <div
-          v-for="error in v$.confirmPassword.$errors"
-          :key="error.$uid"
+        <span
+          v-if="v$.confirmPassword.$errors.length > 0"
           class="text-red-500 text-sm pl-4"
+          >{{ v$.confirmPassword.$errors[0].$message }}</span
         >
-          {{ error.$message }}
-        </div>
       </div>
       <div class="pb-4 text-right">
         <a

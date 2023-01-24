@@ -4,9 +4,7 @@
       v-if="noPicture"
       class="inline-flex overflow-hidden relative justify-center items-center w-8 h-8 md:w-10 md:h-10 bg-gray-100 rounded-full"
     >
-      <span class="font-medium text-gray-600">{{
-        getInitials
-      }}</span>
+      <span class="font-medium text-gray-600">{{ getInitials }}</span>
     </div>
     <img
       class="w-8 h-8 md:w-10 md:h-10 rounded-full"
@@ -14,11 +12,10 @@
       alt=""
       v-else
     />
-    
-      <div class="text-xs text-gray-500">
-        {{ user.fullName }} ({{ user.role }})
-      </div>
-    
+
+    <div class="text-xs text-gray-500">
+      {{ user.fullName }} ({{ user.role }})
+    </div>
   </div>
 </template>
 

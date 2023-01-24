@@ -1,5 +1,8 @@
 <template>
-  <div v-if="!noNavRoutes.includes($route.name)" class="flex relative">
+  <div
+    v-if="!noNavRoutes.includes($route.name)"
+    class="flex mx-auto w-full relative"
+  >
     <aside
       class="absolute inset-0 transform md:transform-none md:opacity-100 duration-200 md:relative z-10 bg-white border-r border-gray-200 w-80 md:w-64"
       :class="{
@@ -208,8 +211,8 @@
         </ul>
       </div>
     </aside>
-    <div class="flex-1 relative z-0">
-      <header class="flex justify-center items-center bg-white">
+    <div class="flex flex-col flex-grow relative z-0">
+      <header class="flex justify-center items-center bg-white border-b">
         <!-- hamburger menu -->
         <button
           @click.prevent="isOpen = true"
@@ -231,7 +234,7 @@
           </svg>
         </button>
         <div
-          class="flex flex-1 justify-between items-center space-x-6 py-5 px-4 font-roboto text-base font-normal text-tegbale-text-gray bg-white border-b"
+          class="flex flex-1 justify-between items-center space-x-6 py-5 px-4 font-roboto text-base font-normal text-tegbale-text-gray bg-white"
         >
           <form action="" class="w-full max-w-md">
             <div

@@ -8,7 +8,7 @@
     >
       Welcome Back
     </h3>
-    <div class="px-4 sm:px-[4.5rem]">
+    <div class="px-4 sm:px-[2.5rem]">
       <div class="mt-6">
         <BaseInput
           v-model="loginData.email"
@@ -34,17 +34,16 @@
           </template>
         </BaseInput>
         <span
-          v-for="error in v$.email.$errors"
-          :key="error.$uid"
+          v-if="v$.email.$errors.length > 0"
           class="text-red-500 text-sm pl-4"
-          >{{ error.$message }}</span
+          >{{ v$.email.$errors[0].$message }}</span
         >
       </div>
       <div class="mt-3 sm:mt-6 md:mt-6">
         <BaseInput
           v-model="loginData.password"
           :type="passwordFieldType"
-          :is-password="isPassword"
+          :is-password="true"
           placeholder="Password"
           with-icon
         >
@@ -104,13 +103,13 @@
             </button>
           </template>
         </BaseInput>
-        <div
-          v-for="error in v$.password.$errors"
-          :key="error.$uid"
+
+        <span
+          v-if="v$.password.$errors.length > 0"
           class="text-red-500 text-sm pl-4"
         >
-          {{ error.$message }}
-        </div>
+          {{ v$.password.$errors[0].$message }}
+        </span>
       </div>
       <div class="pb-4 text-right">
         <a
@@ -155,7 +154,6 @@ const loginData = reactive({
 });
 
 let passwordFieldType = ref("password");
-const isPassword = ref(true);
 const showPassword = ref(false);
 
 const rules = {
