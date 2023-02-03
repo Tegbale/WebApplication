@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-white w-full rounded-md mt-10">
+  <div class="container mx-auto bg-white w-full rounded-md mt-10">
     <table class="w-full">
       <thead class="bg-gray-50 border-b-2 border-gray-200">
         <slot name="table-header" />
@@ -11,10 +11,6 @@
   </div>
 </template>
 
-<script setup>
-
-
-
-</script>
+<script setup></script>
 
 <style lang="scss" scoped></style>

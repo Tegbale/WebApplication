@@ -2,12 +2,16 @@ import { createRouter, createWebHistory } from "vue-router";
 import HomeView from "../views/HomeView.vue";
 //import ApplayoutView from "../views/ApplayoutView.vue";
 import admin from "./admin";
+import user from "./user";
+import guest from "@/router/middleware/guest";
+import middlewarePipeline from "@/router/middleware/middleware-pipeline";
 
 const router = createRouter({
     history: createWebHistory(
         import.meta.env.BASE_URL),
     routes: [
         ...admin,
+        ...user,
         {
             path: "/",
             name: "home",
@@ -29,6 +33,10 @@ const router = createRouter({
             // which is lazy-loaded when the route is visited.
             component: () =>
                 import ("../views/Auth/LoginView.vue"),
+
+            meta: {
+                middleware: [guest],
+            },
         },
         {
             path: "/register",
@@ -38,8 +46,31 @@ const router = createRouter({
             // which is lazy-loaded when the route is visited.
             component: () =>
                 import ("../views/Auth/RegisterView.vue"),
+            meta: {
+                middleware: [guest],
+            },
         },
     ],
+});
+
+router.beforeEach((to, from, next) => {
+    if (!to.meta.middleware) {
+        return next();
+    }
+
+    const middleware = to.meta.middleware;
+
+    const context = {
+        to,
+        from,
+        next,
+        router,
+    };
+
+    return middleware[0]({
+        ...context,
+        next: middlewarePipeline(context, middleware, 1),
+    });
 });
 
 export default router;

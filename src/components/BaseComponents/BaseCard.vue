@@ -1,6 +1,6 @@
 <template>
   <div
-    class="w-full max-w-xl p-4 bg-white rounded-lg shadow-md flex-col justify-center content-center card__width"
+    class="max-w-xl w-full p-4 bg-white rounded-lg shadow-md flex-col justify-center content-center"
   >
     <slot></slot>
   </div>

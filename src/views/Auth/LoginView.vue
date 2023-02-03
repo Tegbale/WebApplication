@@ -1,7 +1,5 @@
 <template>
-  <div
-    class="place-self-center flex items-center justify-center h-screen w-full"
-  >
+  <div class="flex justify-center items-center w-full h-screen">
     <BaseCard>
       <BaseLogo class="pt-8" />
 
@@ -16,7 +14,7 @@
 <script setup>
 import BaseLogo from "../../components/BaseComponents/BaseLogo.vue";
 import BaseCard from "../../components/BaseComponents/BaseCard.vue";
-import Loginform from "./components/loginform.vue";
+import Loginform from "@/views/Auth/components/LoginForm.vue";
 </script>
 
 <style lang="scss" scoped></style>

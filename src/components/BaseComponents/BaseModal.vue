@@ -3,15 +3,24 @@
     <transition name="modal-outter">
       <div
         v-show="modalActive"
-        class="absolute w-full bg-black bg-opacity-40 h-screen top-0 left-0 flex justify-center px-8 z-50"
+        class="fixed inset-0 h-full w-full bg-black bg-opacity-40 flex justify-center items-center px-8 z-50"
       >
         <transition name="modal-inner">
           <div
             v-if="modalActive"
-            class="bg-white p-4 self-start mt-32 w-2/3 max-w-screen-lg rounded-lg"
+            class="bg-white p-10 w-full rounded-lg"
+            :class="isCropper ? 'max-w-sm' : 'max-w-screen-lg'"
+            v-on-click-outside="closeMode"
           >
-            <slot />
-          
+            <div class="w-full">
+              <slot name="title" />
+            </div>
+            <div class="w-full">
+              <slot name="form" />
+            </div>
+            <div class="w-full">
+              <slot name="button" />
+            </div>
           </div>
         </transition>
       </div>
@@ -20,11 +29,23 @@
 </template>
 
 <script setup>
-defineEmits(["close-modal"]);
+import { vOnClickOutside } from "@vueuse/components";
+
+// defineEmits(["close-modal"]);
 defineProps({
   modalActive: {
     type: Boolean,
     default: false,
+  },
+
+  isCropper: {
+    type: Boolean,
+    default: false,
+  },
+
+  closeMode: {
+    type: Function,
+    default: () => {},
   },
 });
 </script>
