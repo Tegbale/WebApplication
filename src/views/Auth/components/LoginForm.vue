@@ -1,8 +1,5 @@
 <template>
   <form @submit.prevent="HandleLogin">
-    <!-- <pre >
-      {{password}}
-    </pre> -->
     <h3
       class="text-tegbale-blue font-bold font-roboto text-center text-4xl py-8"
     >
@@ -120,9 +117,17 @@
       </div>
       <div class="pb-8 sm:pb-16">
         <BaseButton
+          :is-loading="isLoading"
+          :is-disabled="v$.$invalid"
           btn-title="Sign In"
-          class="text-white bg-tegbale-blue hover:bg-blue-400 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-xl text-sm sm:text-base w-full px-5 py-3 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 font-roboto font-bold md:text-2xl"
+          class="text-white rounded-xl text-sm sm:text-base w-full px-5 py-3 text-center font-roboto font-bold md:text-2xl"
+          :class="
+            v$.$invalid
+              ? 'bg-gray-100 cursor-not-allowed'
+              : 'bg-tegbale-blue hover:bg-blue-400 focus:ring-4 focus:outline-none focus:ring-blue-300'
+          "
           type="submit"
+          @click="HandleLogin"
         >
         </BaseButton>
 
@@ -147,12 +152,15 @@ import BaseInput from "../../../components/BaseComponents/BaseInput.vue";
 import BaseButton from "../../../components/BaseComponents/BaseButton.vue";
 import { useVuelidate } from "@vuelidate/core";
 import { required, email, minLength, helpers } from "@vuelidate/validators";
+import { useUsersStore } from "@/stores/user-store";
+import { useRouter } from "vue-router";
 
+const router = useRouter();
 const loginData = reactive({
   email: "",
   password: "",
 });
-
+let isLoading = ref(false);
 let passwordFieldType = ref("password");
 const showPassword = ref(false);
 
@@ -167,7 +175,8 @@ const rules = {
     containsPasswordRequirement: helpers.withMessage(
       () =>
         `The password requires an uppercase, lowercase, number and special character`,
-      (value) => /(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])/.test(value)
+      // (value) => /(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])/.test(value)
+      (value) => /(?=.*[a-z])/.test(value)
     ),
   },
 };
@@ -184,10 +193,28 @@ const switchVisibility = () => {
 //validate the login data...
 const v$ = useVuelidate(rules, loginData);
 
+// declare the store
+const userStore = useUsersStore();
+
 const HandleLogin = async () => {
+  isLoading.value = true;
+  console.log(v$.value.$invalid);
   const result = await v$.value.$validate();
   if (result) {
-    console.log(JSON.stringify(loginData, null, 2));
+    try {
+      let res = await userStore.login(loginData);
+
+      localStorage.setItem("token", res.data?.token);
+      if (res.data?.data?.role === "superadmin") {
+        router.push("/admin/dashboard");
+      } else {
+        router.push("/dashboard");
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      isLoading.value = false;
+    }
   }
 };
 </script>

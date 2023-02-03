@@ -1,3 +1,6 @@
+import admin from "@/router/middleware/admin";
+import auth from "@/router/middleware/auth";
+
 const routes = [
   {
     path: "/admin/dashboard",
@@ -7,6 +10,9 @@ const routes = [
     // which is lazy-loaded when the route is visited.
     components: {
       default: () => import("../views/admin/DashboardView.vue"),
+    },
+    meta: {
+      middleware: [admin, auth],
     },
   },
   {
@@ -18,6 +24,10 @@ const routes = [
     components: {
       default: () => import("../views/admin/AdminSchoolsView.vue"),
     },
+
+    meta: {
+      middleware: [admin, auth],
+    },
   },
   {
     path: "/admin/schools/:id",
@@ -27,6 +37,9 @@ const routes = [
     // which is lazy-loaded when the route is visited.
     components: {
       default: () => import("../views/admin/AdminSchoolsDetailsView.vue"),
+    },
+    meta: {
+      middleware: [admin, auth],
     },
   },
   {
@@ -38,6 +51,9 @@ const routes = [
     components: {
       default: () => import("../views/admin/AdminStaffsView.vue"),
     },
+    meta: {
+      middleware: [admin, auth],
+    },
   },
   {
     path: "/admin/settings",
@@ -47,6 +63,9 @@ const routes = [
     // which is lazy-loaded when the route is visited.
     components: {
       default: () => import("../views/admin/AdminSettingsView.vue"),
+    },
+    meta: {
+      middleware: [admin, auth],
     },
   },
 ];

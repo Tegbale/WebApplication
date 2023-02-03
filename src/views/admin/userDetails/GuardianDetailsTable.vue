@@ -83,9 +83,9 @@
       </tr>
     </template>
   </BaseDataTable>
-  
+
   <!-- mobile data table cards -->
-    <template v-if="GuardiansArray.length > 0">
+  <template v-if="GuardiansArray.length > 0">
     <div
       class="grid grid-auto-fit gap-4 md:hidden pt-4"
       v-for="guardian in GuardiansArray"

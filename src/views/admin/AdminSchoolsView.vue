@@ -165,9 +165,9 @@
             :column-two-text="school.schoolAdmin"
             :column-three-text="school.schoolEmail"
             :to="{
-                    name: 'schoolsDetails',
-                    params: { id: school.id },
-                  }"
+              name: 'schoolsDetails',
+              params: { id: school.id },
+            }"
             :is-clickable="true"
             column-one-title="School Name"
             column-two-title="Admin"

@@ -52,9 +52,7 @@
             {{ teacher.email }}
           </td>
           <td class="p-3 text-sm text-tegbale-text-gray font-roboto">
-            {{ teacher.classroom.name }}... ({{
-              teacher.classroom.amount
-            }})
+            {{ teacher.classroom.name }}... ({{ teacher.classroom.amount }})
           </td>
           <td class="flex justify-end p-3 space-x-2"></td>
         </tr>

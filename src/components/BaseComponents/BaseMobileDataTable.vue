@@ -23,7 +23,10 @@
         </span>
         <span class="text-tegbale-text-gray" v-else>{{ columnThreeText }}</span>
       </div>
-      <div class="flex space-x-3 py-3 font-roboto text-sm font-medium" v-if="select">
+      <div
+        class="flex space-x-3 py-3 font-roboto text-sm font-medium"
+        v-if="select"
+      >
         <slot name="select" />
       </div>
     </div>
