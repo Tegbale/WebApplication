@@ -153,6 +153,7 @@ import BaseButton from "../../../components/BaseComponents/BaseButton.vue";
 import { useVuelidate } from "@vuelidate/core";
 import { required, email, minLength, helpers } from "@vuelidate/validators";
 import { useUsersStore } from "@/stores/user-store";
+import { useToastStore } from "@/stores/toast-store";
 import { useRouter } from "vue-router";
 
 const router = useRouter();
@@ -193,8 +194,9 @@ const switchVisibility = () => {
 //validate the login data...
 const v$ = useVuelidate(rules, loginData);
 
-// declare the store
+// declare the stores
 const userStore = useUsersStore();
+const toastStore = useToastStore();
 
 const HandleLogin = async () => {
   isLoading.value = true;
@@ -210,8 +212,23 @@ const HandleLogin = async () => {
       } else {
         router.push("/dashboard");
       }
+      // call the toast store to show the toast
+      toastStore.showToast({
+        title: "Welcome",
+        message: "You have successfully logged in",
+        type: "success",
+        timeout: 4000,
+      });
     } catch (error) {
       console.log(error);
+
+      // call the toast store to show the toast
+      toastStore.showToast({
+        title: "Login Failed",
+        message: "Invalid email or password",
+        type: "error",
+        timeout: 4000,
+      });
     } finally {
       isLoading.value = false;
     }

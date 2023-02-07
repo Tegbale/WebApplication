@@ -172,7 +172,7 @@
             <li class="flex-1 items-center">
               <button
                 @click.prevent="logout"
-                class="flex w-full items-center pl-4 pr-4 py-2 text-[#e77d7d] w-full, hover:bg-red-500 hover:text-white hover:rounded-xl"
+                class="flex w-full items-center pl-4 pr-4 py-2 text-tegbale-text-gray hover:text-gray-50 w-full, hover:bg-[#e77d7d] hover:text- hover:rounded-xl"
               >
                 <span class="flex justify-center items-center">
                   <svg
