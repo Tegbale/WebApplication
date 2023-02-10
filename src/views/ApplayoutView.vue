@@ -109,7 +109,7 @@
             </li>
             <li class="flex-1 items-center">
               <router-link
-                to="/admin/staffs"
+                to="/admin/users"
                 active-class="bg-tegbale-blue text-white rounded-xl"
                 class="flex items-center pl-4 pr-4 py-2 text-tegbale-text-gray w-full, hover:bg-tegbale-blue hover:text-white hover:rounded-xl"
               >
@@ -128,7 +128,7 @@
                     />
                   </svg>
                   <span class="mx-4 text-base font-normal font-roboto"
-                    >Staffs</span
+                    >Users</span
                   >
                 </span>
               </router-link>

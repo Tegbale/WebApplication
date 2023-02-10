@@ -49,14 +49,14 @@ const routes = [{
         },
     },
     {
-        path: "/admin/staffs",
-        name: "adminStaffs",
+        path: "/admin/users",
+        name: "adminUsers",
         // route level code-splitting
         // this generates a separate chunk (Register.[hash].js) for this route
         // which is lazy-loaded when the route is visited.
         components: {
             default: () =>
-                import ("../views/admin/AdminStaffsView.vue"),
+                import ("../views/admin/AdminUsersView.vue"),
         },
         meta: {
             middleware: [admin, auth],
