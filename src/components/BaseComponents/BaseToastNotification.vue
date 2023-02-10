@@ -14,7 +14,7 @@ const props = defineProps({
   intent: {
     type: String,
     validator(value) {
-      return ["info", "success", "danger", "warning"].includes(value);
+      return ["info", "success", "error", "warning"].includes(value);
     },
     default: "info",
   },
@@ -37,7 +37,7 @@ const containerClass = computed(() => {
         info: "bg-blue-100",
         success: "bg-green-100",
         warning: "bg-orange-100",
-        danger: "bg-red-100",
+        error: "bg-red-100",
       },
     },
   })({
@@ -52,7 +52,7 @@ const iconClass = computed(() => {
         info: "text-blue-700",
         success: "text-green-600",
         warning: "text-orange-400",
-        danger: "text-red-500",
+        error: "text-red-500",
       },
     },
   })({
@@ -67,7 +67,7 @@ const titleClass = computed(() => {
         info: "text-blue-900",
         success: "text-green-900",
         warning: "text-orange-900",
-        danger: "text-red-900",
+        error: "text-red-900",
       },
     },
   })({
@@ -82,7 +82,7 @@ const contentClass = computed(() => {
         info: "text-blue-800",
         success: "text-green-800",
         warning: "text-orange-800",
-        danger: "text-red-800",
+        error: "text-red-800",
       },
     },
   })({
@@ -97,7 +97,7 @@ const closeButtonClass = computed(() => {
         info: "text-blue-900/70 hover:text-blue-900 hover:bg-blue-200 active:bg-blue-300",
         success: "text-green-900/70 hover:text-green-900 hover:bg-green-200 active:bg-green-300",
         warning: "text-orange-900/70 hover:text-orange-900 hover:bg-orange-200 active:bg-orange-300",
-        danger: "text-red-900/70 hover:text-red-900 hover:bg-red-200 active:bg-red-300",
+        error: "text-red-900/70 hover:text-red-900 hover:bg-red-200 active:bg-red-300",
       },
     },
   })({
@@ -109,7 +109,7 @@ const iconComponent = computed(() => {
   const icons = {
     success: CheckCircleIcon,
     warning: ExclamationTriangleIcon,
-    danger: XCircleIcon,
+    error: XCircleIcon,
     info: InformationCircleIcon,
   };
 

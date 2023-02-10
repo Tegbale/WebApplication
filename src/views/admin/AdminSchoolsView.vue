@@ -1,7 +1,7 @@
 <template>
   <ApplayoutView>
     <div>
-      <div class="flex justify-between items-end">
+      <div class="flex justify-between items-end pt-20">
         <BasePageTitle
           pageTitle="Schools"
           :showBtn="true"
@@ -154,6 +154,8 @@
           </tr>
         </template>
       </BaseDataTable>
+
+      <!-- Mobile design  -->
       <template v-if="SchoolLists.length > 0">
         <div
           class="grid grid-auto-fit gap-4 md:hidden pt-4"
