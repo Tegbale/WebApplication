@@ -8,7 +8,7 @@
         <transition name="modal-inner">
           <div
             v-if="modalActive"
-            class="bg-white p-10 w-full rounded-lg"
+            class="bg-white p-10 w-full rounded-lg h-4/5 overflow-y-auto"
             :class="isCropper ? 'max-w-sm' : 'max-w-screen-lg'"
             v-on-click-outside="closeMode"
           >

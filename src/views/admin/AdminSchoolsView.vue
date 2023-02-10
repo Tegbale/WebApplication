@@ -1,7 +1,7 @@
 <template>
   <ApplayoutView>
     <div>
-      <div class="flex justify-between items-end pt-20">
+      <div class="flex justify-between items-end space-x-2 pt-20">
         <BasePageTitle
           pageTitle="Schools"
           :showBtn="true"
@@ -11,7 +11,7 @@
 
         <!-- export dropdown button for mobie devices only -->
         <ExportBtnDropdown
-          class="block md:hidden mt-4"
+          class="flex md:hidden mb-0.5"
           ref="dropdownRef"
           :show-dropdown="showDropdown"
           @show-dropdown="showDropdown = !showDropdown"
@@ -255,7 +255,10 @@
         <h3 class="text-lg md:text-2xl font-medium font-roboto text-black">
           {{ modalTitle }}
         </h3>
-        <button @click="closeModal" class="p-2 hover:bg-gray-200 rounded-full">
+        <button
+          @click="closeModal"
+          class="p-2 hover:bg-gray-200 rounded-full hidden md:block"
+        >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
@@ -332,7 +335,7 @@
         <button
           :loading="isLoading"
           v-if="modalTitle == 'View School'"
-          class="inline-flex bg-red-600 text-white font-medium font-roboto py-2 px-16 w-full md:max-w-fit rounded-3xl hover:bg-red-400"
+          class="inline-flex justify-center bg-red-600 text-white font-medium font-roboto py-2 px-16 w-full md:max-w-fit rounded-3xl hover:bg-red-400"
         >
           <p class="flex items-center" v-if="isLoading">
             <svg
@@ -357,7 +360,7 @@
             </svg>
             Loading...
           </p>
-          <span v-else>Delete School</span>
+          <p v-else>Delete School</p>
         </button>
         <button
           @click="closeModal"
@@ -368,7 +371,7 @@
         <button
           @click="addSchool"
           :loading="isLoading"
-          class="inline-flex bg-tegbale-blue text-white font-medium font-roboto py-2 px-10 w-full md:max-w-fit rounded-3xl hover:bg-blue-900"
+          class="inline-flex justify-center bg-tegbale-blue text-white font-medium font-roboto py-2 px-10 w-full md:max-w-fit rounded-3xl hover:bg-blue-900"
         >
           <p class="flex items-center" v-if="isLoading">
             <svg
