@@ -413,7 +413,7 @@ import { onClickOutside } from "@vueuse/core";
 
 import { ref, computed, reactive } from "vue";
 import ExportBtnDropdown from "@/components/exportBtnDropdown.vue";
-import NoDataCard from "@/components/noDataCard.vue";
+import NoDataCard from "@/components/NoDataCard.vue";
 
 // import validation plugin
 import { useVuelidate } from "@vuelidate/core";
