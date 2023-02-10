@@ -139,7 +139,7 @@ import BaseInput from "@/components/BaseComponents/BaseInput.vue";
 import ExportBtnDropdown from "@/components/exportBtnDropdown.vue";
 import StudentDetailsTable from "@/views/admin/userDetails/studentDetailsTable.vue";
 import TeacherDetailsTable from "@/views/admin/userDetails/teacherDetailsTable.vue";
-import GuardianDetailsTable from "@/views/admin/userDetails/guardianDetailsTable.vue";
+import GuardianDetailsTable from "@/views/admin/userDetails/GuardianDetailsTable.vue";
 import { onClickOutside } from "@vueuse/core";
 
 import { ref, computed } from "vue";
