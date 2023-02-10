@@ -20,7 +20,7 @@ watch(
 </script>
 
 <template>
-  <div class="p-8 w-full absolute z-50 flex justify-end">
+  <div class="p-8 w-full absolute z-9 flex justify-end">
     <BaseToastNotification
       :title="toastStore.toast.title"
       :intent="toastStore.toast.type"
