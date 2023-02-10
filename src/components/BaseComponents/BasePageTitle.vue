@@ -1,6 +1,6 @@
 <template>
   <div
-    class="block w-full items-center space-y-4 sm:space-y-0 sm:flex sm:justify-between"
+    class="block w-full items-center  space-y-4 sm:space-y-0 sm:flex sm:justify-between"
   >
     <div class="block md:flex items-center space-y-2">
       <p

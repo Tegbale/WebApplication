@@ -1,7 +1,7 @@
 <template>
   <ApplayoutView>
     <div>
-      <div class="flex justify-between items-end">
+      <div class="flex justify-between items-end pt-20">
         <BasePageTitle
           pageTitle="Schools"
           :showBtn="true"
@@ -154,6 +154,8 @@
           </tr>
         </template>
       </BaseDataTable>
+
+      <!-- Mobile design  -->
       <template v-if="SchoolLists.length > 0">
         <div
           class="grid grid-auto-fit gap-4 md:hidden pt-4"
@@ -282,6 +284,7 @@
               type="text"
               class="w-full"
               :modalInput="true"
+              v-model="addSchoolData.schoolname"
             />
           </div>
           <div>
@@ -291,6 +294,7 @@
               type="text"
               class="w-full"
               :modalInput="true"
+              v-model="addSchoolData.schoollocation"
             />
           </div>
         </div>
@@ -305,6 +309,7 @@
               type="text"
               class="w-full"
               :modalInput="true"
+              v-model="addSchoolData.adminname"
             />
           </div>
           <div>
@@ -314,6 +319,7 @@
               type="email"
               class="w-full"
               :modalInput="true"
+              v-model="addSchoolData.adminemail"
             />
           </div>
         </div>
@@ -324,10 +330,34 @@
         class="block md:flex items-center md:justify-end md:space-x-4 space-y-3 md:space-y-0 py-10"
       >
         <button
+          :loading="isLoading"
           v-if="modalTitle == 'View School'"
-          class="bg-red-600 text-white font-medium font-roboto py-2 px-16 w-full md:max-w-fit rounded-3xl hover:bg-red-400"
+          class="inline-flex bg-red-600 text-white font-medium font-roboto py-2 px-16 w-full md:max-w-fit rounded-3xl hover:bg-red-400"
         >
-          Delete School
+          <p class="flex items-center" v-if="isLoading">
+            <svg
+              class="w-5 h-5 mr-3 -ml-1 text-white animate-spin"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <circle
+                class="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                stroke-width="4"
+              ></circle>
+              <path
+                class="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+              ></path>
+            </svg>
+            Loading...
+          </p>
+          <span v-else>Delete School</span>
         </button>
         <button
           @click="closeModal"
@@ -336,9 +366,36 @@
           Cancel
         </button>
         <button
-          class="bg-tegbale-blue text-white font-medium font-roboto py-2 px-10 w-full md:max-w-fit rounded-3xl hover:bg-blue-900"
+          @click="addSchool"
+          :loading="isLoading"
+          class="inline-flex bg-tegbale-blue text-white font-medium font-roboto py-2 px-10 w-full md:max-w-fit rounded-3xl hover:bg-blue-900"
         >
-          {{ modalTitle == "Add School" ? "Add School" : "Save Changes" }}
+          <p class="flex items-center" v-if="isLoading">
+            <svg
+              class="w-5 h-5 mr-3 -ml-1 text-white animate-spin"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <circle
+                class="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                stroke-width="4"
+              ></circle>
+              <path
+                class="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+              ></path>
+            </svg>
+            Loading...
+          </p>
+          <span v-else>{{
+            modalTitle == "Add School" ? "Add School" : "Save Changes"
+          }}</span>
         </button>
       </div>
     </template>
@@ -354,10 +411,23 @@ import BaseModal from "@/components/BaseComponents/BaseModal.vue";
 import BaseInput from "@/components/BaseComponents/BaseInput.vue";
 import { onClickOutside } from "@vueuse/core";
 
-import { ref, computed } from "vue";
+import { ref, computed, reactive } from "vue";
 import ExportBtnDropdown from "@/components/exportBtnDropdown.vue";
 import NoDataCard from "@/components/noDataCard.vue";
 
+// import validation plugin
+import { useVuelidate } from "@vuelidate/core";
+import { required, email, helpers } from "@vuelidate/validators";
+
+// import store
+import { useSchoolStore } from "@/stores/school-store";
+//import { useToastStore } from "@/stores/toast-store";
+
+// declare the stores
+const schStore = useSchoolStore();
+//const toastStore = useToastStore();
+
+const isLoading = ref(false);
 const showDropdown = ref(false);
 const modalActive = ref(false);
 const SchoolLists = ref([
@@ -378,6 +448,60 @@ const SchoolLists = ref([
 const dropdownRef = ref(null);
 const isEditing = ref(false);
 const isCreating = ref(false);
+
+const addSchoolData = reactive({
+  schoolname: "",
+  schoollocation: "",
+  adminname: "",
+  adminemail: "",
+});
+
+// validation rules
+
+const rules = {
+  schoolname: {
+    required: helpers.withMessage("School name is required", required),
+  },
+  schoollocation: {
+    required: helpers.withMessage("Location is required", required),
+  },
+  adminname: {
+    required: helpers.withMessage("Name is required", required),
+  },
+  adminemail: {
+    required: helpers.withMessage("Email is required", required),
+    email: helpers.withMessage("Email is invalid", email),
+  },
+};
+
+// validate the add school data
+const v$ = useVuelidate(rules, addSchoolData);
+
+// add a school
+const addSchool = async () => {
+  isLoading.value = true;
+  const result = await v$.value.$validate();
+  if (result) {
+    const data = {
+      name: addSchoolData.schoolname,
+      contact_email: addSchoolData.adminemail,
+      contact_name: addSchoolData.adminname,
+      location: addSchoolData.schoollocation,
+    };
+
+    console.log(data);
+
+    try {
+      const response = await schStore.addSchool(data);
+
+      console.log(response);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      isLoading.value = false;
+    }
+  }
+};
 
 onClickOutside(dropdownRef, () => {
   showDropdown.value = false;

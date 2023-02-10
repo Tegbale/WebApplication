@@ -23,7 +23,7 @@
               alt="user profile pic"
               class="w-full rounded-full"
             />
-            <span v-else>AB</span>
+            <span v-else>{{ getInitials }}</span>
             <button
               @click="showModal = true"
               class="absolute bg-slate-600 p-2 rounded-full bottom-2 right-0"
@@ -163,21 +163,23 @@ import BaseCropperModal from "@/components/BaseComponents/BaseCropperModal.vue";
 import BaseInput from "@/components/BaseComponents/BaseInput.vue";
 import { useVuelidate } from "@vuelidate/core";
 import { helpers } from "@vuelidate/validators";
-import { onMounted, ref } from "vue";
+import { onMounted, ref, computed } from "vue";
 import { useUsersStore } from "@/stores/user-store";
 import { useRouter } from "vue-router";
+import { useToastStore } from "@/stores/toast-store";
 
-const hasProfilePic = ref(false);
+const hasProfilePic = ref(null);
 const isLoading = ref(false);
 const showModal = ref(false);
 const firstname = ref(null);
 const lastname = ref(null);
 const email = ref(null);
 const phone = ref(null);
-//let imageData = null;
+let imageData = null;
 let image = ref(null);
 const userStore = useUsersStore();
 const router = useRouter();
+const toastStore = useToastStore();
 
 const rules = {
   firstname: {
@@ -195,6 +197,14 @@ const rules = {
   },
 };
 
+// computed properties to get the initials of the user
+const getInitials = computed(() => {
+  if (userStore.firstname && userStore.lastname) {
+    return `${userStore.firstname[0]}${userStore.lastname[0]}`;
+  }
+  return null;
+});
+
 //validate the login data...
 const v$ = useVuelidate(rules, { firstname, lastname, email, phone });
 
@@ -203,7 +213,13 @@ onMounted(() => {
   lastname.value = userStore.lastname || null;
   email.value = userStore.email || null;
   phone.value = userStore.phone || null;
-  image.value = userStore.image || null;
+  image.value = userStore.photo || null;
+
+  if (image.value) {
+    hasProfilePic.value = true;
+  } else {
+    hasProfilePic.value = false;
+  }
 });
 
 // function to set cropped image data
@@ -211,8 +227,6 @@ const setCroppedImageData = (data) => {
   imageData = data;
   image.value = data.imageURL;
   hasProfilePic.value = true;
-
-  console.log(image.value);
 };
 
 // function to close modal
@@ -229,17 +243,35 @@ const updateAdminDetails = async () => {
   data.append("lastname", lastname.value);
   data.append("email", email.value);
   data.append("phone", phone.value);
+  data.append("photo", imageData.file);
+  console.log(imageData.file);
+
   const result = await v$.value.$validate();
   if (result) {
     try {
-      // update profile pic
-      await userStore.updateAdminDetails(data);
-      await userStore.fetchAdminDetails();
-
+      // update profile details
+      await userStore.updateUserDetail(data);
+      // fetch updated user details
+      await userStore.fetchUserDetails();
+      // redirect to dashboard
       router.push({ name: "adminDashboard" });
+      // call the toast store to show the toast
+      toastStore.showToast({
+        title: "Updated!",
+        message: "Your details updated successfully",
+        type: "success",
+        timeout: 3000,
+      });
     } catch (error) {
       //errors.value = error.response?.data.errors;
       console.log(error);
+      // call the toast store to show the toast
+      toastStore.showToast({
+        title: "Ooops!",
+        message: "Your details Update was Unsuccessful",
+        type: "error",
+        timeout: 3000,
+      });
     } finally {
       isLoading.value = false;
     }

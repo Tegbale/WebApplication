@@ -4,13 +4,13 @@
     class="flex mx-auto w-full relative"
   >
     <aside
-      class="absolute inset-0 transform md:transform-none md:opacity-100 duration-200 md:relative z-10 bg-white border-r border-gray-200 w-80 md:w-[18%]"
+      class="absolute inset-0 transform md:transform-none md:opacity-100 duration-200 md:relative z-10 bg-white border-r border-gray-200 w-60"
       :class="{
         'translate-x-0 ease-in opacity-100': isOpen,
         '-translate-x-full ease-out opacity-0': !isOpen,
       }"
     >
-      <div class="fixed w-[15%]">
+      <div class="fixed">
         <div class="flex items-center justify-between">
           <div class="flex flex-1 items-center">
             <div class="flex flex-1 justify-between items-center">
@@ -172,7 +172,7 @@
             <li class="flex-1 items-center">
               <button
                 @click.prevent="logout"
-                class="flex w-full items-center pl-4 pr-4 py-2 text-[#e77d7d] w-full, hover:bg-red-500 hover:text-white hover:rounded-xl"
+                class="flex w-full items-center pl-4 pr-4 py-2 text-[#e77d7d] w-full, hover:bg-red-100 hover:rounded-xl"
               >
                 <span class="flex justify-center items-center">
                   <svg
@@ -210,13 +210,11 @@
         </div>
       </div>
     </aside>
-    <div class="flex max-w-[84%] min-h-screen flex-col flex-grow relative z-0">
-      <div
-        class="flex container mx-auto items-center bg-white border-b fixed z-10"
-      >
+    <div class="flex max-w-[100%] min-h-screen flex-col flex-grow relative z-0">
+      <div class="flex w-full items-center bg-white border-b fixed z-10">
         <!-- hamburger menu -->
         <button
-          @click.prevent="isOpen = true"
+          @click.prevent="openMenu"
           class="p-3 ml-2 focus:outline-none rounded-full text-gray-500 hover:bg-gray-100 focus:bg-gray-200 md:hidden"
         >
           <svg
@@ -235,48 +233,57 @@
           </svg>
         </button>
         <nav
-          class="flex w-full md:w-10/12 items-center justify-between py-5 px-4 space-x-3 font-roboto text-base font-normal text-tegbale-text-gray bg-white"
+          class="flex w-full md:w-10/12 items-center justify-between md:justify-around py-4 font-roboto text-base font-normal text-tegbale-text-gray bg-white"
         >
-          <form action="" class="w-full max-w-md">
-            <div
-              class="relative flex items-center text-tegbale-text-gray focus-within:text-tegbale-blue"
-            >
-              <input
-                type="text"
-                name="search"
-                placeholder="Search"
-                autocomplete="off"
-                aria-label="Search"
-                class="pl-12 pr-3 font-medium placeholder:text-tegbale-text-gray text-gray-700 rounded-2xl border-none ring-2 ring-gray-200 focus:ring-tegbale-blue focus:ring-2 w-full"
-              />
-              <div class="absolute w-10 block ml-2 mr-2 pointer-events-none">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke-width="1.5"
-                  stroke="currentColor"
-                  class="w-6 h-6 ml-3 pointer-events-none"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"
-                  />
-                </svg>
+          <div class="w-full sm:w-[30%] max-w-2xl">
+            <form action="">
+              <div
+                class="relative w-full flex items-center text-tegbale-text-gray focus-within:text-tegbale-blue"
+              >
+                <input
+                  type="text"
+                  name="search"
+                  placeholder="Search"
+                  autocomplete="off"
+                  aria-label="Search"
+                  class="pr-3 font-medium placeholder:text-tegbale-text-gray placeholder:pl-10 text-gray-700 rounded-2xl border-none ring-2 ring-gray-200 focus:ring-tegbale-blue focus:ring-2 w-full"
+                />
+                <div class="absolute w-10 block ml-2 mr-2 pointer-events-none">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.5"
+                    stroke="currentColor"
+                    class="w-6 h-6 ml-3 pointer-events-none"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"
+                    />
+                  </svg>
+                </div>
               </div>
-            </div>
-          </form>
-          <div class="flex justify-end items-center space-x-2 md:space-x-6">
-            <BadgeComponent />
+            </form>
+          </div>
+          <div class="flex items-center  space-x-2 md:space-x-6">
+            <BadgeComponent class="hidden md:flex" />
 
-            <AvatarComponent />
+            <AvatarComponent class="flex" />
           </div>
         </nav>
       </div>
 
       <main class="container mx-auto px-6 py-10">
-        <slot />
+        <transition
+          name="router-anim"
+          enter-active-class="animated fadeInDown"
+          leave-active-class="animated fadeOutDown"
+          mode="out-in"
+        >
+          <slot />
+        </transition>
       </main>
     </div>
   </div>
@@ -303,9 +310,17 @@ const logout = () => {
 
   router.push({ name: "login" });
 };
+
+// function to open menu
+const openMenu = () => {
+  isOpen.value = true;
+  console.log(isOpen.value);
+};
 </script>
 
 <style lang="scss" scoped>
+@import "https://cdn.jsdelivr.net/npm/animate.css@3.5.1";
+
 aside {
   // transition: width 0.3s ease-in-out;
   display: flex;

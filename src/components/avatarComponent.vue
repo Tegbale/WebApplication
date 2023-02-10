@@ -8,28 +8,46 @@
     </div>
     <img
       class="w-8 h-8 md:w-10 md:h-10 rounded-full"
-      src="../assets/staticImages/adminAvatar.jpg"
+      :src="userStore.photo"
       alt=""
       v-else
     />
 
     <div class="text-xs text-gray-500">
-      {{ user.fullName }} ({{ user.role }})
+      {{ getFullName }} ({{ userStore.role }})
     </div>
   </div>
 </template>
 
 <script setup>
-import { computed, ref } from "vue";
+import { computed, ref, onMounted } from "vue";
+import { useUsersStore } from "@/stores/user-store";
+
+
+const userStore = useUsersStore();
 const noPicture = ref(false);
-const user = ref({
-  fullName: "John Doe",
-  role: "Admin",
+
+onMounted(() => {
+  if (userStore.photo) {
+    noPicture.value = false;
+  } else {
+    noPicture.value = true;
+  }
 });
-//return initials of the user
+// computed properties to get the initials of the user
 const getInitials = computed(() => {
-  const initials = user.value.fullName.match(/\b\w/g) || [];
-  return ((initials.shift() || "") + (initials.pop() || "")).toUpperCase();
+  if (userStore.firstname && userStore.lastname) {
+    return `${userStore.firstname[0]}${userStore.lastname[0]}`;
+  }
+  return null;
+});
+
+//get the full name of the user
+const getFullName = computed(() => {
+  if (userStore.firstname && userStore.lastname) {
+    return `${userStore.firstname} ${userStore.lastname}`;
+  }
+  return null;
 });
 </script>
 
