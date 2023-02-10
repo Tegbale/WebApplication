@@ -22,7 +22,7 @@ export default {
     },
 
     // edit user
-    updateUser(payload, id) {
+    updateUser(id, payload) {
         return api().put("/account/admin/users/" + id, payload, {
             headers: {
                 Authorization: "Bearer " + localStorage.getItem("token"),
