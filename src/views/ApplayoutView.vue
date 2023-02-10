@@ -299,7 +299,7 @@ import { useRouter } from "vue-router";
 const userStore = useUsersStore();
 const router = useRouter();
 const noNavRoutes = ref(["home", "login", "register"]);
-const isOpen = ref(true);
+const isOpen = ref(false);
 
 // function to logout user
 const logout = () => {
