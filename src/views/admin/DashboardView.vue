@@ -1,7 +1,9 @@
 <template>
   <ApplayoutView>
     <div>
-      <BasePageTitle pageTitle="Dashboard" />
+      <div class="pt-20">
+        <BasePageTitle pageTitle="Dashboard" />
+      </div>
       <div class="pt-10 grid grid-auto-fit-sm gap-8">
         <DashboardCards :cardValue="totalSchools" cardTitle="schools">
           <template #icon>

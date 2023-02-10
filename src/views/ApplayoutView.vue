@@ -211,7 +211,7 @@
       </div>
     </aside>
     <div class="flex max-w-[100%] min-h-screen flex-col flex-grow relative z-0">
-      <div class="flex w-full items-center bg-white border-b fixed z-10">
+      <div class="flex w-full items-center bg-white border-b fixed z-50 z">
         <!-- hamburger menu -->
         <button
           @click.prevent="openMenu"
