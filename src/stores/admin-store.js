@@ -2,16 +2,6 @@
 import { defineStore } from "pinia";
 import admin from "@/api/admin";
 
-
-// {
-//     "firstname": "School",
-//     "lastname": "Admin",
-//     "email": "school2@gmail.com",
-//     "role": "schooladmin",
-//     "gender": "male",
-//     "phone": "080320223210",
-//     "password": "password"
-// }
 export const useAdminsStore = defineStore("admin", {
     state: () => ({
         id: null,
@@ -26,11 +16,16 @@ export const useAdminsStore = defineStore("admin", {
 
         users: [],
         schools: [],
-
-
     }),
-    actions: {
 
+    getters: {
+        AllUsers(state) {
+            if (state.users && state.users.length > 0) {
+                return state.users.filter((user) => user.role !== "superadmin");
+            }
+        },
+    },
+    actions: {
         // create a user
         async createNewUser(payload) {
             const res = await admin.createUser(payload);
@@ -47,9 +42,8 @@ export const useAdminsStore = defineStore("admin", {
             (this.$state.phone = res.data.data.phone),
             (this.$state.email = res.data.data.email),
             (this.$state.gender = res.data.data.gender),
-            (this.$state.role = res.data.data.role)
+            (this.$state.role = res.data.data.role);
         },
-
 
         // update user details by id
         async updateUserDetailById(id, payload) {
@@ -78,7 +72,7 @@ export const useAdminsStore = defineStore("admin", {
             (this.$state.token = null),
             (this.$state.role = null),
             (this.$state.photo = null);
-            (this.$state.profile.user_id = null);
+            this.$state.profile.user_id = null;
         },
 
         // get user by role
@@ -86,7 +80,14 @@ export const useAdminsStore = defineStore("admin", {
             const res = await admin.getUserByRole(role);
             this.setUserDetails(res);
             return res;
-        }
+        },
+
+        // get all users
+        async getAllUsers() {
+            const { data } = await admin.getAllUsers();
+            this.$state.users = data.data.data;
+            return data;
+        },
     },
 
     persist: true,

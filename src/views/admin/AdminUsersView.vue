@@ -3,7 +3,7 @@
     <div>
       <div class="flex justify-between space-x-2 items-end pt-20">
         <BasePageTitle
-          pageTitle="Staff Users"
+          pageTitle="Users"
           :showBtn="true"
           btnText="Create User"
           @clicked="handleModalAction"
@@ -39,6 +39,11 @@
             <th
               class="p-3 text-sm font-semibold tracking-wide text-left text-tegbale-text-gray"
             >
+              Phone
+            </th>
+            <th
+              class="p-3 text-sm font-semibold tracking-wide text-left text-tegbale-text-gray"
+            >
               Role
             </th>
             <th class="flex flex-col p-3">
@@ -52,27 +57,30 @@
           </tr>
         </template>
         <template #table-body>
-          <template v-if="StaffLists.length > 0">
+          <template v-if="adminStore.AllUsers.length > 0">
             <tr
               class="border-b-2 border-gray-100"
-              v-for="staff in StaffLists"
-              :key="staff.id"
+              v-for="(user, i) in adminStore.AllUsers"
+              :key="i"
             >
               <td class="p-3 text-sm text-tegbale-text-gray font-roboto">
-                {{ staff.id }}
+                {{ i + 1 }}
               </td>
               <td class="p-3 text-sm text-tegbale-text-gray font-roboto">
-                {{ staff.fullName }}
+                {{ user.fullname }}
               </td>
               <td class="p-3 text-sm text-tegbale-text-gray font-roboto">
-                {{ staff.staffEmail }}
+                {{ user.email }}
               </td>
               <td class="p-3 text-sm text-tegbale-text-gray font-roboto">
-                {{ staff.role }}
+                {{ user.phone }}
+              </td>
+              <td class="p-3 text-sm text-tegbale-text-gray font-roboto">
+                {{ user.role }}
               </td>
               <td class="flex justify-end p-3 space-x-2">
                 <button
-                  @click="handleViewStaff(staff.id)"
+                  @click="handleViewUser(user.id)"
                   class="text-sm p-1 text-blue-700 font-bold hover:bg-blue-200 hover:rounded-full"
                 >
                   <svg
@@ -96,7 +104,7 @@
                   </svg>
                 </button>
                 <button
-                  @click="handleEditStaff(staff.id)"
+                  @click="handleEditUser(user.id)"
                   class="text-sm p-1 text-tegbale-green font-bold hover:bg-green-200 hover:rounded-full"
                 >
                   <svg
@@ -140,29 +148,37 @@
               colspan="5"
               class="text-center h-52 text-tegbale-text-gray text-xl font-roboto font-medium"
             >
-              No Staff has been added
+              No User has been added
             </td>
           </tr>
         </template>
       </BaseDataTable>
       <!-- Mobile design  -->
-      <template v-if="StaffLists.length > 0">
+      <template v-if="adminStore.AllUsers.length > 0">
         <div
           class="grid grid-auto-fit gap-4 md:hidden pt-4"
-          v-for="staff in StaffLists"
-          :key="staff.id"
+          v-for="(user, i) in adminStore.AllUsers"
+          :key="i"
         >
           <BaseMobileDataTable
-            :column-one-text="staff.fullName"
-            :column-two-text="staff.staffEmail"
-            :column-three-text="staff.role"
-            column-one-title="Staff Name"
+            :column-one-text="user.fullname"
+            :column-two-text="user.email"
+            :column-three-text="user.role"
+            column-one-title="User Name"
             column-two-title="Email"
             column-three-title="Role"
+            :select="true"
+            :notClickable="true"
           >
+            <template #select>
+              <div class="flex space-x-3 font-roboto text-sm font-medium">
+                <span>Phone:</span
+                ><span class="text-tegbale-text-gray">{{ user.phone }}</span>
+              </div>
+            </template>
             <template #button>
               <button
-                @click="handleViewSchool(staff.id)"
+                @click="handleViewSchool(user.id)"
                 class="flex items-center text-xs px-2 py-1 space-x-2 text-blue-700 font-bold border bg-blue-200 hover:bg-blue-900 hover:text-yellow-100 rounded-full"
               >
                 <span class="">view</span>
@@ -187,7 +203,7 @@
                 </svg>
               </button>
               <button
-                @click="handleEditSchool(staff.id)"
+                @click="handleEditSchool(user.id)"
                 class="flex items-center text-xs px-2 py-1 space-x-2 text-green-700 font-bold border bg-green-200 hover:bg-green-500 hover:text-white rounded-full"
               >
                 <span class="">edit</span>
@@ -266,13 +282,13 @@
               type="text"
               class="w-full"
               :modalInput="modalInput"
-              v-model="user.name"
+              v-model="user.fullname"
             />
             <span
-              v-if="v$.name.$errors.length > 0"
+              v-if="v$.fullname.$errors.length > 0"
               class="text-red-500 text-sm pl-4"
             >
-              {{ v$.name.$errors[0].$message }}
+              {{ v$.fullname.$errors[0].$message }}
             </span>
           </div>
           <div>
@@ -300,48 +316,47 @@
               :modalInput="modalInput"
               v-model="user.password"
               :is-password="true"
-              
             >
-            <template #password>
-            <button @click.prevent="switchVisibility">
-              <svg
-                v-if="showPassword"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke-width="1.5"
-                stroke="currentColor"
-                class="w-6 h-6"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"
-                />
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                />
-              </svg>
-              <svg
-                v-else
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke-width="1.5"
-                stroke="currentColor"
-                class="w-6 h-6"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88"
-                />
-              </svg>
-            </button>
-          </template>
-          </BaseInput>
+              <template #password>
+                <button @click.prevent="switchVisibility">
+                  <svg
+                    v-if="showPassword"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.5"
+                    stroke="currentColor"
+                    class="w-6 h-6"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"
+                    />
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                    />
+                  </svg>
+                  <svg
+                    v-else
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.5"
+                    stroke="currentColor"
+                    class="w-6 h-6"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88"
+                    />
+                  </svg>
+                </button>
+              </template>
+            </BaseInput>
             <span
               v-if="v$.password.$errors.length > 0"
               class="text-red-500 text-sm pl-4"
@@ -470,7 +485,7 @@ import { required, email, minLength, helpers } from "@vuelidate/validators";
 
 import { onClickOutside } from "@vueuse/core";
 
-import { ref, computed, reactive } from "vue";
+import { ref, computed, reactive, onMounted } from "vue";
 import ExportBtnDropdown from "../../components/exportBtnDropdown.vue";
 
 // import stores
@@ -483,7 +498,7 @@ const adminStore = useAdminsStore();
 const toastStore = useToastStore();
 
 const user = reactive({
-  name: "",
+  fullname: "",
   email: "",
   password: "",
   phone: "",
@@ -495,7 +510,7 @@ const rules = {
     required,
     email,
   },
-  name: {
+  fullname: {
     required,
     minLength: minLength(3),
   },
@@ -524,20 +539,7 @@ const v$ = useVuelidate(rules, user);
 const isLoading = ref(false);
 const showDropdown = ref(false);
 const modalActive = ref(false);
-const StaffLists = ref([
-  {
-    id: 1,
-    fullName: "Precious Ogbodo",
-    staffEmail: "emmajayschools@gmail.com",
-    role: "Admin",
-  },
-  {
-    id: 2,
-    fullName: "Emeka Ahmed",
-    staffEmail: "soyabeans@yahoo.com",
-    role: "Teacher",
-  },
-]);
+const Users = ref([]);
 const modalInput = ref(true);
 const dropdownRef = ref(null);
 const isEditing = ref(false);
@@ -575,13 +577,13 @@ const closeModal = () => {
   isCreating.value = false;
 };
 
-const handleEditStaff = (id) => {
+const handleEditUser = (id) => {
   isEditing.value = true;
   modalActive.value = !modalActive.value;
   console.log(id);
 };
 
-const handleViewStaff = (id) => {
+const handleViewUser = (id) => {
   isEditing.value = false;
   isCreating.value = false;
   modalActive.value = !modalActive.value;
@@ -610,15 +612,15 @@ const saveUser = async () => {
       try {
         const res = await adminStore.createNewUser(payload);
 
-       if(res.status === 200) {
-         // call the toast store to show the toast
-         toastStore.showToast({
-          title: "Congratulations",
-          message: "User created successfully",
-          type: "success",
-          timeout: 4000,
-        });
-       }
+        if (res.status === 200) {
+          // call the toast store to show the toast
+          toastStore.showToast({
+            title: "Congratulations",
+            message: "User created successfully",
+            type: "success",
+            timeout: 4000,
+          });
+        }
       } catch (error) {
         console.log(error);
 
@@ -653,16 +655,27 @@ const modalTitle = computed(() => {
 
 // get first name
 const firstname = computed(() => {
-  if (user.name) {
-    return user.name.split(" ")[0];
+  if (user.fullname) {
+    return user.fullname.split(" ")[0];
   } else return "";
 });
 
 // get last name
 const lastname = computed(() => {
-  if (user.name) {
-    return user.name.split(" ")[1];
+  if (user.fullname) {
+    return user.fullname.split(" ")[1];
   } else return "";
+});
+
+// mounted hook
+onMounted(async () => {
+  console.log(adminStore.users);
+  // get all the users
+  try {
+    await adminStore.getAllUsers();
+  } catch (error) {
+    console.log(error);
+  }
 });
 </script>
 
