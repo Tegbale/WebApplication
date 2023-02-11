@@ -16,6 +16,10 @@ const router = createRouter({
             path: "/",
             name: "home",
             component: HomeView,
+            meta: {
+                transition: 'slide-down'
+            }
+
         },
         // {
         //   path: "/about",
@@ -36,6 +40,7 @@ const router = createRouter({
 
             meta: {
                 middleware: [guest],
+                transition: 'slide-down'
             },
         },
         {
@@ -48,6 +53,7 @@ const router = createRouter({
                 import ("../views/Auth/RegisterView.vue"),
             meta: {
                 middleware: [guest],
+                transition: 'slide-down'
             },
         },
     ],
