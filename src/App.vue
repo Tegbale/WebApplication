@@ -20,8 +20,9 @@ watch(
 </script>
 
 <template>
-  <div class="p-8 w-full absolute z-9 flex justify-end">
+  <div class="p-8 w-full absolute flex justify-end right-0 bottom-5">
     <BaseToastNotification
+      class="animate__animated animate__fadeInUp z-50"
       :title="toastStore.toast.title"
       :intent="toastStore.toast.type"
       :show="toastStore.toast.show"
@@ -38,9 +39,7 @@ watch(
 </template>
 
 <style scoped>
-
 @import "https://cdn.jsdelivr.net/npm/animate.css@3.5.1";
-
 
 .slide-down-enter-active,
 .slide-down-leave-active {
@@ -76,6 +75,4 @@ watch(
 .slide-down-leave-active {
   transform: translateY(-100%);
 } */
-
-
 </style>
