@@ -30,7 +30,52 @@ watch(
       {{ toastStore.toast.message }}!
     </BaseToastNotification>
   </div>
-  <RouterView />
+  <router-view v-slot="{ Component, route }">
+    <transition :name="route.meta.transition || ''" mode="out-in">
+      <component :is="Component" />
+    </transition>
+  </router-view>
 </template>
 
-<style scoped></style>
+<style scoped>
+
+@import "https://cdn.jsdelivr.net/npm/animate.css@3.5.1";
+
+
+.slide-down-enter-active,
+.slide-down-leave-active {
+  transition: opacity 0.5s ease-out;
+}
+
+.slide-down-enter-from,
+.slide-down-leave-to {
+  opacity: 0;
+}
+/* 
+.slide-down-leave-active {
+  transform: translateY(0%);
+} */
+
+/* .slide-down-enter-active {
+  transform: translateY(0%);
+}
+
+.slide-down-leave-active {
+  transform: translateY(100%);
+}
+
+.slide-down-enter,
+.slide-down-leave-to {
+  transform: translateY(100%);
+}
+
+.slide-down-enter-active {
+  transform: translateY(0%);
+}
+
+.slide-down-leave-active {
+  transform: translateY(-100%);
+} */
+
+
+</style>

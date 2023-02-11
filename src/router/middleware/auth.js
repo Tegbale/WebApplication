@@ -8,7 +8,7 @@ export default function auth({ next, router }) {
     const user = useUsersStore();
 
     if (!user.id) {
-        return router.push({ name: "login" });
+        return router.push({ name: "home" });
     }
 
     return next();
