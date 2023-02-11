@@ -291,48 +291,65 @@
               {{ v$.email.$errors[0].$message }}
             </span>
           </div>
-        </div>
-      </div>
-      <div class="pt-5">
-        <!-- <p class="text-sm font-medium font-roboto">Admin Information</p> -->
-        <div class="grid grid-auto-fit gap-3">
           <div>
             <BaseInput
-              label="Phone Number"
-              placeholder="Enter Phone Number"
-              type="text"
+              label="Password"
+              placeholder="Enter Password"
+              type="password"
               class="w-full"
               :modalInput="modalInput"
-              v-model="user.phone"
+              v-model="user.password"
             />
             <span
-              v-if="v$.phone.$errors.length > 0"
+              v-if="v$.password.$errors.length > 0"
               class="text-red-500 text-sm pl-4"
             >
-              {{ v$.phone.$errors[0].$message }}
+              {{ v$.password.$errors[0].$message }}
             </span>
           </div>
-          <div>
-            <label for="role" class="text-xs">Role</label>
-            <div
-              class="relative flex items-center text-gray-300 focus-within:text-tegbale-blue"
-              :class="{ 'mt-1': modalInput }"
-            >
-              <select
-                v-model="user.role"
-                class="border border-gray-300 rounded-2xl leading-5 mt-1 pr-3 pl-10 py-2 w-full hover:border-gray-400 focus:outline-none focus:border-none focus:ring-1 focus:border-gray-400 placeholder:text-[12px] placeholder:tracking-wide placeholder:opacity-50 placeholder:content-center text-tegbale-text-gray"
+        </div>
+
+        <div class="pt-5">
+          <!-- <p class="text-sm font-medium font-roboto">Admin Information</p> -->
+          <div class="grid grid-auto-fit gap-3">
+            <div>
+              <BaseInput
+                label="Phone Number"
+                placeholder="Enter Phone Number"
+                type="text"
+                class="w-full"
+                :modalInput="modalInput"
+                v-model="user.phone"
+              />
+              <span
+                v-if="v$.phone.$errors.length > 0"
+                class="text-red-500 text-sm pl-4"
               >
-                <option selected disabled value="">Select Role</option>
-                <option value="schooladmin">School Admin</option>
-                <option value="parent">Parent</option>
-              </select>
+                {{ v$.phone.$errors[0].$message }}
+              </span>
             </div>
-            <span
-              v-if="v$.role.$errors.length > 0"
-              class="text-red-500 text-sm pl-4"
-            >
-              {{ v$.role.$errors[0].$message }}
-            </span>
+            <div>
+              <label for="role" class="text-xs">Role</label>
+              <div
+                class="relative flex items-center text-gray-300 focus-within:text-tegbale-blue"
+                :class="{ 'mt-1': modalInput }"
+              >
+                <select
+                  v-model="user.role"
+                  class="border border-gray-300 rounded-2xl leading-5 mt-1 pr-3 pl-10 py-2 w-full hover:border-gray-400 focus:outline-none focus:border-none focus:ring-1 focus:border-gray-400 placeholder:text-[12px] placeholder:tracking-wide placeholder:opacity-50 placeholder:content-center text-tegbale-text-gray"
+                >
+                  <option selected disabled value="">Select Role</option>
+                  <option value="schooladmin">School Admin</option>
+                  <option value="parent">Parent</option>
+                </select>
+              </div>
+              <span
+                v-if="v$.role.$errors.length > 0"
+                class="text-red-500 text-sm pl-4"
+              >
+                {{ v$.role.$errors[0].$message }}
+              </span>
+            </div>
           </div>
         </div>
       </div>
@@ -407,7 +424,7 @@ import BaseMobileDataTable from "@/components/BaseComponents/BaseMobileDataTable
 import BaseModal from "@/components/BaseComponents/BaseModal.vue";
 import BaseInput from "@/components/BaseComponents/BaseInput.vue";
 import { useVuelidate } from "@vuelidate/core";
-import { required, email, minLength } from "@vuelidate/validators";
+import { required, email, minLength, helpers } from "@vuelidate/validators";
 
 import { onClickOutside } from "@vueuse/core";
 
@@ -426,6 +443,7 @@ const toastStore = useToastStore();
 const user = reactive({
   name: "",
   email: "",
+  password: "",
   phone: "",
   role: "",
 });
@@ -445,6 +463,16 @@ const rules = {
   },
   role: {
     required,
+  },
+  password: {
+    required,
+    minLength: minLength(8),
+    containsPasswordRequirement: helpers.withMessage(
+      () =>
+        `The password requires an uppercase, lowercase, number and special character`,
+      // (value) => /(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])/.test(value)
+      (value) => /(?=.*[a-z])/.test(value)
+    ),
   },
 };
 
@@ -520,6 +548,7 @@ const saveUser = async () => {
       let payload = {
         firstname: firstname.value,
         lastname: lastname.value,
+        password: user.password,
         email: user.email,
         phone: user.phone,
         role: user.role,
