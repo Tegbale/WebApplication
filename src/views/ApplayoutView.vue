@@ -210,12 +210,12 @@
         </div>
       </div>
     </aside>
-    <div class="flex max-w-[100%] min-h-screen flex-col flex-grow relative z-0">
-      <div class="flex w-full items-center bg-white border-b fixed z-50 z">
+    <div class="flex w-screen min-h-screen flex-col flex-grow relative z-0">
+      <div class="flex w-full items-center bg-white border-b fixed z-50">
         <!-- hamburger menu -->
         <button
           @click.prevent="openMenu"
-          class="p-3 ml-2 focus:outline-none rounded-full text-gray-500 hover:bg-gray-100 focus:bg-gray-200 md:hidden"
+          class="p-3 focus:outline-none rounded-full text-gray-500 hover:bg-gray-100 focus:bg-gray-200 md:hidden"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -238,7 +238,7 @@
           <div class="w-full sm:w-[30%] max-w-2xl">
             <form action="">
               <div
-                class="relative w-full flex items-center text-tegbale-text-gray focus-within:text-tegbale-blue"
+                class="relative w-full flex items-center text-tegbale-text-gray focus-within:text-transparent"
               >
                 <input
                   type="text"
@@ -246,16 +246,16 @@
                   placeholder="Search"
                   autocomplete="off"
                   aria-label="Search"
-                  class="pr-3 font-medium placeholder:text-tegbale-text-gray placeholder:pl-10 text-gray-700 rounded-2xl border-none ring-2 ring-gray-200 focus:ring-tegbale-blue focus:ring-2 w-full"
+                  class="pr-3 font-medium placeholder:text-tegbale-text-gray placeholder:pl-4 text-gray-700 rounded-2xl border-none ring-2 ring-gray-200 focus:ring-tegbale-blue focus:ring-2 w-full"
                 />
-                <div class="absolute w-10 block ml-2 mr-2 pointer-events-none">
+                <div class="absolute w-10 block pointer-events-none">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke-width="1.5"
                     stroke="currentColor"
-                    class="w-6 h-6 ml-3 pointer-events-none"
+                    class="w-6 h-6 ml-1 pointer-events-none" 
                   >
                     <path
                       stroke-linecap="round"
@@ -276,14 +276,9 @@
       </div>
 
       <main class="container mx-auto px-6 py-10">
-        <transition
-          name="router-anim"
-          enter-active-class="animated fadeInDown"
-          leave-active-class="animated fadeOutDown"
-          mode="out-in"
-        >
+      
           <slot />
-        </transition>
+      
       </main>
     </div>
   </div>
@@ -319,7 +314,6 @@ const openMenu = () => {
 </script>
 
 <style lang="scss" scoped>
-@import "https://cdn.jsdelivr.net/npm/animate.css@3.5.1";
 
 aside {
   // transition: width 0.3s ease-in-out;

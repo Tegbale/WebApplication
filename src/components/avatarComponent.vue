@@ -14,7 +14,7 @@
     />
 
     <div class="text-xs text-gray-500">
-      {{ getFullName }} ({{ userStore.role }})
+      {{ getFullName }} <span class="user_role">({{ userStore.role }})</span>
     </div>
   </div>
 </template>
@@ -51,4 +51,10 @@ const getFullName = computed(() => {
 });
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.user_role {
+  
+  font-size: xx-small;
+}
+
+</style>

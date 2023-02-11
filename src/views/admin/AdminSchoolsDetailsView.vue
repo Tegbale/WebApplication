@@ -1,7 +1,9 @@
 <template>
   <div>
     <ApplayoutView>
-      <div class="flex justify-between items-end">
+      <div
+        class="flex justify-between items-end sm:items-center space-x-2 mt-20"
+      >
         <BasePageTitle
           pageTitle="Schools"
           :showBtn="true"
@@ -12,14 +14,14 @@
         />
         <!-- export dropdown button for mobie devices only -->
         <ExportBtnDropdown
-          class="block md:hidden mt-4"
+          class="flex md:hidden mb-0.5"
           ref="dropdownRef"
           :show-dropdown="showDropdown"
           @show-dropdown="showDropdown = !showDropdown"
         />
       </div>
 
-      <BaseTabWrapper>
+      <BaseTabWrapper class="">
         <BaseTab title="Students">
           <StudentDetailsTable />
         </BaseTab>

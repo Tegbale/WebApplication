@@ -1,7 +1,7 @@
 <template>
   <ApplayoutView>
     <div>
-      <div class="flex justify-between items-end">
+      <div class="flex justify-between space-x-2 items-end pt-20">
         <BasePageTitle
           pageTitle="Staff Users"
           :showBtn="true"
@@ -10,8 +10,9 @@
         />
 
         <!-- export dropdown button for mobie devices only -->
+
         <ExportBtnDropdown
-          class="block md:hidden mt-4"
+          class="flex mb-0.5 md:hidden"
           ref="dropdownRef"
           :show-dropdown="showDropdown"
           @show-dropdown="showDropdown = !showDropdown"
@@ -264,8 +265,15 @@
               placeholder="Enter Full Name"
               type="text"
               class="w-full"
-              :modalInput="true"
+              :modalInput="modalInput"
+              v-model="user.name"
             />
+            <span
+              v-if="v$.name.$errors.length > 0"
+              class="text-red-500 text-sm pl-4"
+            >
+              {{ v$.name.$errors[0].$message }}
+            </span>
           </div>
           <div>
             <BaseInput
@@ -273,8 +281,15 @@
               placeholder="Enter Email Address"
               type="email"
               class="w-full"
-              :modalInput="true"
+              :modalInput="modalInput"
+              v-model="user.email"
             />
+            <span
+              v-if="v$.email.$errors.length > 0"
+              class="text-red-500 text-sm pl-4"
+            >
+              {{ v$.email.$errors[0].$message }}
+            </span>
           </div>
         </div>
       </div>
@@ -287,24 +302,37 @@
               placeholder="Enter Phone Number"
               type="text"
               class="w-full"
-              :modalInput="true"
+              :modalInput="modalInput"
+              v-model="user.phone"
             />
+            <span
+              v-if="v$.phone.$errors.length > 0"
+              class="text-red-500 text-sm pl-4"
+            >
+              {{ v$.phone.$errors[0].$message }}
+            </span>
           </div>
           <div>
             <label for="role" class="text-xs">Role</label>
             <div
               class="relative flex items-center text-gray-300 focus-within:text-tegbale-blue"
-              :class="{ 'mt-2': modalInput }"
+              :class="{ 'mt-1': modalInput }"
             >
               <select
-                class="border border-gray-300 rounded-2xl leading-5 mt-2 pr-3 pl-10 py-2 w-full hover:border-gray-400 focus:outline-none focus:border-none focus:ring-1 focus:border-gray-400 placeholder:text-[12px] placeholder:tracking-wide placeholder:opacity-50 placeholder:content-center text-tegbale-text-gray"
+                v-model="user.role"
+                class="border border-gray-300 rounded-2xl leading-5 mt-1 pr-3 pl-10 py-2 w-full hover:border-gray-400 focus:outline-none focus:border-none focus:ring-1 focus:border-gray-400 placeholder:text-[12px] placeholder:tracking-wide placeholder:opacity-50 placeholder:content-center text-tegbale-text-gray"
               >
-                <option selected>Select Role</option>
-                <option value="2">Admin</option>
-                <option value="3">Teacher</option>
-                <option value="4">Student</option>
+                <option selected disabled value="">Select Role</option>
+                <option value="schooladmin">School Admin</option>
+                <option value="parent">Parent</option>
               </select>
             </div>
+            <span
+              v-if="v$.role.$errors.length > 0"
+              class="text-red-500 text-sm pl-4"
+            >
+              {{ v$.role.$errors[0].$message }}
+            </span>
           </div>
         </div>
       </div>
@@ -326,11 +354,45 @@
           Cancel
         </button>
         <button
-          class="bg-tegbale-blue text-white font-medium font-roboto py-2 px-10 w-full md:max-w-fit rounded-3xl hover:bg-blue-900"
+          :disabled="v$.$invalid"
+          @click.prevent="saveUser"
+          class="text-white font-medium font-roboto py-2 px-10 w-full md:max-w-fit rounded-3xl"
+          :class="
+            v$.$invalid
+              ? 'bg-gray-100 cursor-not-allowed'
+              : 'bg-tegbale-blue hover:bg-blue-400 focus:ring-4 focus:outline-none focus:ring-blue-300'
+          "
         >
-          {{
-            modalTitle == "Create New User" ? "Create New User" : "Save Changes"
-          }}
+          <p class="flex items-center" v-if="isLoading">
+            <svg
+              class="w-5 h-5 mr-3 -ml-1 text-white animate-spin"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <circle
+                class="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                stroke-width="4"
+              ></circle>
+              <path
+                class="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+              ></path>
+            </svg>
+            ...Loading
+          </p>
+          <p v-else>
+            {{
+              modalTitle == "Create New User"
+                ? "Create New User"
+                : "Save Changes"
+            }}
+          </p>
         </button>
       </div>
     </template>
@@ -344,12 +406,52 @@ import BaseDataTable from "@/components/BaseComponents/BaseDataTable.vue";
 import BaseMobileDataTable from "@/components/BaseComponents/BaseMobileDataTable.vue";
 import BaseModal from "@/components/BaseComponents/BaseModal.vue";
 import BaseInput from "@/components/BaseComponents/BaseInput.vue";
+import { useVuelidate } from "@vuelidate/core";
+import { required, email, minLength } from "@vuelidate/validators";
 
 import { onClickOutside } from "@vueuse/core";
 
-import { ref, computed } from "vue";
+import { ref, computed, reactive } from "vue";
 import ExportBtnDropdown from "../../components/exportBtnDropdown.vue";
 
+// import stores
+import { useAdminsStore } from "@/stores/admin-store";
+
+import { useToastStore } from "@/stores/toast-store";
+
+// declare the stores
+const adminStore = useAdminsStore();
+const toastStore = useToastStore();
+
+const user = reactive({
+  name: "",
+  email: "",
+  phone: "",
+  role: "",
+});
+
+const rules = {
+  email: {
+    required,
+    email,
+  },
+  name: {
+    required,
+    minLength: minLength(3),
+  },
+  phone: {
+    required,
+    minLength: minLength(11),
+  },
+  role: {
+    required,
+  },
+};
+
+// validate the user data
+const v$ = useVuelidate(rules, user);
+
+const isLoading = ref(false);
 const showDropdown = ref(false);
 const modalActive = ref(false);
 const StaffLists = ref([
@@ -366,11 +468,12 @@ const StaffLists = ref([
     role: "Teacher",
   },
 ]);
-
+const modalInput = ref(true);
 const dropdownRef = ref(null);
 const isEditing = ref(false);
 const isCreating = ref(false);
 
+// methods
 onClickOutside(dropdownRef, () => {
   showDropdown.value = false;
 });
@@ -403,6 +506,55 @@ const handleViewStaff = (id) => {
 
   console.log(id);
 };
+
+const saveUser = async () => {
+  isLoading.value = true;
+  // console.log(v$.value.$invalid);
+  const result = await v$.value.$validate();
+  // console.log(result);
+  // console.log(user);
+  // console.log(v$);
+
+  if (result) {
+    if (modalTitle.value === "Create New User") {
+      let payload = {
+        firstname: firstname.value,
+        lastname: lastname.value,
+        email: user.email,
+        phone: user.phone,
+        role: user.role,
+      };
+      try {
+        await adminStore.createNewUser(payload);
+
+        // call the toast store to show the toast
+        toastStore.showToast({
+          title: "Congratulations",
+          message: "User created successfully",
+          type: "success",
+          timeout: 4000,
+        });
+      } catch (error) {
+        console.log(error);
+
+        // call the toast store to show the toast
+        toastStore.showToast({
+          title: "Error",
+          message: "Error creating user",
+          type: "error",
+          timeout: 4000,
+        });
+      } finally {
+        isLoading.value = false;
+      }
+
+      // console.log(user);
+    } else {
+      console.log("update...");
+    }
+  }
+};
+
 // computed properties
 const modalTitle = computed(() => {
   if (isEditing.value) {
@@ -412,6 +564,20 @@ const modalTitle = computed(() => {
   } else {
     return "View User";
   }
+});
+
+// get first name
+const firstname = computed(() => {
+  if (user.name) {
+    return user.name.split(" ")[0];
+  } else return "";
+});
+
+// get last name
+const lastname = computed(() => {
+  if (user.name) {
+    return user.name.split(" ")[1];
+  } else return "";
 });
 </script>
 
