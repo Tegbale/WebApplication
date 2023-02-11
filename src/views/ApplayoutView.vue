@@ -255,7 +255,7 @@
                     viewBox="0 0 24 24"
                     stroke-width="1.5"
                     stroke="currentColor"
-                    class="w-6 h-6 ml-1 pointer-events-none" 
+                    class="w-6 h-6 ml-1 pointer-events-none"
                   >
                     <path
                       stroke-linecap="round"
@@ -267,7 +267,7 @@
               </div>
             </form>
           </div>
-          <div class="flex items-center  space-x-2 md:space-x-6">
+          <div class="flex items-center space-x-2 md:space-x-6">
             <BadgeComponent class="hidden md:flex" />
 
             <AvatarComponent class="flex" />
@@ -276,9 +276,7 @@
       </div>
 
       <main class="container mx-auto px-6 py-10">
-      
-          <slot />
-      
+        <slot />
       </main>
     </div>
   </div>
@@ -314,7 +312,6 @@ const openMenu = () => {
 </script>
 
 <style lang="scss" scoped>
-
 aside {
   // transition: width 0.3s ease-in-out;
   display: flex;
