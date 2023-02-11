@@ -7,11 +7,11 @@
     <img
       src="@/assets/communication.png"
       alt=""
-      class=" opacity-10 absolute max-w-2xl right-28"
+      class=" opacity-10 absolute max-w-2xl right-0 md:right-28"
     />
 
     <header class="w-full absolute left-0 top-0 p-6 lg:p-32">
-      <div class="flex justify-between">
+      <div class="md:flex justify-start md:justify-between">
         <div>
           <div
             class="logo rounded-full flex justify-center items-center text-tegbale-blue text-5xl font-bold font-poppins bg-white mx-0"

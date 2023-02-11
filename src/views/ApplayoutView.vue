@@ -303,7 +303,7 @@ const logout = () => {
 
   userStore.clearUserDetails();
 
-  router.push({ name: "login" });
+  router.push({ name: "home" });
 };
 
 // function to open menu
