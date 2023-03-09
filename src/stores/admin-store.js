@@ -19,10 +19,8 @@ export const useAdminsStore = defineStore("admin", {
     }),
 
     getters: {
-        AllUsers(state) {
-            if (state.users && state.users.length > 0) {
-                return state.users.filter((user) => user.role !== "superadmin");
-            }
+        allUsers(state) {
+            return state.users;
         },
     },
     actions: {
@@ -85,7 +83,15 @@ export const useAdminsStore = defineStore("admin", {
         // get all users
         async getAllUsers() {
             const { data } = await admin.getAllUsers();
-            this.$state.users = data.data.data;
+            const usersArray = data.data.data;
+
+            // filter out the superadmin where role is superadmin
+            const filteredUsers = usersArray.filter((user) => {
+                return user.role !== "superadmin";
+            });
+
+            this.$state.users = filteredUsers;
+
             return data;
         },
     },

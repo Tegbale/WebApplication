@@ -2,14 +2,12 @@
 
 import { useUsersStore } from "@/stores/user-store";
 
-
-
 export default function auth({ next, router }) {
-    const user = useUsersStore();
+  const user = useUsersStore();
 
-    if (!user.id) {
-        return router.push({ name: "home" });
-    }
+  if (!user.id) {
+    return router.push({ name: "home" });
+  }
 
-    return next();
+  return next();
 }

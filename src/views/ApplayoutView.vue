@@ -1,6 +1,6 @@
 <template>
   <div
-    v-if="!noNavRoutes.includes($route.name)"
+    
     class="flex mx-auto w-full relative"
   >
     <aside
@@ -291,7 +291,7 @@ import { useRouter } from "vue-router";
 
 const userStore = useUsersStore();
 const router = useRouter();
-const noNavRoutes = ref(["home", "login", "register"]);
+
 const isOpen = ref(false);
 
 // function to logout user

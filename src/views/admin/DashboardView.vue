@@ -1,5 +1,5 @@
 <template>
-  <ApplayoutView>
+
     <div>
       <div class="pt-20">
         <BasePageTitle pageTitle="Dashboard" />
@@ -99,11 +99,9 @@
         </DashboardCards>
       </div>
     </div>
-  </ApplayoutView>
 </template>
 
 <script setup>
-import ApplayoutView from "../ApplayoutView.vue";
 import BasePageTitle from "@/components/BaseComponents/BasePageTitle.vue";
 import DashboardCards from "../../components/dashboardCards.vue";
 import { ref } from "vue";

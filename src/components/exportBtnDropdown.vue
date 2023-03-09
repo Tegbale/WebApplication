@@ -1,5 +1,5 @@
 <template>
-  <div class="relative ">
+  <div class="relative">
     <button
       class="relative text-white bg-tegbale-blue hover:bg-blue-900 focus:outline-none font-medium rounded-lg text-sm px-4 py-1 text-center inline-flex items-center justify-self-end"
       type="button"

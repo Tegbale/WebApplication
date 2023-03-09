@@ -11,6 +11,7 @@ export const useSchoolStore = defineStore("school", {
         contact_email: null,
         contact_name: null,
         location: null,
+        AllSchools: null,
     }),
 
     getters: {
@@ -25,6 +26,11 @@ export const useSchoolStore = defineStore("school", {
                 location: this.$state.location,
             };
         },
+
+        // get every school from the dB
+        getAllSchool() {
+            return this.$state.AllSchools
+        }
     },
     actions: {
         async addSchool(payload) {
@@ -49,5 +55,12 @@ export const useSchoolStore = defineStore("school", {
             (this.$state.contact_name = res.data.data.contact_name),
             (this.$state.location = res.data.data.location);
         },
+        // fetch all schools in the database
+
+        async fetchAllSchools() {
+            const { data } = await school.fetchSchools();
+            return data
+        }
+
     },
 });

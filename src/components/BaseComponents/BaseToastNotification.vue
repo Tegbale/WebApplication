@@ -1,5 +1,4 @@
 <script setup>
-
 import {
   InformationCircleIcon,
   XMarkIcon,
@@ -7,8 +6,8 @@ import {
   ExclamationTriangleIcon,
   XCircleIcon,
 } from "@heroicons/vue/20/solid/index.js";
-import {computed} from "vue";
-import {cva} from "class-variance-authority";
+import { computed } from "vue";
+import { cva } from "class-variance-authority";
 
 const props = defineProps({
   intent: {
@@ -95,9 +94,12 @@ const closeButtonClass = computed(() => {
     variants: {
       intent: {
         info: "text-blue-900/70 hover:text-blue-900 hover:bg-blue-200 active:bg-blue-300",
-        success: "text-green-900/70 hover:text-green-900 hover:bg-green-200 active:bg-green-300",
-        warning: "text-orange-900/70 hover:text-orange-900 hover:bg-orange-200 active:bg-orange-300",
-        error: "text-red-900/70 hover:text-red-900 hover:bg-red-200 active:bg-red-300",
+        success:
+          "text-green-900/70 hover:text-green-900 hover:bg-green-200 active:bg-green-300",
+        warning:
+          "text-orange-900/70 hover:text-orange-900 hover:bg-orange-200 active:bg-orange-300",
+        error:
+          "text-red-900/70 hover:text-red-900 hover:bg-red-200 active:bg-red-300",
       },
     },
   })({
@@ -124,31 +126,19 @@ function dismiss() {
 </script>
 
 <template>
-  <div
-    v-if="props.show"
-    :class="containerClass"
-  >
+  <div v-if="props.show" :class="containerClass">
     <div class="shrink-0">
-      <component
-        :is="iconComponent"
-        :class="iconClass"
-      />
+      <component :is="iconComponent" :class="iconClass" />
     </div>
     <div class="flex-1 space-y-2 min-w-0">
-      <h2
-        v-if="props.title"
-        :class="titleClass"
-      >
+      <h2 v-if="props.title" :class="titleClass">
         {{ props.title }}
       </h2>
       <div :class="contentClass">
         <slot />
       </div>
     </div>
-    <div
-      v-if="props.onDismiss"
-      class="shrink-0"
-    >
+    <div v-if="props.onDismiss" class="shrink-0">
       <button
         :title="dismissLabel"
         :aria-label="dismissLabel"

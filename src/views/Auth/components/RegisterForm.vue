@@ -208,14 +208,8 @@
           >{{ v$.confirmPassword.$errors[0].$message }}</span
         >
       </div>
-      <div class="pb-4 text-right">
-        <a
-          href="#"
-          class="text-tegbale-blue hover:underline text-right font-roboto leading-normal text-base"
-          >Forgot Password?</a
-        >
-      </div>
-      <div class="pb-8 sm:pb-16">
+    
+      <div class="py-8 sm:pb-16">
         <BaseButton
           btn-title="Sign In"
           class="text-white bg-tegbale-blue hover:bg-blue-400 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-xl text-sm sm:text-base w-full px-5 py-3 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 font-roboto font-bold md:text-2xl"
