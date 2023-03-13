@@ -1,6 +1,5 @@
 <template>
   <div>
-    <ApplayoutView>
       <div
         class="flex justify-between items-end sm:items-center space-x-2 mt-20"
       >
@@ -28,7 +27,6 @@
         <BaseTab title="Teachers"><TeacherDetailsTable /></BaseTab>
         <BaseTab title="Guardians"> <GuardianDetailsTable /> </BaseTab>
       </BaseTabWrapper>
-    </ApplayoutView>
     <BaseModal :modalActive="modalActive" :closeMode="closeModal">
       <template #title>
         <div class="flex justify-between items-center">
@@ -132,7 +130,6 @@
 </template>
 
 <script setup>
-import ApplayoutView from "../ApplayoutView.vue";
 import BasePageTitle from "@/components/BaseComponents/BasePageTitle.vue";
 import BaseTab from "@/components/BaseComponents/BaseTab.vue";
 import BaseTabWrapper from "@/components/BaseComponents/BaseTabWrapper.vue";

@@ -11,12 +11,21 @@ export default {
     },
 
     // update a school endpoint using the school id
-    updateSchool(payload, id) {
-        return api().put(`/account/admin/school/${id}`, payload, {
+    updateSchool(id, payload) {
+        return api().post(`/account/admin/school/${id}`, payload, {
             headers: {
                 Authorization: "Bearer " + localStorage.getItem("token"),
             },
         });
+    },
+
+    // get a single school detail
+    getSchool(id) {
+        return api().get(`account/admin/school/${id}`, {
+            headers: {
+                Authorization: "Bearer " + localStorage.getItem("token"),
+            },
+        })
     },
 
     // fetch all schools
@@ -27,4 +36,13 @@ export default {
             },
         });
     },
-};
+
+    // delete a school
+    deleteSchoolById(id) {
+        return api().delete(`/account/admin/school/${id}`, {
+            headers: {
+                Authorization: "Bearer " + localStorage.getItem("token"),
+            },
+        });
+    }
+}

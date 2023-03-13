@@ -3,11 +3,11 @@
 import { useUsersStore } from "@/stores/user-store";
 
 export default function admin({ next, router }) {
-    const admin = useUsersStore();
+  const admin = useUsersStore();
 
-    if (admin.role !== "superadmin") {
-        return router.push({ name: "login" });
-    }
+  if (admin.role !== "superadmin") {
+    return router.push({ name: "login" });
+  }
 
-    return next();
+  return next();
 }

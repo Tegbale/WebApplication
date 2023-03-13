@@ -1,4 +1,7 @@
-<script setup></script>
+<script setup>
+
+
+</script>
 
 <template>
   <main
@@ -7,7 +10,7 @@
     <img
       src="@/assets/communication.png"
       alt=""
-      class=" opacity-10 absolute max-w-2xl right-0 md:right-28"
+      class="opacity-10 absolute max-w-2xl right-0 md:right-28"
     />
 
     <header class="w-full absolute left-0 top-0 p-6 lg:p-32">
@@ -29,7 +32,9 @@
                   <div class="w-10 border-b border-solid border-white"></div>
                   <h1 class="ml-3 text-3xl font-bold">1</h1>
                 </div>
-                <div class="text-right text-lg font-poppins font-semibold">Login</div>
+                <div class="text-right text-lg font-poppins font-semibold">
+                  Login
+                </div>
               </router-link>
             </li>
             <li
@@ -40,7 +45,9 @@
                   <div class="w-10 border-b border-solid border-white"></div>
                   <h1 class="ml-3 text-3xl font-bold">2</h1>
                 </div>
-                <div class="text-right text-lg font-poppins font-semibold">Request a Demo</div>
+                <div class="text-right text-lg font-poppins font-semibold">
+                  Request a Demo
+                </div>
               </router-link>
             </li>
           </ul>

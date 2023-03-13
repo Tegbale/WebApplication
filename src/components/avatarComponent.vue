@@ -23,7 +23,6 @@
 import { computed, ref, onMounted } from "vue";
 import { useUsersStore } from "@/stores/user-store";
 
-
 const userStore = useUsersStore();
 const noPicture = ref(false);
 
@@ -53,8 +52,6 @@ const getFullName = computed(() => {
 
 <style lang="scss" scoped>
 .user_role {
-  
   font-size: xx-small;
 }
-
 </style>

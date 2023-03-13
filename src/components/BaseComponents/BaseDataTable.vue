@@ -1,6 +1,6 @@
 <template>
-  <div class="container mx-auto bg-white w-full rounded-md mt-10">
-    <table class="w-full">
+  <div class="container mx-auto bg-white w-full rounded-lg mt-10">
+    <table class="w-full rounded-lg">
       <thead class="bg-gray-50 border-b-2 border-gray-200">
         <slot name="table-header" />
       </thead>
