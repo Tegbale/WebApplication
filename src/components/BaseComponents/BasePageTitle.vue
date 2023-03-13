@@ -4,7 +4,7 @@
   >
     <div class="block md:flex items-center space-y-2">
       <p
-        class="text-xl sm:text-2xl font-medium text-black capitalize pr-2 md:pr-6"
+        class="text-xl sm:text-2xl md:text-3xl font-medium text-black capitalize pr-2 md:pr-6"
       >
         {{ pageTitle }}
       </p>

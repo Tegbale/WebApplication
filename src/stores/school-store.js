@@ -34,26 +34,46 @@ export const useSchoolStore = defineStore("school", {
     },
     actions: {
         async addSchool(payload) {
-            const res = await school.addSchool(payload);
-            this.setSchoolDetails(res);
+            const { data } = await school.addSchool(payload);
+            let result = data.data;
+            this.setSchoolDetails(result);
 
-            return res;
+            return data;
         },
-        // udpate a school
-        async updateSchool(payload, id) {
-            const res = await school.updateSchool(payload, id);
-            return res;
+        // update a school
+        async updateSchool(id, payload) {
+            const { data } = await school.updateSchool(id, payload);
+            let result = data.data;
+            this.setSchoolDetails(result);
+            return data;
+        },
+
+        // get a school details
+        async fetchSchool(id) {
+            const { data } = await school.getSchool(id);
+            let schoolDetails = data.data;
+            this.setSchoolDetails(schoolDetails);
+            console.log(JSON.stringify(schoolDetails, null, 2))
+
+            return data
+        },
+
+        // delete a school data
+        async deleteSchool(id) {
+            const { data } = await school.deleteSchoolById(id);
+
+            return data;
         },
 
         // set school details
-        async setSchoolDetails(res) {
-            (this.$state.id = res.data.data.id),
-            (this.$state.name = res.data.data.name),
-            // (this.$state.address = res.data.data.address),
-            // (this.$state.phone = res.data.data.phone),
-            (this.$state.contact_email = res.data.data.contact_email),
-            (this.$state.contact_name = res.data.data.contact_name),
-            (this.$state.location = res.data.data.location);
+        async setSchoolDetails(data) {
+            (this.$state.id = data.id),
+            (this.$state.name = data.name),
+            // (this.$state.address = data.address),
+            // (this.$state.phone = data.phone),
+            (this.$state.contact_email = data.contact_email),
+            (this.$state.contact_name = data.contact_name),
+            (this.$state.location = data.location);
         },
         // fetch all schools in the database
 
@@ -63,4 +83,9 @@ export const useSchoolStore = defineStore("school", {
         }
 
     },
+    persist: {
+        storage: sessionStorage,
+        paths: ['id'],
+    },
+
 });
