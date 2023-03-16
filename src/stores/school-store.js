@@ -53,7 +53,6 @@ export const useSchoolStore = defineStore("school", {
             const { data } = await school.getSchool(id);
             let schoolDetails = data.data;
             this.setSchoolDetails(schoolDetails);
-            console.log(JSON.stringify(schoolDetails, null, 2))
 
             return data
         },

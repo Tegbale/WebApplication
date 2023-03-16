@@ -374,15 +374,12 @@ const closeModal = () => {
 const handleEditUser = (id) => {
   isEditing.value = true;
   modalActive.value = !modalActive.value;
-  console.log(id);
 };
 
 const handleViewUser = (id) => {
   isEditing.value = false;
   isCreating.value = false;
   modalActive.value = !modalActive.value;
-
-  console.log(id);
 };
 
 const saveUser = async () => {

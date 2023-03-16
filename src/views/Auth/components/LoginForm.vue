@@ -200,7 +200,7 @@ const toastStore = useToastStore();
 
 const HandleLogin = async () => {
   isLoading.value = true;
-  console.log(v$.value.$invalid);
+  // console.log(v$.value.$invalid);
   const result = await v$.value.$validate();
   if (result) {
     try {
