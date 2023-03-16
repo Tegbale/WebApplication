@@ -241,7 +241,6 @@ const updateAdminDetails = async () => {
   data.append("email", email.value);
   data.append("phone", phone.value);
   data.append("photo", imageData.file);
-  console.log(imageData.file);
 
   const result = await v$.value.$validate();
   if (result) {

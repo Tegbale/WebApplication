@@ -307,7 +307,6 @@ const logout = () => {
 // function to open menu
 const openMenu = () => {
   isOpen.value = true;
-  console.log(isOpen.value);
 };
 </script>
 

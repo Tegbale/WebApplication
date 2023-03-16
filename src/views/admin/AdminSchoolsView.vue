@@ -5,7 +5,7 @@
         <BasePageTitle pageTitle="Schools" :showBtn="true" btnText="Add School" @clicked="handleModalAction" />
         <!-- export dropdown button for mobie devices only -->
         <ExportBtnDropdown class="flex md:hidden mb-0.5" ref="dropdownRef" :show-dropdown="showDropdown"
-          @show-dropdown="showDropdown = !showDropdown" />
+          @show-dropdown="showDropdown = !showDropdown" @select-file-type="dataExport" />
       </div>
       <div v-if="loadingData" class=" flex justify-center items-center h-72">
         <svg aria-hidden="true" class="inline w-16 h-16 mr-2 text-white animate-spin  fill-blue-600" viewBox="0 0 100 101"
@@ -36,7 +36,8 @@
               </th>
               <th class="flex flex-col p-3">
                 <!-- Dropdown menu -->
-                <ExportBtnDropdown ref="dropdownRef" :show-dropdown="showDropdown" @show-dropdown="handleShowDropdown" />
+                <ExportBtnDropdown ref="dropdownRef" :show-dropdown="showDropdown" @show-dropdown="handleShowDropdown"
+                  @select-file-type="dataExport" />
               </th>
             </tr>
           </template>
@@ -95,6 +96,8 @@
             </tr>
           </template>
         </BaseDataTable>
+        <!-- <pre>{{ rowArray }}</pre> -->
+        <!-- <pre>{{ SchoolLists }}</pre> -->
         <!-- Mobile design  -->
         <template v-if="SchoolLists && SchoolLists.length > 0">
           <div class="grid grid-auto-fit gap-4 md:hidden pt-4" v-for="school in SchoolLists" :key="school.id">
@@ -274,6 +277,9 @@ import BaseModal from "@/components/BaseComponents/BaseModal.vue";
 import BaseInput from "@/components/BaseComponents/BaseInput.vue";
 import { onClickOutside } from "@vueuse/core";
 
+// import the helper functions
+import { dataParser } from "@/helpers/export-data.js"
+
 import { ref, computed, reactive, onMounted, defineEmits } from "vue";
 import ExportBtnDropdown from "@/components/exportBtnDropdown.vue";
 import NoDataCard from "@/components/NoDataCard.vue";
@@ -309,6 +315,7 @@ const dropdownRef = ref(null);
 const isEditing = ref(false);
 const isCreating = ref(false);
 const schoolId = ref(null);
+const header = ref(['id', 'Name', 'Admin', 'Email'])
 
 const schoolData = reactive({
   schoolname: "",
@@ -349,8 +356,6 @@ const saveSchoolDetails = async () => {
       contact_name: schoolData.adminname,
       location: schoolData.schoollocation,
     };
-
-    //console.log(data);
 
     try {
       if (modalTitle.value == "Add School") {
@@ -428,7 +433,7 @@ const deleteData = async () => {
     console.log(error);
     // call the toast store to show the toast
     toastStore.showToast({
-      title: "Hurray!",
+      title: "Ooops!",
       message: "delete School failed",
       type: "error",
       timeout: 4000,
@@ -459,10 +464,27 @@ const closeModal = () => {
   isCreating.value = false;
 };
 
-const handleEditSchool = (id) => {
+const handleEditSchool = async (id) => {
   isEditing.value = true;
   modalActive.value = !modalActive.value;
-  console.log(id);
+  try {
+    const { data } = await schStore.fetchSchool(id);
+
+    schoolData.adminemail = data.contact_email;
+    schoolData.adminname = data.contact_name;
+    schoolData.schoollocation = data.location;
+    schoolData.schoolname = data.name;
+    schoolId.value = data.id
+  } catch (error) {
+    console.log(error)
+    // call the toast store to show the toast
+    toastStore.showToast({
+      title: "Ooops!",
+      message: "Unable to Fetch School details",
+      type: "error",
+      timeout: 4000,
+    });
+  };
 };
 
 // fetch all schools
@@ -483,11 +505,8 @@ const handleViewSchool = async (id) => {
   isCreating.value = false;
   modalActive.value = !modalActive.value;
 
-  console.log(id);
-
   try {
     const { data } = await schStore.fetchSchool(id);
-    console.log(JSON.stringify(data, null, 2))
 
     schoolData.adminemail = data.contact_email;
     schoolData.adminname = data.contact_name;
@@ -496,8 +515,36 @@ const handleViewSchool = async (id) => {
     schoolId.value = data.id
   } catch (error) {
     console.log(error)
+    // call the toast store to show the toast
+    toastStore.showToast({
+      title: "Ooops!",
+      message: "Unable to Fetch School details",
+      type: "error",
+      timeout: 4000,
+    });
   }
 };
+
+// method to export data here..
+const dataExport = (value) => {
+
+  // declear the name of the document
+  let docName = "Schools";
+
+  switch (value) {
+    case 'pdf':
+      dataParser().generatePdf(rowArray.value, header.value, docName);
+
+      break;
+    case 'csv':
+      dataParser().exportDataFromJSON(SchoolLists.value, docName, value)
+
+      break;
+    default:
+      // code block
+      dataParser().exportDataFromJSON(SchoolLists.value, null, null)
+  }
+}
 
 // computed properties
 const modalTitle = computed(() => {
@@ -509,6 +556,20 @@ const modalTitle = computed(() => {
     return "View School";
   }
 });
+
+// create a new array of nested arrays to use in generating pdf file
+const rowArray = computed(() => {
+
+  // remove the created_at key from each object in the SchoolLists array
+  let newArray = SchoolLists.value.map(({ created_at, ...rest }) => {
+    return rest;
+  })
+
+  // map through the newArray and create a new array of nested arrays
+  return newArray.map(item => {
+    return Object.values(item)
+  })
+})
 
 // mounted hook
 onMounted(fetchAllSchools());
