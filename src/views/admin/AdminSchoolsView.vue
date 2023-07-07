@@ -164,12 +164,18 @@
           <p class="text-sm font-medium font-roboto">School Information</p>
           <div class="grid grid-auto-fit gap-3">
             <div>
-              <BaseInput label="School Name" placeholder="Enter School Name" type="text" class="w-full" :modalInput="true"
-                v-model="schoolData.schoolname" />
+              <BaseInput label="School Name" placeholder="Enter School Name" type="text" class="w-full"
+                :disabled="modalTitle === 'View School'" :modalInput="true" v-model="schoolData.schoolname" />
+              <span v-if="errors && errors.name && errors.name.length > 0" class="text-red-500 text-sm pl-4">
+                {{ errors.name[0] }}
+              </span>
             </div>
             <div>
               <BaseInput label="School Location" placeholder="Enter School Location" type="text" class="w-full"
-                :modalInput="true" v-model="schoolData.schoollocation" />
+                :modalInput="true" v-model="schoolData.schoollocation" :disabled="modalTitle === 'View School'" />
+              <span v-if="errors && errors.location && errors.location.length > 0" class="text-red-500 text-sm pl-4">
+                {{ errors.location[0] }}
+              </span>
             </div>
           </div>
         </div>
@@ -177,12 +183,30 @@
           <p class="text-sm font-medium font-roboto">Admin Information</p>
           <div class="grid grid-auto-fit gap-3">
             <div>
-              <BaseInput label="Name" placeholder="Enter Admin Name" type="text" class="w-full" :modalInput="true"
-                v-model="schoolData.adminname" />
+              <!-- <pre>{{ usersStore.users }}</pre> -->
+              <label for="role" class="text-xs">Name</label>
+              <div class="relative flex items-center text-gray-300 focus-within:text-tegbale-blue"
+                :class="{ 'mt-1': modalInput }">
+                <select v-model="schoolData.adminname" :disabled="modalTitle === 'View School'"
+                  class="border border-gray-300 rounded-2xl leading-5 mt-2 pr-3 pl-10 py-2 w-full hover:border-gray-400 focus:outline-none focus:border-none focus:ring-1 focus:border-gray-400 placeholder:text-[12px] placeholder:tracking-wide placeholder:opacity-50 placeholder:content-center text-tegbale-text-gray">
+                  <option selected disabled value="">Select School Admin</option>
+
+                  <option v-for="user in usersStore.users" :value="user.fullname" :key="user.fullname">{{ user.fullname }}
+                  </option>
+                </select>
+              </div>
+              <span v-if="errors && errors.contact_name && errors.contact_name.length > 0"
+                class="text-red-500 text-sm pl-4">
+                {{ errors.contact_name[0] }}
+              </span>
             </div>
             <div>
               <BaseInput label="Email Address" placeholder="Enter School email" type="email" class="w-full"
-                :modalInput="true" v-model="schoolData.adminemail" />
+                :modalInput="true" v-model="schoolData.adminemail" :disabled="modalTitle === 'View School'" />
+              <span v-if="errors && errors.contact_email && errors.contact_email.length > 0"
+                class="text-red-500 text-sm pl-4">
+                {{ errors.contact_email[0] }}
+              </span>
             </div>
           </div>
         </div>
@@ -207,7 +231,7 @@
             class="bg-tegbale-text-gray text-white font-medium font-roboto py-2 px-16 w-full md:max-w-fit rounded-3xl hover:bg-gray-400">
             Cancel
           </button>
-          <button @click="saveSchoolDetails" :loading="isLoading"
+          <button @click="saveSchoolDetails" v-if="modalTitle !== 'View School'" :loading="isLoading"
             class="inline-flex justify-center bg-tegbale-blue text-white font-medium font-roboto py-2 px-10 w-full md:max-w-fit rounded-3xl hover:bg-blue-900">
             <p class="flex items-center" v-if="isLoading">
               <svg class="w-5 h-5 mr-3 -ml-1 text-white animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none"
@@ -229,39 +253,41 @@
 
     <BaseDeleteModal :modalActive="deleteActive">
       <template #title>
-        <div class="flex justify-between items-center">
-          <h3 class="text-lg md:text-3xl font-medium font-roboto text-black">
-            {{ deleteModalTitle }}
-          </h3>
+        <div class="flex items-center">
+          <svg aria-hidden="true" class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20"
+            xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd"
+              d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+              clip-rule="evenodd"></path>
+          </svg>
+          <span class="sr-only">Info</span>
+          <h3 class="text-lg font-medium">Caution</h3>
         </div>
       </template>
       <!--  -->
       <template #form>
-        <div class="pt-8 text-lg">
+        <div class="mt-2 mb-4 text-sm sm:text-base">
           <p>Are You sure you want to Delete this?</p>
         </div>
       </template>
       <template #button>
-        <div class="block md:flex items-center md:justify-end md:space-x-4 space-y-3 md:space-y-0 py-10">
-          <button @click.prevent="deleteData" :loading="isDeleting"
-            class="inline-flex justify-center bg-red-600 text-white font-medium font-roboto py-2 px-8 w-full md:max-w-fit rounded-3xl hover:bg-red-400">
-            <p class="flex items-center" v-if="isDeleting">
-              <svg class="w-5 h-5 mr-3 -ml-1 text-white animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none"
-                viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor"
-                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-                </path>
-              </svg>
-              Loading...
-            </p>
-            <p v-else>Yes, I am sure</p>
+        <div class="flex">
+          <button type="button" @click.prevent="deleteData"
+            class="text-white bg-red-800 hover:bg-red-900 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-xs px-3 py-1.5 mr-2 text-center inline-flex items-center">
+
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+              stroke="currentColor" class="-ml-0.5 mr-2 h-4 w-4">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+            </svg>
+
+            Yes, Delete
           </button>
-          <button @click.prevent="cancelDelete"
-            class="bg-tegbale-text-gray text-white font-medium font-roboto py-2 px-8 w-full md:max-w-fit rounded-3xl hover:bg-gray-400">
+          <button type="button" @click.prevent="cancelDelete"
+            class="text-red-800 bg-transparent border border-red-800 hover:bg-gray-50 hover:text-gray-900 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-xs px-3 py-1.5 text-center"
+            data-dismiss-target="#alert-additional-content-2" aria-label="Close">
             No, Cancel
           </button>
-
         </div>
       </template>
     </BaseDeleteModal>
@@ -277,19 +303,16 @@ import BaseModal from "@/components/BaseComponents/BaseModal.vue";
 import BaseInput from "@/components/BaseComponents/BaseInput.vue";
 import { onClickOutside } from "@vueuse/core";
 
-// import the helper functions
 import { dataParser } from "@/helpers/export-data.js"
 
 import { ref, computed, reactive, onMounted, defineEmits } from "vue";
 import ExportBtnDropdown from "@/components/exportBtnDropdown.vue";
 import NoDataCard from "@/components/NoDataCard.vue";
 
-// import validation plugin
-import { useVuelidate } from "@vuelidate/core";
-import { required, email, helpers } from "@vuelidate/validators";
 
 // import store
-import { useSchoolStore } from "@/stores/school-store";
+import { useSchoolStore } from "@/stores/schools";
+import { useUserStore } from "@/stores/users";
 import { useToastStore } from "@/stores/toast-store";
 
 
@@ -299,6 +322,7 @@ const emit = defineEmits(['emitId'])
 
 // declare the stores
 const schStore = useSchoolStore();
+const usersStore = useUserStore();
 const toastStore = useToastStore();
 
 const isLoading = ref(false);
@@ -307,10 +331,10 @@ const isSaving = ref(false);
 const showDropdown = ref(false);
 const modalActive = ref(false);
 const SchoolLists = ref(null);
-const loadingData = ref(false)
-const deleteActive = ref(false)
-const deleteModalTitle = ref("Delete School")
+const loadingData = ref(false);
+const deleteActive = ref(false);
 
+const errors = ref(null);
 const dropdownRef = ref(null);
 const isEditing = ref(false);
 const isCreating = ref(false);
@@ -325,77 +349,62 @@ const schoolData = reactive({
 });
 
 // validation rules
-
-const rules = {
-  schoolname: {
-    required: helpers.withMessage("School name is required", required),
-  },
-  schoollocation: {
-    required: helpers.withMessage("Location is required", required),
-  },
-  adminname: {
-    required: helpers.withMessage("Name is required", required),
-  },
-  adminemail: {
-    required: helpers.withMessage("Email is required", required),
-    email: helpers.withMessage("Email is invalid", email),
-  },
-};
-
-// validate the add school data
-const v$ = useVuelidate(rules, schoolData);
-
-// add a school
 const saveSchoolDetails = async () => {
 
-  const result = await v$.value.$validate();
-  if (result) {
-    const data = {
-      name: schoolData.schoolname,
-      contact_email: schoolData.adminemail,
-      contact_name: schoolData.adminname,
-      location: schoolData.schoollocation,
-    };
+  const data = {
+    name: schoolData.schoolname,
+    contact_email: schoolData.adminemail,
+    contact_name: schoolData.adminname,
+    location: schoolData.schoollocation,
+  };
 
-    try {
-      if (modalTitle.value == "Add School") {
-        isLoading.value = true;
-        await schStore.addSchool(data);
-        await fetchAllSchools();
+  try {
+    if (modalTitle.value == "Add School") {
+      isLoading.value = true;
+      await schStore.addSchool(data);
+      await fetchAllSchools();
 
-        // call the toast store to show the toast
-        toastStore.showToast({
-          title: "Hurray!",
-          message: "School added successfully",
-          type: "success",
-          timeout: 4000,
-        });
-      } else {
-        isSaving.value = true
-        await schStore.updateSchool(schoolId.value, data)
-        await fetchAllSchools();
-        // call the toast store to show the toast
-        toastStore.showToast({
-          title: "Hurray!",
-          message: "School updated successfully",
-          type: "success",
-          timeout: 4000,
-        });
-      }
-    } catch (error) {
+      modalActive.value = false
+
       // call the toast store to show the toast
       toastStore.showToast({
-        title: "Ooops!",
-        message: "Unable to add or Update",
-        type: "error",
+        title: "Hurray!",
+        message: "School added successfully",
+        type: "success",
         timeout: 4000,
       });
-    } finally {
-      isLoading.value = false;
-      isSaving.value = false;
+    } else {
+      isSaving.value = true
+      await schStore.updateSchool(schoolId.value, data)
+      await fetchAllSchools();
       modalActive.value = false
+
+      // call the toast store to show the toast
+      toastStore.showToast({
+        title: "Hurray!",
+        message: "School updated successfully",
+        type: "success",
+        timeout: 4000,
+      });
     }
+  } catch (error) {
+
+    // populate the error bag 
+    errors.value = error.fieldErrors;
+
+    // call the toast store to show the toast
+    toastStore.showToast({
+      title: "Ooops!",
+      message: error.message || "Unable to add or Update",
+      type: "error",
+      timeout: 4000,
+    });
+  } finally {
+    isLoading.value = false;
+    isSaving.value = false;
+    // modalActive.value = false
   }
+  // }
 };
 
 // handleDeleteSchool
@@ -421,7 +430,7 @@ const deleteData = async () => {
     const { data } = await schStore.deleteSchool(schoolId.value);
     // fetch the latest data of schools
     await fetchAllSchools();
-
+    console.log(data);
     // call the toast store to show the toast
     toastStore.showToast({
       title: "Hurray!",
@@ -453,8 +462,9 @@ const handleShowDropdown = () => {
   showDropdown.value = !showDropdown.value;
 };
 
-const handleModalAction = () => {
+const handleModalAction = async () => {
   isCreating.value = true;
+  await usersStore.getAllUsers();
   modalActive.value = !modalActive.value;
 };
 
@@ -466,6 +476,7 @@ const closeModal = () => {
 
 const handleEditSchool = async (id) => {
   isEditing.value = true;
+  await usersStore.getAllUsers();
   modalActive.value = !modalActive.value;
   try {
     const { data } = await schStore.fetchSchool(id);
@@ -489,12 +500,19 @@ const handleEditSchool = async (id) => {
 
 // fetch all schools
 const fetchAllSchools = async () => {
-  loadingData.value = true
+  loadingData.value = true;
   try {
     const res = await schStore.fetchAllSchools();
     SchoolLists.value = res.data.data
   } catch (error) {
     console.log(error);
+    // call the toast store to show the toast
+    toastStore.showToast({
+      title: "Ooops!",
+      message: error.message || "Unable to Fetch School details",
+      type: "error",
+      timeout: 4000,
+    });
   } finally {
     loadingData.value = false
   }
@@ -503,6 +521,7 @@ const fetchAllSchools = async () => {
 const handleViewSchool = async (id) => {
   isEditing.value = false;
   isCreating.value = false;
+  await usersStore.getAllUsers();
   modalActive.value = !modalActive.value;
 
   try {
@@ -572,7 +591,9 @@ const rowArray = computed(() => {
 })
 
 // mounted hook
-onMounted(fetchAllSchools());
+onMounted(() => {
+  fetchAllSchools()
+});
 </script>
 
 <style lang="scss" scoped></style>

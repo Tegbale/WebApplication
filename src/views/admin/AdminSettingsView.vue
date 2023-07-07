@@ -161,7 +161,7 @@ import BaseInput from "@/components/BaseComponents/BaseInput.vue";
 import { useVuelidate } from "@vuelidate/core";
 import { helpers } from "@vuelidate/validators";
 import { onMounted, ref, computed } from "vue";
-import { useUsersStore } from "@/stores/user-store";
+import { useAuthStore } from "@/stores/auth";
 import { useRouter } from "vue-router";
 import { useToastStore } from "@/stores/toast-store";
 
@@ -174,7 +174,7 @@ const email = ref(null);
 const phone = ref(null);
 let imageData = null;
 let image = ref(null);
-const userStore = useUsersStore();
+const userStore = useAuthStore();
 const router = useRouter();
 const toastStore = useToastStore();
 
@@ -206,11 +206,11 @@ const getInitials = computed(() => {
 const v$ = useVuelidate(rules, { firstname, lastname, email, phone });
 
 onMounted(() => {
-  firstname.value = userStore.firstname || null;
-  lastname.value = userStore.lastname || null;
-  email.value = userStore.email || null;
-  phone.value = userStore.phone || null;
-  image.value = userStore.photo || null;
+  firstname.value = userStore.user.firstname || null;
+  lastname.value = userStore.user.lastname || null;
+  email.value = userStore.user.email || null;
+  phone.value = userStore.user.phone || null;
+  image.value = userStore.user.photo || null;
 
   if (image.value) {
     hasProfilePic.value = true;
@@ -246,9 +246,9 @@ const updateAdminDetails = async () => {
   if (result) {
     try {
       // update profile details
-      await userStore.updateUserDetail(data);
+      await userStore.updateAuthDetails(data);
       // fetch updated user details
-      await userStore.fetchUserDetails();
+      await userStore.fetchAuthDetails();
       // redirect to dashboard
       router.push({ name: "adminDashboard" });
       // call the toast store to show the toast

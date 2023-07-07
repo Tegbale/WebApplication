@@ -1,6 +1,6 @@
 import api from "@/api/axios";
 
-export default {
+const school = {
     // add a school endpoint
     addSchool(payload) {
         return api().post("/account/admin/school", payload, {
@@ -46,3 +46,5 @@ export default {
         });
     }
 }
+
+export default school;

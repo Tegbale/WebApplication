@@ -3,7 +3,7 @@ import axios from "axios";
 const url = import.meta.env.VITE_API_URL;
 
 export default () => {
-  //create an axios custom instance
+  // create an axios custom instance
   const api = axios.create({
     baseURL: url,
   });
@@ -12,34 +12,36 @@ export default () => {
   api.interceptors.response.use(
     (response) => response,
     (error) => {
-      let error_message = null;
+      let message = null;
+      let fieldErrors = null; // variable to hold field errors
+
       try {
         if (error.response.status === 401) {
           if (import.meta.env.NODE_ENV === "development")
-            console.log("you are unauthorized...401");
-          //  store.dispatch('auth/LogoutUser')
+            console.log("You are unauthorized...401");
+          // store.dispatch('auth/LogoutUser')
         } else if (error.response.status === 400) {
           if (import.meta.env.NODE_ENV === "development")
-            console.log("it's a bad request...400");
+            console.log("It's a bad request...400");
         } else if (error.response.status === 404) {
           if (import.meta.env.NODE_ENV === "development")
-            console.log("it was not found...404");
+            console.log("It was not found...404");
         }
 
         if (import.meta.env.NODE_ENV === "development") {
           console.log(JSON.stringify(error.response, null, 2));
         }
 
-        //console.log(JSON.stringify(error, null, 2))
-
-        error_message = error.response.data.message;
+        message = error.response.data.message;
+        fieldErrors = error.response.data.errors; // assign field errors to variable
       } catch (e) {
         if (import.meta.env.NODE_ENV === "development") {
-          console.log("error in axios interceptor: " + e);
+          console.log("Error in axios interceptor: " + e);
         }
       }
 
-      return Promise.reject(error_message);
+      // return the error message and field errors as an object
+      return Promise.reject({ message, fieldErrors });
     }
   );
 

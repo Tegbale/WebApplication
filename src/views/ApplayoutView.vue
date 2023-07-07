@@ -286,10 +286,10 @@
 import { ref } from "vue";
 import AvatarComponent from "../components/avatarComponent.vue";
 import BadgeComponent from "../components/badgeComponent.vue";
-import { useUsersStore } from "@/stores/user-store";
+import { useAuthStore } from "@/stores/auth";
 import { useRouter } from "vue-router";
 
-const userStore = useUsersStore();
+const userStore = useAuthStore();
 const router = useRouter();
 
 const isOpen = ref(false);

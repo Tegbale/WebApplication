@@ -11,7 +11,6 @@
       :value="modelValue"
       @input="$emit('update:modelValue', $event.target.value)"
       v-bind="$attrs"
-      autocomplete="off"
     />
     <div class="absolute w-10 block ml-2 mr-2">
       <slot name="icon" v-if="withIcon"></slot>

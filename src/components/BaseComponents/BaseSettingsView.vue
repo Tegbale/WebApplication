@@ -161,7 +161,7 @@ import BaseInput from "@/components/BaseComponents/BaseInput.vue";
 import { useVuelidate } from "@vuelidate/core";
 import { helpers } from "@vuelidate/validators";
 import { onMounted, ref, computed } from "vue";
-import { useUsersStore } from "@/stores/user-store";
+import { useAuthStore } from "@/stores/auth";
 import { useRouter } from "vue-router";
 import { useToastStore } from "@/stores/toast-store";
 
@@ -174,7 +174,7 @@ const email = ref(null);
 const phone = ref(null);
 let imageData = null;
 let image = ref(null);
-const userStore = useUsersStore();
+const userStore = useAuthStore();
 const router = useRouter();
 const toastStore = useToastStore();
 

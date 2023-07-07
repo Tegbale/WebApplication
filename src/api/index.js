@@ -1,11 +1,11 @@
-import user from "@/api/user";
-import school from "@/api/school";
-import admin from "@/api/admin";
+import auth from "@/api/auth";
+// import school from "@/api/school";
+import superAdmin from "@/api/superadmin";
 
 const $Api = {
-  user,
-  school,
-  admin,
+  auth,
+  // school,
+  superAdmin,
 };
 
 export default $Api;
