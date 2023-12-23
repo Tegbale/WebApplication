@@ -15,9 +15,6 @@
 import BaseLogo from "../../components/BaseComponents/BaseLogo.vue";
 import BaseCard from "../../components/BaseComponents/BaseCard.vue";
 import Loginform from "@/views/Auth/components/LoginForm.vue";
-
-
-
 </script>
 
 <style lang="scss" scoped></style>

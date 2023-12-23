@@ -35,7 +35,7 @@
             d="M8.25 4.5l7.5 7.5-7.5 7.5"
           />
         </svg>
-        <p class="flex text-sm md:text-2xl capitalize text-gray-500 pl-2">
+        <p class="flex text-sm md:text-2xl capitalize text-gray-500 pl-2 mb-1">
           {{ subTitle }}
         </p>
       </div>

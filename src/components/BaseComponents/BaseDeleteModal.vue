@@ -8,8 +8,7 @@
         <transition name="modal-inner">
           <div
             v-if="modalActive"
-            class="p-8 mb-4  sm:w-3/5 text-red-800 border border-red-300 rounded-lg bg-red-50"
-            
+            class="p-8 mb-4 sm:w-3/5 text-red-800 border border-red-300 rounded-lg bg-red-50"
             v-on-click-outside="closeMode"
           >
             <div class="w-full">

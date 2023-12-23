@@ -23,6 +23,13 @@
         </span>
         <span class="text-tegbale-text-gray" v-else>{{ columnThreeText }}</span>
       </div>
+      <div class="flex space-x-3 py-3 font-roboto text-sm font-medium">
+        <span>{{ columnThreeTitle }}:</span>
+        <span class="text-tegbale-text-gray" v-if="subTable">
+          {{ columnThreeTextA }}... ({{ columnThreeTextB }})
+        </span>
+        <span class="text-tegbale-text-gray" v-else>{{ columnThreeText }}</span>
+      </div>
       <div
         class="flex space-x-3 py-3 font-roboto text-sm font-medium"
         v-if="select"
@@ -60,7 +67,7 @@ defineProps({
     required: true,
   },
   columnThreeText: {
-    type: String,
+    type: [String, Number],
   },
   columnThreeTextA: {
     type: String,

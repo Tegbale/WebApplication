@@ -1,5 +1,5 @@
 // user.js in the auth directory inside the stores dir
-import { defineStore } from 'pinia';
+import { defineStore } from "pinia";
 import $Api from "@/api";
 
 const auth = $Api.auth.authuser;
@@ -16,7 +16,7 @@ export const useAuthStore = defineStore("auth", {
       role: null,
       photo: null,
       email: null,
-      emailVerificationStatus: null,
+      email_verification_status: null,
     },
     token: null,
   }),
@@ -33,7 +33,18 @@ export const useAuthStore = defineStore("auth", {
     },
 
     setUserDetails(data, token) {
-      const { id, firstname, lastname, fullname, phone, gender, role, photo, email, emailVerificationStatus } = data;
+      const {
+        id,
+        firstname,
+        lastname,
+        fullname,
+        phone,
+        gender,
+        role,
+        photo,
+        email,
+        email_verification_status,
+      } = data;
 
       this.user = {
         id,
@@ -45,7 +56,7 @@ export const useAuthStore = defineStore("auth", {
         role,
         photo,
         email,
-        emailVerificationStatus,
+        email_verification_status,
       };
 
       this.token = token;
@@ -74,7 +85,7 @@ export const useAuthStore = defineStore("auth", {
         role: null,
         photo: null,
         email: null,
-        emailVerificationStatus: null,
+        email_verification_status: null,
       };
       this.token = null;
     },
@@ -96,7 +107,17 @@ export const useAuthStore = defineStore("auth", {
     },
 
     isAdmin(state) {
-      return state.user.role === 'superadmin';
+      return state.user.role === "superadmin";
+    },
+
+    // get auth user role
+    authUserRole(state) {
+      return state.user ? state.user.role : "";
+    },
+
+    // get email verification status..
+    authUserEmailVerification(state) {
+      return state.user ? state.user.email_verification_status : null;
     },
   },
 

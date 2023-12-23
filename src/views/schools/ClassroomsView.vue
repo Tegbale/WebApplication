@@ -3,9 +3,9 @@
     <div>
       <div class="flex justify-between items-end space-x-2 pt-20">
         <BasePageTitle
-          pageTitle="Schools"
+          pageTitle="Classroom"
           :showBtn="true"
-          btnText="Add School"
+          btnText="Add Classroom"
           @clicked="handleModalAction"
         />
         <!-- export dropdown button for mobie devices only -->
@@ -52,12 +52,17 @@
               <th
                 class="p-3 text-sm font-semibold tracking-wide text-left text-tegbale-text-gray"
               >
-                Admin
+                Head Teacher
               </th>
               <th
                 class="p-3 text-sm font-semibold tracking-wide text-left text-tegbale-text-gray"
               >
-                Email Address
+                No of Students
+              </th>
+              <th
+                class="p-3 text-sm font-semibold tracking-wide text-left text-tegbale-text-gray"
+              >
+                No of Teachers
               </th>
               <th class="flex flex-col p-3">
                 <!-- Dropdown menu -->
@@ -71,11 +76,11 @@
             </tr>
           </template>
           <template #table-body>
-            <template v-if="SchoolLists && SchoolLists.length > 0">
+            <template v-if="ClassLists && ClassLists.length > 0">
               <tr
                 class="border-b-2 border-gray-100 hover:bg-gray-50"
-                v-for="(school, i) in SchoolLists"
-                :key="school.id"
+                v-for="(classItem, i) in ClassLists"
+                :key="classItem.id"
               >
                 <td class="p-3 text-sm text-tegbale-text-gray font-roboto">
                   {{ i + 1 }}
@@ -85,21 +90,25 @@
                 >
                   <router-link
                     :to="{
-                      name: 'schoolsDetails',
-                      params: { id: school.id },
+                      name: 'ClassroomDetails',
+                      params: { id: classItem.id },
                     }"
-                    >{{ school.name }}</router-link
                   >
+                    {{ classItem.name }}
+                  </router-link>
                 </td>
                 <td class="p-3 text-sm text-tegbale-text-gray font-roboto">
-                  {{ school.contact_name }}
+                  {{ classItem.head_teacher.full_name }}
                 </td>
                 <td class="p-3 text-sm text-tegbale-text-gray font-roboto">
-                  {{ school.contact_email }}
+                  {{ classItem.number_of_students }}
+                </td>
+                <td class="p-3 text-sm text-tegbale-text-gray font-roboto">
+                  {{ classItem.number_of_teachers }}
                 </td>
                 <td class="flex justify-end p-3 space-x-2">
                   <button
-                    @click="handleViewSchool(school.id)"
+                    @click="handleViewClass(classItem.id)"
                     class="text-sm p-1 text-blue-700 font-bold hover:bg-blue-200 hover:rounded-full"
                   >
                     <svg
@@ -123,7 +132,7 @@
                     </svg>
                   </button>
                   <button
-                    @click="handleEditSchool(school.id)"
+                    @click="handleEditClass(classItem.id)"
                     class="text-sm p-1 text-tegbale-green font-bold hover:bg-green-200 hover:rounded-full"
                   >
                     <svg
@@ -142,7 +151,7 @@
                     </svg>
                   </button>
                   <button
-                    @click="handleDeleteSchool(school.id)"
+                    @click="handleDeleteClass(classItem.id)"
                     class="text-sm p-1 text-red-700 font-bold hover:bg-red-200 hover:rounded-full"
                   >
                     <svg
@@ -168,36 +177,32 @@
                 colspan="5"
                 class="text-center py-6 h-52 text-tegbale-text-gray text-xl font-roboto font-medium"
               >
-                No School has been added.
+                No class has been added.
               </td>
             </tr>
           </template>
         </BaseDataTable>
-        <!-- <pre>{{ rowArray }}</pre> -->
-        <!-- <pre>{{ SchoolLists }}</pre> -->
         <!-- Mobile design  -->
-        <template v-if="SchoolLists && SchoolLists.length > 0">
+        <template v-if="ClassLists && ClassLists.length > 0">
           <div
             class="grid grid-auto-fit gap-4 md:hidden pt-4"
-            v-for="school in SchoolLists"
-            :key="school.id"
+            v-for="classItem in ClassLists"
+            :key="classItem.id"
           >
             <BaseMobileDataTable
-              :column-one-text="school.name"
-              :column-two-text="school.contact_name"
-              :column-three-text="school.contact_email"
-              :to="{
-                name: 'schoolsDetails',
-                params: { id: school.id },
-              }"
-              :is-clickable="true"
-              column-one-title="School Name"
-              column-two-title="Admin"
-              column-three-title="Email"
+              :column-one-text="classItem.name"
+              :column-two-text="classItem.head_teacher.full_name"
+              :column-three-text="classItem.number_of_students"
+              :column-four-text="classItem.number_of_teachers"
+              :not-clickable="true"
+              column-one-title="Name"
+              column-two-title="Head Teacher"
+              column-three-title="Number of Students"
+              column-four-title="Number of Teachers"
             >
               <template #button>
                 <button
-                  @click="handleViewSchool(school.id)"
+                  @click="handleViewClass(classItem.id)"
                   class="flex items-center text-xs px-2 py-1 space-x-2 text-blue-700 font-bold border bg-blue-200 hover:bg-blue-900 hover:text-yellow-100 rounded-full"
                 >
                   <span class="">view</span>
@@ -222,7 +227,7 @@
                   </svg>
                 </button>
                 <button
-                  @click="handleEditSchool(school.id)"
+                  @click="handleEditClass(classItem.id)"
                   class="flex items-center text-xs px-2 py-1 space-x-2 text-green-700 font-bold border bg-green-200 hover:bg-green-500 hover:text-white rounded-full"
                 >
                   <span class="">edit</span>
@@ -242,7 +247,7 @@
                   </svg>
                 </button>
                 <button
-                  @click="handleDeleteSchool(school.id)"
+                  @click="handleDeleteClass(classItem.id)"
                   class="flex items-center text-xs px-2 py-1 space-x-2 text-red-700 font-bold border bg-red-200 hover:bg-red-700 hover:text-red-200 rounded-full"
                 >
                   <span class="">delete</span>
@@ -301,18 +306,18 @@
         </div>
       </template>
       <template #form>
-        <div class="pt-8">
-          <p class="text-sm font-medium font-roboto">School Information</p>
-          <div class="grid grid-auto-fit gap-3">
+        <div class="pt-8 mx-1">
+          <p class="text-sm font-medium font-roboto">class Information</p>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
             <div>
               <BaseInput
-                label="School Name"
-                placeholder="Enter School Name"
+                label="class Name"
+                placeholder="Enter class Name"
                 type="text"
                 class="w-full"
-                :disabled="modalTitle === 'View School'"
+                :disabled="modalTitle === 'View class'"
                 :modalInput="true"
-                v-model="schoolData.schoolname"
+                v-model="singleClassDetails.name"
               />
               <span
                 v-if="errors && errors.name && errors.name.length > 0"
@@ -321,78 +326,46 @@
                 {{ errors.name[0] }}
               </span>
             </div>
-            <div>
-              <BaseInput
-                label="School Location"
-                placeholder="Enter School Location"
-                type="text"
-                class="w-full"
-                :modalInput="true"
-                v-model="schoolData.schoollocation"
-                :disabled="modalTitle === 'View School'"
-              />
-              <span
-                v-if="errors && errors.location && errors.location.length > 0"
-                class="text-red-500 text-sm pl-4"
-              >
-                {{ errors.location[0] }}
-              </span>
-            </div>
           </div>
         </div>
-        <div class="pt-5">
-          <p class="text-sm font-medium font-roboto">Admin Information</p>
+        <div class="pt-5 mx-1">
+          <p class="text-sm font-medium font-roboto">
+            Head Teacher Information
+          </p>
           <div class="grid grid-auto-fit gap-3">
             <div>
-              <!-- <pre>{{ usersStore.schooladmin }}</pre> -->
               <label for="role" class="text-xs">Name</label>
               <div
-                class="relative flex items-center text-gray-300 focus-within:text-tegbale-blue"
+                class="relative flex items-center text-gray-300 focus-within:text-tegbale-blue mb-1"
                 :class="{ 'mt-1': modalInput }"
               >
                 <select
-                  v-model="schoolData.adminname"
-                  :disabled="modalTitle === 'View School'"
+                  v-model="singleClassDetails.head_teacher_id"
+                  :disabled="modalTitle === 'View class'"
                   class="border border-gray-300 rounded-2xl leading-5 mt-2 pr-3 pl-10 py-2 w-full hover:border-gray-400 focus:outline-none focus:border-none focus:ring-1 focus:border-gray-400 placeholder:text-[12px] placeholder:tracking-wide placeholder:opacity-50 placeholder:content-center text-black"
                 >
                   <option selected disabled value="">
-                    Select School Admin
+                    Select Head Teacher
                   </option>
 
                   <option
-                    v-for="user in usersStore.schooladmin"
-                    :value="user.fullname"
+                    v-for="user in teacherStore.teachers.data"
+                    :value="user.id"
                     :key="user.fullname"
                   >
                     {{ user.fullname }}
                   </option>
                 </select>
               </div>
-              <!-- <BaseSelectInput label="Name" v-model="schoolData.adminname" :options="usersStore.users" />
-              <span v-if="errors && errors.contact_name && errors.contact_name.length > 0"
-                class="text-red-500 text-sm pl-4">
-                {{ errors.contact_name[0] }}
-              </span> -->
-            </div>
-            <div>
-              <BaseInput
-                label="Email Address"
-                placeholder="Enter School email"
-                type="email"
-                class="w-full"
-                :modalInput="true"
-                v-model="schoolData.adminemail"
-                :disabled="modalTitle === 'View School'"
-              />
               <span
                 v-if="
                   errors &&
-                  errors.contact_email &&
-                  errors.contact_email.length > 0
+                  errors.head_teacher_id &&
+                  errors.head_teacher_id.length > 0
                 "
                 class="text-red-500 text-sm pl-4"
               >
-                {{ errors.contact_email[0] }}
+                {{ errors.head_teacher_id[0] }}
               </span>
             </div>
           </div>
@@ -405,7 +378,7 @@
           <button
             @click.prevent="triggerDeleteModal"
             :loading="isLoading"
-            v-if="modalTitle == 'View School'"
+            v-if="modalTitle == 'View class'"
             class="inline-flex justify-center bg-red-600 text-white font-medium font-roboto py-2 px-16 w-full md:max-w-fit rounded-3xl hover:bg-red-400"
           >
             <p class="flex items-center" v-if="isLoading">
@@ -431,7 +404,7 @@
               </svg>
               Loading...
             </p>
-            <p v-else>Delete School</p>
+            <p v-else>Delete class</p>
           </button>
           <button
             @click="closeModal"
@@ -440,8 +413,8 @@
             Cancel
           </button>
           <button
-            @click="saveSchoolDetails"
-            v-if="modalTitle !== 'View School'"
+            @click="saveClassDetails"
+            v-if="modalTitle !== 'View class'"
             :loading="isLoading"
             class="inline-flex justify-center bg-tegbale-blue text-white font-medium font-roboto py-2 px-10 w-full md:max-w-fit rounded-3xl hover:bg-blue-900"
           >
@@ -469,7 +442,7 @@
               Loading...
             </p>
             <span v-else>{{
-              modalTitle == "Add School" ? "Add School" : "Save Changes"
+              modalTitle == "Add class" ? "Add class" : "Save Changes"
             }}</span>
           </button>
         </div>
@@ -496,7 +469,6 @@
           <h3 class="text-lg font-medium">Caution</h3>
         </div>
       </template>
-      <!--  -->
       <template #form>
         <div class="mt-2 mb-4 text-sm sm:text-base">
           <p>Are You sure you want to Delete this?</p>
@@ -548,6 +520,8 @@ import BaseDeleteModal from "@/components/BaseComponents/BaseDeleteModal.vue";
 import BaseMobileDataTable from "@/components/BaseComponents/BaseMobileDataTable.vue";
 import BaseModal from "@/components/BaseComponents/BaseModal.vue";
 import BaseInput from "@/components/BaseComponents/BaseInput.vue";
+
+import BaseSelectInput from "@/components/BaseComponents/BaseSelectInput.vue";
 import { onClickOutside } from "@vueuse/core";
 
 import { dataParser } from "@/helpers/export-data.js";
@@ -557,17 +531,18 @@ import ExportBtnDropdown from "@/components/exportBtnDropdown.vue";
 import NoDataCard from "@/components/NoDataCard.vue";
 
 // import store
-import { useSchoolStore } from "@/stores/schools";
+import { useClassroom } from "@/stores/classrooms";
+import { useTeacher } from "@/stores/teachers";
 import { useUserStore } from "@/stores/users";
 import { useToastStore } from "@/stores/toast-store";
-import BaseSelectInput from "@/components/BaseComponents/BaseSelectInput.vue";
 
 // define emit
 
 const emit = defineEmits(["emitId"]);
 
 // declare the stores
-const schStore = useSchoolStore();
+const classStore = useClassroom();
+const teacherStore = useTeacher();
 const usersStore = useUserStore();
 const toastStore = useToastStore();
 
@@ -576,7 +551,7 @@ const isDeleting = ref(false);
 const isSaving = ref(false);
 const showDropdown = ref(false);
 const modalActive = ref(false);
-const SchoolLists = ref(null);
+const ClassLists = ref(null);
 const loadingData = ref(false);
 const deleteActive = ref(false);
 
@@ -584,50 +559,50 @@ const errors = ref(null);
 const dropdownRef = ref(null);
 const isEditing = ref(false);
 const isCreating = ref(false);
-const schoolId = ref(null);
-const header = ref(["id", "Name", "Admin", "Email"]);
+const classId = ref(null);
+const header = ref(["id", "Head Teacher", "No of Students", "No of Teachers"]);
 
-const schoolData = reactive({
-  schoolname: "",
-  schoollocation: "",
-  adminname: "",
-  adminemail: "",
+const classData = reactive({
+  name: "",
+  head_teacher_id: null,
+  studentCount: "",
+  teacherCount: "",
 });
 
-// validation rules
-const saveSchoolDetails = async () => {
-  const data = {
-    name: schoolData.schoolname,
-    contact_email: schoolData.adminemail,
-    contact_name: schoolData.adminname,
-    location: schoolData.schoollocation,
-  };
+const singleClassDetails = reactive({
+  name: "",
+  head_teacher_id: null,
+});
 
+const teachersArray = ref();
+
+// validation rules
+const saveClassDetails = async () => {
   try {
-    if (modalTitle.value == "Add School") {
+    if (modalTitle.value == "Add class") {
       isLoading.value = true;
-      await schStore.addSchool(data);
-      await fetchAllSchools();
+      await classStore.createClassroom(singleClassDetails);
+      await fetchAllClassrooms();
 
       modalActive.value = false;
 
       // call the toast store to show the toast
       toastStore.showToast({
         title: "Hurray!",
-        message: "School added successfully",
+        message: "class added successfully",
         type: "success",
         timeout: 4000,
       });
     } else {
       isSaving.value = true;
-      await schStore.updateSchool(schoolId.value, data);
-      await fetchAllSchools();
+      await classStore.updateClassroom(classId.value, singleClassDetails);
+      await fetchAllClassrooms();
       modalActive.value = false;
 
       // call the toast store to show the toast
       toastStore.showToast({
         title: "Hurray!",
-        message: "School updated successfully",
+        message: "class updated successfully",
         type: "success",
         timeout: 4000,
       });
@@ -648,13 +623,12 @@ const saveSchoolDetails = async () => {
     isSaving.value = false;
     // modalActive.value = false
   }
-  // }
 };
 
-// handleDeleteSchool
-const handleDeleteSchool = (id) => {
+// handleDeleteClass
+const handleDeleteClass = (id) => {
   deleteActive.value = true;
-  schoolId.value = id;
+  classId.value = id;
 };
 
 // trigger the delete modal component
@@ -666,19 +640,19 @@ const cancelDelete = () => {
   deleteActive.value = false;
 };
 
-// delete school
+// delete classItem
 const deleteData = async () => {
   isDeleting.value = true;
 
   try {
-    const { data } = await schStore.deleteSchool(schoolId.value);
-    // fetch the latest data of schools
-    await fetchAllSchools();
+    const { data } = await classStore.deleteAClassroom(classId.value);
+    // fetch the latest data of classroom
+    await fetchAllClassrooms();
     console.log(data);
     // call the toast store to show the toast
     toastStore.showToast({
       title: "Hurray!",
-      message: "School deleted successfully",
+      message: "class deleted successfully",
       type: "success",
       timeout: 4000,
     });
@@ -687,7 +661,7 @@ const deleteData = async () => {
     // call the toast store to show the toast
     toastStore.showToast({
       title: "Ooops!",
-      message: "delete School failed",
+      message: "delete class failed",
       type: "error",
       timeout: 4000,
     });
@@ -707,7 +681,6 @@ const handleShowDropdown = () => {
 
 const handleModalAction = async () => {
   isCreating.value = true;
-  await usersStore.getAllUsers();
   modalActive.value = !modalActive.value;
 };
 
@@ -717,42 +690,45 @@ const closeModal = () => {
   isCreating.value = false;
 };
 
-const handleEditSchool = async (id) => {
+const handleEditClass = async (id) => {
+  classId.value = id;
   isEditing.value = true;
-  await usersStore.getAllUsers();
   modalActive.value = !modalActive.value;
+  console.log(classId.value);
   try {
-    const { data } = await schStore.fetchSchool(id);
+    const { data } = await classStore.fetchAClassroomById(id);
+    singleClassDetails.head_teacher_id = data.head_teacher.id;
+    singleClassDetails.name = data.name;
 
-    schoolData.adminemail = data.contact_email;
-    schoolData.adminname = data.contact_name;
-    schoolData.schoollocation = data.location;
-    schoolData.schoolname = data.name;
-    schoolId.value = data.id;
+    // classData.teacherCount = data.number_of_teachers;
+    // classData.studentCount = data.number_of_students;
+    // classData.headTeacher = data.location;
+    // classData.classname = data.name;
+    // classId.value = data.id
   } catch (error) {
     console.log(error);
     // call the toast store to show the toast
     toastStore.showToast({
       title: "Ooops!",
-      message: "Unable to Fetch School details",
+      message: "Unable to Fetch class details",
       type: "error",
       timeout: 4000,
     });
   }
 };
 
-// fetch all schools
-const fetchAllSchools = async () => {
+// fetch all classrooms
+const fetchAllClassrooms = async () => {
   loadingData.value = true;
   try {
-    const res = await schStore.fetchAllSchools();
-    SchoolLists.value = res.data.data;
+    const res = await classStore.fetchAllClassrooms();
+    ClassLists.value = res.data.data;
   } catch (error) {
     console.log(error);
     // call the toast store to show the toast
     toastStore.showToast({
       title: "Ooops!",
-      message: error.message || "Unable to Fetch School details",
+      message: error.message || "Unable to Fetch class details",
       type: "error",
       timeout: 4000,
     });
@@ -761,26 +737,48 @@ const fetchAllSchools = async () => {
   }
 };
 
-const handleViewSchool = async (id) => {
+// fetch all teachers
+const fetchAllTeachers = async () => {
+  loadingData.value = true;
+  try {
+    const res = await teacherStore.fetchAllTeachers();
+    teachersArray.value = res.data.data;
+  } catch (error) {
+    console.log(error);
+    // call the toast store to show the toast
+    // toastStore.showToast({
+    //   title: "Ooops!",
+    //   message: error.message || "Unable to Fetch Teachers",
+    //   type: "error",
+    //   timeout: 4000,
+    // });
+  } finally {
+    loadingData.value = false;
+  }
+};
+
+const handleViewClass = async (id) => {
   isEditing.value = false;
   isCreating.value = false;
-  await usersStore.getAllUsers();
+  // await usersStore.getAllUsers();
   modalActive.value = !modalActive.value;
 
   try {
-    const { data } = await schStore.fetchSchool(id);
-
-    schoolData.adminemail = data.contact_email;
-    schoolData.adminname = data.contact_name;
-    schoolData.schoollocation = data.location;
-    schoolData.schoolname = data.name;
-    schoolId.value = data.id;
+    const { data } = await classStore.fetchAClassroomById(id);
+    // console.log(data)
+    singleClassDetails.head_teacher_id = data.head_teacher.id;
+    singleClassDetails.name = data.name;
+    // classData.teacherCount = data.number_of_teachers;
+    // classData.studentCount = data.number_of_students;
+    // classData.headTeacher = data.location;
+    // classData.classname = data.name;
+    // classId.value = data.id
   } catch (error) {
     console.log(error);
     // call the toast store to show the toast
     toastStore.showToast({
       title: "Ooops!",
-      message: "Unable to Fetch School details",
+      message: "Unable to Fetch class details",
       type: "error",
       timeout: 4000,
     });
@@ -790,7 +788,7 @@ const handleViewSchool = async (id) => {
 // method to export data here..
 const dataExport = (value) => {
   // declear the name of the document
-  let docName = "Schools";
+  let docName = "Classrooms";
 
   switch (value) {
     case "pdf":
@@ -798,30 +796,30 @@ const dataExport = (value) => {
 
       break;
     case "csv":
-      dataParser().exportDataFromJSON(SchoolLists.value, docName, value);
+      dataParser().exportDataFromJSON(ClassLists.value, docName, value);
 
       break;
     default:
       // code block
-      dataParser().exportDataFromJSON(SchoolLists.value, null, null);
+      dataParser().exportDataFromJSON(ClassLists.value, null, null);
   }
 };
 
 // computed properties
 const modalTitle = computed(() => {
   if (isEditing.value) {
-    return "Edit School";
+    return "Edit class";
   } else if (isCreating.value) {
-    return "Add School";
+    return "Add class";
   } else {
-    return "View School";
+    return "View class";
   }
 });
 
 // create a new array of nested arrays to use in generating pdf file
 const rowArray = computed(() => {
-  // remove the created_at key from each object in the SchoolLists array
-  let newArray = SchoolLists.value.map(({ created_at, ...rest }) => {
+  // remove the created_at key from each object in the ClassLists array
+  let newArray = ClassLists.value.map(({ created_at, ...rest }) => {
     return rest;
   });
 
@@ -833,7 +831,8 @@ const rowArray = computed(() => {
 
 // mounted hook
 onMounted(() => {
-  fetchAllSchools();
+  fetchAllClassrooms();
+  fetchAllTeachers();
 });
 </script>
 

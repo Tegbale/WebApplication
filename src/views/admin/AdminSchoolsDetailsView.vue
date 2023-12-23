@@ -1,32 +1,34 @@
 <template>
   <div>
-      <div
-        class="flex justify-between items-end sm:items-center space-x-2 mt-20"
-      >
-        <BasePageTitle
-          pageTitle="Schools"
-          :showBtn="true"
-          btnText="Add School"
-          @clicked="handleModalAction"
-          :showSubTitle="true"
-          subTitle="Laurel Nursery and Primary School"
-        />
-        <!-- export dropdown button for mobie devices only -->
-        <ExportBtnDropdown
-          class="flex md:hidden mb-0.5"
-          ref="dropdownRef"
-          :show-dropdown="showDropdown"
-          @show-dropdown="showDropdown = !showDropdown"
-        />
-      </div>
+    <div class="flex justify-between items-end sm:items-center space-x-2 mt-20">
+      <BasePageTitle
+        pageTitle="Schools"
+        :showBtn="true"
+        btnText="Add School"
+        @clicked="handleModalAction"
+        :showSubTitle="true"
+        subTitle="Laurel Nursery and Primary School"
+      />
+      <!-- export dropdown button for mobie devices only -->
+      <ExportBtnDropdown
+        class="flex md:hidden mb-0.5"
+        ref="dropdownRef"
+        :show-dropdown="showDropdown"
+        @show-dropdown="showDropdown = !showDropdown"
+      />
+    </div>
 
-      <BaseTabWrapper class="">
-        <BaseTab title="Students">
-          <StudentDetailsTable />
-        </BaseTab>
-        <BaseTab title="Teachers"><TeacherDetailsTable /></BaseTab>
-        <BaseTab title="Guardians"> <GuardianDetailsTable /> </BaseTab>
-      </BaseTabWrapper>
+    <BaseTabWrapper class="" @changeTab="handleTabChange">
+      <BaseTab title="Students">
+        <StudentDetailsTable ref="studentDetails" />
+      </BaseTab>
+      <BaseTab title="Teachers">
+        <TeacherDetailsTable ref="teacherDetails" />
+      </BaseTab>
+      <BaseTab title="Guardians">
+        <GuardianDetailsTable ref="guardianDetails" />
+      </BaseTab>
+    </BaseTabWrapper>
     <BaseModal :modalActive="modalActive" :closeMode="closeModal">
       <template #title>
         <div class="flex justify-between items-center">
@@ -146,6 +148,9 @@ import { ref, computed } from "vue";
 const showDropdown = ref(false);
 const modalActive = ref(false);
 
+const studentDetails = ref(null);
+const teacherDetails = ref(null);
+const guardianDetails = ref(null);
 const dropdownRef = ref(null);
 const isEditing = ref(false);
 const isCreating = ref(false);
@@ -175,6 +180,36 @@ const modalTitle = computed(() => {
     return "View School";
   }
 });
+
+const handleTabChange = (value) => {
+  let role, currentPage;
+
+  switch (value) {
+    case "Students":
+      role = studentDetails.value.role;
+      currentPage = studentDetails.value.currentPage;
+      // console.log(role);
+      studentDetails.value.fetchAllUsersByRole(role, currentPage);
+      break;
+
+    case "Teachers":
+      role = teacherDetails.value.role;
+      currentPage = teacherDetails.value.currentPage;
+      // console.log(role);
+      teacherDetails.value.fetchAllUsersByRole(role, currentPage);
+      break;
+
+    case "Guardians":
+      role = guardianDetails.value.role;
+      currentPage = guardianDetails.value.currentPage;
+      // console.log(role);
+      guardianDetails.value.fetchAllUsersByRole(role, currentPage);
+      break;
+
+    default:
+      break;
+  }
+};
 </script>
 
 <style lang="scss" scoped></style>

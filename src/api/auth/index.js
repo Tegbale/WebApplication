@@ -2,7 +2,6 @@
 
 import authuser from "@/api/auth/authuser.js";
 
-
 const auth = {
   authuser,
 };

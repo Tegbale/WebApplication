@@ -1,72 +1,85 @@
-import admin from "@/router/middleware/admin";
 import auth from "@/router/middleware/auth";
+import school from "@/router/middleware/school";
 
 const routes = [
   {
-    path: "/admin/dashboard",
-    name: "adminDashboard",
+    path: "/dashboard",
+    name: "schoolDashboard",
     // route level code-splitting
     // this generates a separate chunk (Register.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
     components: {
-      default: () => import("../views/admin/DashboardView.vue"),
+      default: () => import("../views/schools/DashboardView.vue"),
     },
     meta: {
-      middleware: [admin, auth],
+      middleware: [school, auth],
     },
   },
   {
-    path: "/admin/schools",
-    name: "adminSchools",
+    path: "/classrooms",
+    name: "classrooms",
     // route level code-splitting
     // this generates a separate chunk (Register.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
     components: {
-      default: () => import("../views/admin/AdminSchoolsView.vue"),
+      default: () => import("../views/schools/ClassroomsView.vue"),
     },
-
     meta: {
-      middleware: [admin, auth],
+      middleware: [school, auth],
     },
   },
   {
-    path: "/admin/schools/:id",
-    name: "schoolsDetails",
+    path: "/classrooms/:id",
+    name: "ClassroomDetails",
     // route level code-splitting
     // this generates a separate chunk (Register.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
     components: {
-      default: () => import("../views/admin/AdminSchoolsDetailsView.vue"),
+      default: () => import("../views/schools/classroomDetails.vue"),
     },
     meta: {
-      middleware: [admin, auth],
+      middleware: [school, auth],
     },
   },
   {
-    path: "/admin/users",
-    name: "adminUsers",
+    path: "/teachers",
+    name: "teachers",
     // route level code-splitting
     // this generates a separate chunk (Register.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
     components: {
-      default: () => import("../views/admin/AdminUsersView.vue"),
+      default: () => import("../views/schools/TeachersView.vue"),
     },
     meta: {
-      middleware: [admin, auth],
+      middleware: [school, auth],
     },
   },
   {
-    path: "/admin/settings",
-    name: "adminSettings",
+    path: "/students",
+    name: "students",
     // route level code-splitting
     // this generates a separate chunk (Register.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
     components: {
-      default: () => import("../views/admin/AdminSettingsView.vue"),
+      default: () => import("../views/schools/StudentsView.vue"),
     },
     meta: {
-      middleware: [admin, auth],
+      middleware: [school, auth],
+    },
+  },
+  {
+    path: "/settings",
+    name: "settings",
+    // route level code-splitting
+    // this generates a separate chunk (Register.[hash].js) for this route
+    // which is lazy-loaded when the route is visited.
+    components: {
+      default: () => import("../views/schools/StudentsView.vue"),
+    },
+    meta: {
+      middleware: [school, auth],
     },
   },
 ];
+
 export default routes;

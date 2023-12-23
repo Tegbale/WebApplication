@@ -208,7 +208,7 @@
           >{{ v$.confirmPassword.$errors[0].$message }}</span
         >
       </div>
-    
+
       <div class="py-8 sm:pb-16">
         <BaseButton
           btn-title="Sign In"

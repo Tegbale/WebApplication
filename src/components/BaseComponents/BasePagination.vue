@@ -1,44 +1,74 @@
 <template>
-    <div class="pagination">
-      <ul>
-        <li v-for="(link, index) in links" :key="index" :class="{ active: link.active }">
-          <a @click="goToPage(link.url)">{{ link.label }}</a>
-        </li>
-      </ul>
-    </div>
-  </template>
-  
-  <script setup>
-  const links = [
-    { url: '/page/1', label: 'Page 1', active: true },
-    { url: '/page/2', label: 'Page 2', active: false },
-    { url: '/page/3', label: 'Page 3', active: false }
-  ];
-  
-  const goToPage = (url) => {
-    // Handle navigation logic
-    console.log(`Navigating to ${url}`);
-  };
-  </script>
-  
-  <style>
-  .pagination {
-    display: flex;
-    justify-content: center;
+  <div class="flex items-center space-x-2">
+    <button
+      @click="goToFirstPage"
+      :disabled="currentPage === 1"
+      class="px-2 py-1 rounded bg-blue-500 text-white disabled:bg-gray-400 disabled:text-gray-600"
+    >
+      First
+    </button>
+    <button
+      @click="previousPage"
+      :disabled="currentPage === 1"
+      class="px-2 py-1 rounded bg-blue-500 text-white disabled:bg-gray-400 disabled:text-gray-600"
+    >
+      Previous
+    </button>
+    <span class="text-gray-700"
+      >Page {{ currentPage }} of {{ totalPages }}</span
+    >
+    <button
+      @click="nextPage"
+      :disabled="currentPage === totalPages"
+      class="px-2 py-1 rounded bg-blue-500 text-white disabled:bg-gray-400 disabled:text-gray-600"
+    >
+      Next
+    </button>
+    <button
+      @click="goToLastPage"
+      :disabled="currentPage === totalPages"
+      class="px-2 py-1 rounded bg-blue-500 text-white disabled:bg-gray-400 disabled:text-gray-600"
+    >
+      Last
+    </button>
+  </div>
+</template>
+
+<script setup>
+import { ref } from "vue";
+
+const emit = defineEmits(["page-change"]);
+
+const props = defineProps(["currentPage", "totalPages"]);
+
+const currentPage = ref(props.currentPage);
+const totalPages = ref(props.totalPages);
+
+function goToFirstPage() {
+  if (currentPage.value > 1) {
+    emit("page-change", 1);
   }
-  
-  .pagination ul {
-    list-style: none;
-    display: flex;
-    justify-content: center;
+}
+
+function previousPage() {
+  if (currentPage.value > 1) {
+    emit("page-change", currentPage.value - 1);
   }
-  
-  .pagination li {
-    margin: 0 5px;
+}
+
+function nextPage() {
+  if (currentPage.value < totalPages.value) {
+    emit("page-change", currentPage.value + 1);
   }
-  
-  .pagination li.active a {
-    font-weight: bold;
+}
+
+function goToLastPage() {
+  if (currentPage.value < totalPages.value) {
+    emit("page-change", totalPages.value);
   }
-  </style>
-  
+}
+</script>
+
+<style>
+/* No additional custom styling required */
+</style>

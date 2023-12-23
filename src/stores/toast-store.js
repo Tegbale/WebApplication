@@ -2,8 +2,6 @@
 
 import { defineStore } from "pinia";
 
-
-
 export const useToastStore = defineStore("toast", {
   state: () => ({
     toast: {
@@ -32,4 +30,3 @@ export const useToastStore = defineStore("toast", {
     },
   },
 });
-

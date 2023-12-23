@@ -39,7 +39,9 @@
       </tr>
     </template>
     <template #table-body>
-      <template v-if="GuardiansArray.length > 0">
+      <template
+        v-if="allGuardians && allGuardians.data && allGuardians.data.length > 0"
+      >
         <tr
           class="border-b-2 border-gray-100 hover:bg-gray-50"
           v-for="guardian in GuardiansArray"
@@ -76,16 +78,18 @@
       <tr v-else>
         <td
           colspan="5"
-          class="flex items-center justify-center text-center h-52 text-tegbale-text-gray text-xl font-roboto font-medium"
+          class="text-center py-6 h-52 text-tegbale-text-gray text-xl font-roboto font-medium"
         >
-          No Guardian has been added
+          No Guardian has been added.
         </td>
       </tr>
     </template>
   </BaseDataTable>
 
   <!-- mobile data table cards -->
-  <template v-if="GuardiansArray.length > 0">
+  <template
+    v-if="allGuardians && allGuardians.data && allGuardians.data.length > 0"
+  >
     <div
       class="grid grid-auto-fit gap-4 md:hidden pt-4"
       v-for="guardian in GuardiansArray"
@@ -117,6 +121,14 @@
       </BaseMobileDataTable>
     </div>
   </template>
+  <div
+    class="flex items-center justify-center text-center h-52 md:hidden text-tegbale-text-gray text-xl font-roboto font-medium"
+  >
+    <p>No Guardian has been added</p>
+  </div>
+  <div class="">
+    <!--  -->
+  </div>
 </template>
 
 <script setup>
@@ -127,60 +139,23 @@ import { onClickOutside } from "@vueuse/core";
 
 import { ref } from "vue";
 
+// import stores
+import { useUserStore } from "@/stores/users";
+import { useToastStore } from "@/stores/toast-store";
+
+// declare the stores
+const usersStore = useUserStore();
+const toastStore = useToastStore();
+
+// pagination variables
+const currentPage = ref(1);
+
+const allGuardians = ref({});
+const role = ref("parent");
+
 const showDropdown = ref(false);
 
 const dropdownRef = ref(null);
-
-const GuardiansArray = ref([
-  {
-    id: 1,
-    name: "John Doe",
-    email: "john@test.com",
-    phone: "08012345678",
-    wards: [
-      {
-        id: 1,
-        name: "Ebube Shola",
-      },
-      {
-        id: 2,
-        name: "Christiana Oluwaseun",
-      },
-    ],
-  },
-  {
-    id: 2,
-    name: "John Doe",
-    email: "john@test.com",
-    phone: "08012345678",
-    wards: [
-      {
-        id: 1,
-        name: "Ebube Shola",
-      },
-      {
-        id: 2,
-        name: "Christiana Oluwaseun",
-      },
-    ],
-  },
-  {
-    id: 3,
-    name: "John Doe",
-    email: "john@test.com",
-    phone: "08012345678",
-    wards: [
-      {
-        id: 1,
-        name: "Ebube Shola",
-      },
-      {
-        id: 2,
-        name: "Christiana Oluwaseun",
-      },
-    ],
-  },
-]);
 
 onClickOutside(dropdownRef, () => {
   showDropdown.value = false;
@@ -189,9 +164,29 @@ onClickOutside(dropdownRef, () => {
 const handleShowDropdown = () => {
   showDropdown.value = !showDropdown.value;
 };
-// show ward list for a guardian on click of ward name
+const fetchAllUsersByRole = async () => {
+  try {
+    const { data } = await usersStore.getUserByRole(
+      role.value,
+      currentPage.value
+    );
+    allGuardians.value = data;
+  } catch (error) {
+    // Handle error
+    toastStore.showToast({
+      title: "Error",
+      message: error.message || "error in getting users",
+      type: "error",
+      timeout: 4000,
+    });
+  }
+};
 
-// computed properties
+defineExpose({
+  role,
+  currentPage,
+  fetchAllUsersByRole,
+});
 </script>
 
 <style lang="scss" scoped></style>

@@ -8,14 +8,14 @@
         <transition name="modal-inner">
           <div
             v-if="modalActive"
-            class="bg-white p-10 w-full rounded-lg overflow-y-auto"
-            :class="isCropper ? 'max-w-sm' : 'max-w-screen-lg'"
+            class="bg-white p-10 w-full rounded-lg overflow-hidden"
+            :class="isCropper ? 'max-w-sm' : 'max-w-screen-md'"
             v-on-click-outside="closeMode"
           >
             <div class="w-full">
               <slot name="title" />
             </div>
-            <div class="w-full">
+            <div class="w-full overflow-y-auto max-h-[calc(100vh-4rem)]">
               <slot name="form" />
             </div>
             <div class="w-full">

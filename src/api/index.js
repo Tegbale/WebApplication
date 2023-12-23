@@ -1,10 +1,10 @@
 import auth from "@/api/auth";
-// import school from "@/api/school";
+import schoolAdmin from "@/api/schooladmin";
 import superAdmin from "@/api/superadmin";
 
 const $Api = {
   auth,
-  // school,
+  schoolAdmin,
   superAdmin,
 };
 

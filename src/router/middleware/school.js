@@ -2,12 +2,12 @@
 
 import { useAuthStore } from "@/stores/auth";
 
-export default function admin({ next, router }) {
+export default function school({ next, router }) {
   const user = useAuthStore().user;
 
   // console.log(admin.role);
 
-  if (user.role !== "superadmin") {
+  if (user.role !== "schooladmin") {
     return router.push({ name: "login" });
   }
 

@@ -1,10 +1,7 @@
 <template>
-  <div
-    
-    class="flex mx-auto w-full relative"
-  >
+  <div class="flex mx-auto w-full relative">
     <aside
-      class="absolute inset-0 transform md:transform-none md:opacity-100 duration-200 md:relative z-10 bg-white border-r border-gray-200 w-60"
+      class="fixed inset-0 transform md:transform-none md:opacity-100 duration-200 md:relative z-10 border-r bg-white border-gray-200 w-60"
       :class="{
         'translate-x-0 ease-in opacity-100': isOpen,
         '-translate-x-full ease-out opacity-0': !isOpen,
@@ -53,7 +50,7 @@
           <ul class="flex flex-1 flex-col space-y-4">
             <li class="flex-1 items-center">
               <router-link
-                to="/admin/dashboard"
+                to="/dashboard"
                 active-class="bg-tegbale-blue text-white rounded-xl"
                 class="flex items-center pl-4 pr-4 py-2 text-tegbale-text-gray hover:bg-tegbale-blue hover:text-white hover:rounded-xl"
               >
@@ -79,56 +76,82 @@
             </li>
             <li class="flex-1 items-center">
               <router-link
-                to="/admin/schools"
+                to="/classrooms"
                 active-class="bg-tegbale-blue text-white rounded-xl"
                 class="flex items-center pl-4 pr-4 py-2 text-tegbale-text-gray w-full, hover:bg-tegbale-blue hover:text-white hover:rounded-xl"
               >
                 <span class="flex justify-center items-center">
                   <svg
-                    width="23"
+                    width="24"
                     height="20"
-                    viewBox="0 0 23 20"
+                    viewBox="0 0 24 20"
                     fill="currentColor"
                     xmlns="http://www.w3.org/2000/svg"
                     class="w-5 h-5"
                   >
                     <path
-                      d="M21.1111 8.88889H18.8889V2.22222H20V0H2.22222V2.22222H3.33333V8.88889H1.11111C0.816426 8.88889 0.533811 9.00595 0.325437 9.21433C0.117063 9.4227 0 9.70532 0 10V20H22.2222V10C22.2222 9.70532 22.1052 9.4227 21.8968 9.21433C21.6884 9.00595 21.4058 8.88889 21.1111 8.88889ZM13.3333 17.7778V13.3333H8.88889V17.7778H5.55556V2.22222H16.6667V17.7778H13.3333Z"
-                      fill="currentColor"
-                    />
-                    <path
-                      d="M7.77783 4.44446H10.0001V6.66668H7.77783V4.44446ZM12.2223 4.44446H14.4445V6.66668H12.2223V4.44446ZM7.77783 8.8889H10.0001V11.1111H7.77783V8.8889ZM12.2223 8.8889H14.4445V11.1111H12.2223V8.8889Z"
+                      d="M1.57966 0C0.706359 0 0 0.706359 0 1.57869V18.4213C0 19.2936 0.706359 20 1.57966 20H21.5797C22.453 20 23.1593 19.2936 23.1593 18.4213V1.57869C23.1593 0.706359 22.453 0 21.5797 0H1.57966ZM2.10557 2.1046H21.0537V17.8954H18.4232V16.8436H13.6852V17.8954H2.10557V2.1046ZM11.5797 6.31574C11.1608 6.31574 10.7592 6.48211 10.463 6.77827C10.1669 7.07442 10.0005 7.47609 10.0005 7.89491C10.0005 8.31374 10.1669 8.71541 10.463 9.01156C10.7592 9.30771 11.1608 9.47409 11.5797 9.47409C11.9985 9.47409 12.4002 9.30771 12.6963 9.01156C12.9925 8.71541 13.1588 8.31374 13.1588 7.89491C13.1588 7.47609 12.9925 7.07442 12.6963 6.77827C12.4002 6.48211 11.9985 6.31574 11.5797 6.31574ZM7.36949 8.15883C6.71524 8.15883 6.18354 8.68957 6.18354 9.34189C6.19234 9.65019 6.32099 9.9429 6.54217 10.1579C6.76335 10.3728 7.05962 10.4931 7.36804 10.4931C7.67646 10.4931 7.97273 10.3728 8.19391 10.1579C8.41509 9.9429 8.54374 9.65019 8.55254 9.34189C8.55254 8.6886 8.02277 8.15883 7.36949 8.15883ZM15.7898 8.15883C15.6316 8.15431 15.474 8.18158 15.3265 8.23903C15.1789 8.29647 15.0444 8.38293 14.9308 8.49328C14.8173 8.60363 14.727 8.73563 14.6654 8.88147C14.6038 9.02731 14.572 9.18404 14.572 9.34237C14.572 9.5007 14.6038 9.65743 14.6654 9.80327C14.727 9.94911 14.8173 10.0811 14.9308 10.1915C15.0444 10.3018 15.1789 10.3883 15.3265 10.4457C15.474 10.5032 15.6316 10.5304 15.7898 10.5259C16.0979 10.5171 16.3903 10.3886 16.6051 10.1676C16.8199 9.94657 16.9401 9.65054 16.9401 9.34237C16.9401 9.0342 16.8199 8.73818 16.6051 8.51718C16.3903 8.29618 16.0979 8.16763 15.7898 8.15883ZM11.5797 10.5259C10.442 10.5259 9.25118 10.9129 8.54193 11.4967C8.16233 11.3781 7.76716 11.317 7.36949 11.3153C6.10151 11.3153 4.73608 11.9859 4.73608 12.8196V13.6843H18.4232V12.8196C18.4232 11.9859 17.0578 11.3153 15.7898 11.3153C15.3942 11.3153 14.9889 11.3809 14.6174 11.4967C13.9081 10.9129 12.7174 10.5259 11.5797 10.5259Z"
                       fill="currentColor"
                     />
                   </svg>
+
                   <span class="mx-4 text-base font-normal font-roboto"
-                    >Schools</span
+                    >Classrooms</span
                   >
                 </span>
               </router-link>
             </li>
             <li class="flex-1 items-center">
               <router-link
-                to="/admin/users"
+                to="/teachers"
                 active-class="bg-tegbale-blue text-white rounded-xl"
                 class="flex items-center pl-4 pr-4 py-2 text-tegbale-text-gray w-full, hover:bg-tegbale-blue hover:text-white hover:rounded-xl"
               >
                 <span class="flex justify-center items-center">
                   <svg
-                    width="30"
+                    width="25"
                     height="20"
-                    viewBox="0 0 30 20"
+                    viewBox="0 0 25 20"
                     fill="currentColor"
-                    class="w-5 h-5"
                     xmlns="http://www.w3.org/2000/svg"
+                    class="w-5 h-5"
                   >
                     <path
-                      d="M30 13.25C30 14 28.5 14.5 26.75 14.75C25.625 12.625 23.375 11 20.75 9.875C21 9.5 21.25 9.25 21.5 8.875H22.5C26.375 8.75 30 11.125 30 13.25ZM8.5 8.75H7.5C3.625 8.75 0 11.125 0 13.25C0 14 1.5 14.5 3.25 14.75C4.375 12.625 6.625 11 9.25 9.875L8.5 8.75ZM15 10C17.75 10 20 7.75 20 5C20 2.25 17.75 0 15 0C12.25 0 10 2.25 10 5C10 7.75 12.25 10 15 10ZM15 11.25C9.875 11.25 5 14.5 5 17.5C5 20 15 20 15 20C15 20 25 20 25 17.5C25 14.5 20.125 11.25 15 11.25ZM22.125 7.5H22.5C24.625 7.5 26.25 5.875 26.25 3.75C26.25 1.625 24.625 0 22.5 0C21.875 0 21.375 0.125 20.875 0.375C21.875 1.625 22.5 3.25 22.5 5C22.5 5.875 22.375 6.75 22.125 7.5ZM7.5 7.5H7.875C7.625 6.75 7.5 5.875 7.5 5C7.5 3.25 8.125 1.625 9.125 0.375C8.625 0.125 8.125 0 7.5 0C5.375 0 3.75 1.625 3.75 3.75C3.75 5.875 5.375 7.5 7.5 7.5Z"
+                      d="M8.12506 13.75C8.0317 13.75 7.93834 13.7637 7.84928 13.7926C7.34303 13.957 6.81061 14.0625 6.25006 14.0625C5.68952 14.0625 5.15709 13.957 4.65045 13.7926C4.56139 13.7637 4.46842 13.75 4.37506 13.75C1.95084 13.75 -0.0128275 15.7219 6.31046e-05 18.1492C0.00553185 19.175 0.848891 20 1.87506 20H10.6251C11.6512 20 12.4946 19.175 12.5001 18.1492C12.513 15.7219 10.5493 13.75 8.12506 13.75ZM6.25006 12.5C8.32116 12.5 10.0001 10.8211 10.0001 8.75C10.0001 6.67891 8.32116 5 6.25006 5C4.17897 5 2.50006 6.67891 2.50006 8.75C2.50006 10.8211 4.17897 12.5 6.25006 12.5ZM23.1251 0H8.12506C7.09108 0 6.25006 0.869141 6.25006 1.93711V3.75C7.16491 3.75 8.01178 4.01484 8.75006 4.44531V2.5H22.5001V13.75H20.0001V11.25H15.0001V13.75H12.0219C12.768 14.402 13.3157 15.2629 13.5723 16.25H23.1251C24.159 16.25 25.0001 15.3809 25.0001 14.3129V1.93711C25.0001 0.869141 24.159 0 23.1251 0Z"
                       fill="currentColor"
                     />
                   </svg>
+
                   <span class="mx-4 text-base font-normal font-roboto"
-                    >Users</span
+                    >Teachers</span
+                  >
+                </span>
+              </router-link>
+            </li>
+
+            <li class="flex-1 items-center">
+              <router-link
+                active-class="bg-tegbale-blue text-white rounded-xl"
+                to="/students"
+                class="flex items-center pl-4 pr-4 py-2 text-tegbale-text-gray w-full, hover:bg-tegbale-blue hover:text-white hover:rounded-xl"
+              >
+                <span class="flex justify-center items-center">
+                  <svg
+                    width="35"
+                    height="20"
+                    viewBox="0 0 35 20"
+                    fill="currentColor"
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="w-5 h-5"
+                  >
+                    <path
+                      d="M17.1844 0L16.8408 0.104281L3.11965 4.70143L0 5.72997L1.81669 6.31175V15.9166C1.16136 16.2975 0.71899 16.9923 0.71899 17.8046C0.71899 18.3869 0.95029 18.9453 1.362 19.357C1.77372 19.7687 2.33213 20 2.91438 20C3.49663 20 4.05504 19.7687 4.46676 19.357C4.87847 18.9453 5.10977 18.3869 5.10977 17.8046C5.10977 16.9923 4.6674 16.2975 4.01208 15.9166V7.06916L6.20747 7.78815V13.4138C6.20747 14.3139 6.75631 15.0604 7.40834 15.5763C8.06037 16.0889 8.87047 16.4512 9.84303 16.7761C11.7903 17.4237 14.3568 17.8046 17.1844 17.8046C20.0121 17.8046 22.5785 17.4248 24.5258 16.775C25.4984 16.4512 26.3085 16.0889 26.9605 15.5752C27.6125 15.0604 28.1614 14.3139 28.1614 13.4138V7.78815L31.2492 6.75851L34.3688 5.72997L31.2481 4.70033L17.5269 0.104281L17.1844 0ZM17.1844 2.29967L27.4753 5.72997L17.1844 9.16026L6.89352 5.72997L17.1844 2.29967ZM8.40285 8.54336L16.8419 11.3557L17.1844 11.4588L17.528 11.3546L25.966 8.54226V13.4138C25.966 13.4248 25.9704 13.5521 25.6224 13.8255C25.2755 14.0999 24.6531 14.4457 23.8386 14.7179C22.2119 15.2591 19.8134 15.6092 17.1844 15.6092C14.5554 15.6092 12.157 15.2602 10.5291 14.7168C9.7168 14.4457 9.09331 14.0988 8.74643 13.8255C8.39737 13.551 8.40285 13.4248 8.40285 13.4138V8.54336Z"
+                      fill="currentColor"
+                    />
+                  </svg>
+
+                  <span class="mx-4 text-base font-normal font-roboto"
+                    >Students</span
                   >
                 </span>
               </router-link>
@@ -136,7 +159,7 @@
             <li class="flex-1 items-center">
               <router-link
                 active-class="bg-tegbale-blue text-white rounded-xl"
-                to="/admin/settings"
+                to="/settings"
                 class="flex items-center pl-4 pr-4 py-2 text-tegbale-text-gray w-full, hover:bg-tegbale-blue hover:text-white hover:rounded-xl"
               >
                 <span class="flex justify-center items-center">
@@ -210,7 +233,7 @@
         </div>
       </div>
     </aside>
-    <div class="flex w-screen min-h-screen flex-col flex-grow relative z-0">
+    <div class="flex w-screen min-h-screen flex-col flex-grow relative">
       <div class="flex w-full items-center bg-white border-b fixed z-50">
         <!-- hamburger menu -->
         <button
@@ -246,9 +269,9 @@
                   placeholder="Search"
                   autocomplete="off"
                   aria-label="Search"
-                  class="pr-3 font-medium placeholder:text-tegbale-text-gray placeholder:pl-4 text-gray-700 rounded-2xl border-none ring-2 ring-gray-200 focus:ring-tegbale-blue focus:ring-2 w-full"
+                  class="pr-3 font-medium placeholder:text-tegbale-text-gray placeholder:text-xs placeholder:sm:text-base placeholder:sm:pl-4 text-gray-700 rounded-2xl border-none ring-2 ring-gray-200 focus:ring-tegbale-blue focus:ring-2 w-full"
                 />
-                <div class="absolute w-10 block pointer-events-none">
+                <div class="absolute hidden sm:block pointer-events-none">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     fill="none"
@@ -267,7 +290,7 @@
               </div>
             </form>
           </div>
-          <div class="flex items-center space-x-2 md:space-x-6">
+          <div class="flex items-center space-x-4 px-4">
             <BadgeComponent class="hidden md:flex" />
 
             <AvatarComponent class="flex" />

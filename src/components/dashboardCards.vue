@@ -11,7 +11,7 @@
         {{ cardTitle }}
       </p>
       <p class="text-3xl font-semibold font-roboto text-black">
-        {{ cardValue }}
+        {{ cardValue >= 0 ? cardValue : "--" }}
       </p>
     </div>
   </div>
