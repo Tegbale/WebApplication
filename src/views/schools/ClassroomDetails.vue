@@ -7,8 +7,18 @@
       <ExportBtnDropdown class="flex md:hidden mb-0.5" ref="dropdownRef" :show-dropdown="showDropdown"
         @show-dropdown="showDropdown = !showDropdown" />
     </div>
-
-    <BaseTabWrapper class="" @changeTab="handleTabChange">
+    <div v-if="loadingData" class="flex justify-center items-center h-72">
+      <svg aria-hidden="true" class="inline w-16 h-16 mr-2 text-white animate-spin fill-blue-600" viewBox="0 0 100 101"
+        fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path
+          d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+          fill="currentColor" />
+        <path
+          d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+          fill="currentFill" />
+      </svg>
+    </div>
+    <BaseTabWrapper class="" @changeTab="handleTabChange" v-else>
       <BaseTab title="Teachers">
         <TeacherDetailsTable ref="teacherDetails" @schoolNameOutput="handleSchoolNameOutput" />
       </BaseTab>
@@ -48,7 +58,7 @@
             </div>
           </div>
         </div>
-        <div v-if="modalTitle === 'Add New Teacher'" class="px-2 mt-8">
+        <div v-if="modalTitle === 'Add Teacher To Class'" class="px-2 mt-8">
           <p class="text-sm font-medium font-roboto">Teacher Information</p>
           <div class="grid grid-auto-fit gap-3">
             <div class="relative flex items-center text-gray-300 focus-within:text-tegbale-blue mb-1"
@@ -74,7 +84,7 @@
           <button @click="addMember"
             class="bg-tegbale-blue text-white font-medium font-roboto py-2 px-10 w-full md:max-w-fit rounded-3xl hover:bg-blue-900">
             {{
-              modalTitle == "Add New Teacher" ? "Add Teacher" : "Add Student"
+              modalTitle == "Add Teacher To Class" ? "Add Teacher" : "Add Student"
             }}
           </button>
         </div>
@@ -95,12 +105,14 @@ import TeacherDetailsTable from "@/views/admin/userDetails/teacherDetailsTable.v
 import { onClickOutside } from "@vueuse/core";
 
 // import stores
-import { useStudent } from "@/stores/students"; 
-import { useTeacher } from "@/stores/teachers"; 
+import { useStudent } from "@/stores/students";
+import { useClassroom } from "@/stores/classrooms";
+import { useTeacher } from "@/stores/teachers";
 import { useToastStore } from "@/stores/toast-store";
 
 // declare the stores
 const studentStore = useStudent();
+const classroomStore = useClassroom();
 const teacherStore = useTeacher();
 const toastStore = useToastStore();
 
@@ -119,6 +131,7 @@ const dropdownRef = ref(null);
 const isEditing = ref(false);
 const isCreating = ref(false);
 const btnText = ref("Add Teacher");
+const loadingData = ref(false);
 
 onClickOutside(dropdownRef, () => {
   showDropdown.value = false;
@@ -143,11 +156,12 @@ const modalTitle = computed(() => {
   if (btnText.value === "Add Student") {
     return "Add Student to Classroom";
   }
-  return "Add New Teacher";
+  return "Add Teacher To Class";
 });
 
 // fetch all Teachers of a school
 const fetchTeachers = async () => {
+  loadingData.value = true;
   try {
     await teacherStore.fetchAllTeachers();
     // if (response.status === 200) {
@@ -161,10 +175,13 @@ const fetchTeachers = async () => {
       type: "error",
       timeout: 4000,
     });
+  } finally {
+    loadingData.value = false;
   }
 }
 // fetch all students of a school
 const fetchStudents = async () => {
+  loadingData.value = true;
   try {
     await studentStore.fetchAllStudents();
     // if (response.status === 200) {
@@ -178,38 +195,48 @@ const fetchStudents = async () => {
       type: "error",
       timeout: 4000,
     });
+  } finally {
+    loadingData.value = false;
   }
+}
+
+// fetch all Members in a class using the classroomId
+const fetchAllMembers = async () => {
+  // get the classroomId from the route
+  const classroomId = route.params.id
+  await classStore.fetchAllMembersInAClass(classroomId);
 }
 
 // add teacher or student to classroom
 const addMember = async () => {
 
-  if (modalTitle.value === 'Add New Teacher') {
+  if (modalTitle.value === 'Add Teacher To Class') {
     const payload = {
       classroom_id: route.params.id,
       teacher_id: teacher_id.value,
     };
     try {
-      const { data } = await teacherStore.addTeacherToClass(payload);
+      const data = await classroomStore.addTeacherToClass(payload);
 
-      console.log(data);
+      // console.log(data);
       // call the toast store to show the toast
-      // toastStore.showToast({
-      //   title: "Hurray!",
-      //   message: "Teacher added successfully",
-      //   type: "success",
-      //   timeout: 4000,
-      // });
+      toastStore.showToast({
+        title: "Hurray!",
+        message: data.message || "Teacher added successfully",
+        type: "success",
+        timeout: 4000,
+      });
     } catch (error) {
       console.log(error);
       // call the toast store to show the toast
       toastStore.showToast({
         title: "Ooops!",
-        message: error.message || "Add Teacher failed",
+        message: error.message || "Add Teacher To Class failed",
         type: "error",
         timeout: 4000,
       });
     } finally {
+      fetchTeachers();
       isCreating.value = false;
       modalActive.value = false;
     }
@@ -219,26 +246,27 @@ const addMember = async () => {
       student_id: student_id.value,
     };
     try {
-      const { data } = await teacherStore.addTeacherToClass(payload);
-
+      const { data } = await classroomStore.addStudentToClass(payload);
       console.log(data);
+
       // call the toast store to show the toast
-      // toastStore.showToast({
-      //   title: "Hurray!",
-      //   message: "Teacher added successfully",
-      //   type: "success",
-      //   timeout: 4000,
-      // });
+      toastStore.showToast({
+        title: "Hurray!",
+        message: "Student added successfully",
+        type: "success",
+        timeout: 4000,
+      });
     } catch (error) {
       console.log(error);
       // call the toast store to show the toast
       toastStore.showToast({
         title: "Ooops!",
-        message: error.message || "Add Teacher failed",
+        message: error.message || "Add Student to Class failed",
         type: "error",
         timeout: 4000,
       });
     } finally {
+      fetchStudents();
       isCreating.value = false;
       modalActive.value = false;
     }
@@ -265,9 +293,10 @@ const handleTabChange = (value) => {
   }
 };
 
-onMounted(() => {
-  fetchTeachers()
-  fetchStudents()
+onMounted(async () => {
+  await fetchAllMembers();
+  await fetchTeachers();
+  await fetchStudents();
 });
 </script>
 

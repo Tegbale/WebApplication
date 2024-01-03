@@ -68,6 +68,19 @@ const routes = [
     },
   },
   {
+    path: "/guardians",
+    name: "guardians",
+    // route level code-splitting
+    // this generates a separate chunk (Register.[hash].js) for this route
+    // which is lazy-loaded when the route is visited.
+    components: {
+      default: () => import("../views/schools/GuardiansView.vue"),
+    },
+    meta: {
+      middleware: [school, auth],
+    },
+  },
+  {
     path: "/settings",
     name: "settings",
     // route level code-splitting

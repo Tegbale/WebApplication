@@ -50,17 +50,14 @@ export const useUserStore = defineStore("users", {
       return data;
     },
 
-    async getAllUsers(page) {
-      // console.log(superAdmin);
+    async getAllUsers(page = 1) {
+      console.log("page", page);
       const { data } = await superAdmin.fetchAllUsers(page);
-      //  console.log(data.data);
-      // const usersArray = data;
-
-      // const filteredUsers = usersArray.filter((user) => user.role !== "superadmin");
 
       this.users = data.data;
       return data;
     },
+
 
     async deleteAUser(id) {
       const { data } = await superAdmin.deleteUserById(id);

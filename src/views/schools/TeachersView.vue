@@ -28,18 +28,14 @@
               <th class="p-3 text-sm font-semibold tracking-wide text-left text-tegbale-text-gray">
                 Name
               </th>
-              <!-- <th
-                class="p-3 text-sm font-semibold tracking-wide text-left text-tegbale-text-gray"
-              >
-                Head Teacher
-              </th> -->
-              <th class="p-3 text-sm font-semibold tracking-wide text-left text-tegbale-text-gray">
+              <th colspan="2" class="p-3 text-sm font-semibold tracking-wide text-left text-tegbale-text-gray">
                 Email Address
               </th>
+
               <th class="p-3 text-sm font-semibold tracking-wide text-left text-tegbale-text-gray">
                 Classroom
               </th>
-              <th class="flex flex-col p-3">
+              <th class="flex items-end flex-col p-3">
                 <!-- Dropdown menu -->
                 <ExportBtnDropdown ref="dropdownRef" :show-dropdown="showDropdown" @show-dropdown="handleShowDropdown"
                   @select-file-type="dataExport" />
@@ -47,31 +43,26 @@
             </tr>
           </template>
           <template #table-body>
-            <template v-if="TeacherLists && TeacherLists.length > 0">
-              <tr class="border-b-2 border-gray-100 hover:bg-gray-50" v-for="(teacherItem, i) in TeacherLists"
-                :key="teacherItem.id">
+            <template v-if="allTeachers && allTeachers.length > 0">
+              <tr class="border-b-2 border-gray-100 hover:bg-gray-50" v-for="(teacher, i) in allTeachers"
+                :key="teacher.id">
                 <td class="p-3 text-sm text-tegbale-text-gray font-roboto">
                   {{ i + 1 }}
                 </td>
-                <td class="p-3 text-sm text-blue-700 font-roboto hover:text-blue-900 hover:underline">
-                  <router-link :to="{
-                    name: 'ClassroomDetails',
-                    params: { id: teacherItem.id },
-                  }">
-                    {{ teacherItem.name }}
-                  </router-link>
+                <td class="p-3 text-sm text-tegbale-text-gray font-roboto">
+                  {{ teacher.fullname }}
                 </td>
                 <td class="p-3 text-sm text-tegbale-text-gray font-roboto">
-                  {{ teacherItem.head_teacher.full_name }}
+                  {{ teacher.email }}
                 </td>
                 <td class="p-3 text-sm text-tegbale-text-gray font-roboto">
-                  {{ teacherItem.number_of_students }}
+                  {{ teacher.number_of_students }}
                 </td>
                 <td class="p-3 text-sm text-tegbale-text-gray font-roboto">
-                  {{ teacherItem.number_of_teachers }}
+                  {{ teacher.number_of_teachers }}
                 </td>
                 <td class="flex justify-end p-3 space-x-2">
-                  <button @click="handleViewTeacher(teacherItem.id)"
+                  <button @click="handleViewTeacher(teacher.id)"
                     class="text-sm p-1 text-blue-700 font-bold hover:bg-blue-200 hover:rounded-full">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                       stroke="currentColor" class="w-5 h-5">
@@ -80,7 +71,7 @@
                       <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                     </svg>
                   </button>
-                  <button @click="handleEditTeacher(teacherItem.id)"
+                  <button @click="handleEditTeacher(teacher.id)"
                     class="text-sm p-1 text-tegbale-green font-bold hover:bg-green-200 hover:rounded-full">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                       stroke="currentColor" class="w-5 h-5">
@@ -88,7 +79,7 @@
                         d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" />
                     </svg>
                   </button>
-                  <button @click="handleDeleteTeacher(teacherItem.id)"
+                  <button @click="handleDeleteTeacher(teacher.id)"
                     class="text-sm p-1 text-red-700 font-bold hover:bg-red-200 hover:rounded-full">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                       stroke="currentColor" class="w-5 h-5">
@@ -107,13 +98,13 @@
           </template>
         </BaseDataTable>
         <!-- Mobile design  -->
-        <template v-if="TeacherLists && TeacherLists.length > 0">
-          <div class="grid grid-auto-fit gap-4 md:hidden pt-4" v-for="teacherItem in TeacherLists" :key="teacherItem.id">
-            <BaseMobileDataTable :column-one-text="teacherItem.name" :column-two-text="teacherItem.head_teacher.full_name"
-              :column-three-text="teacherItem.number_of_students" :not-clickable="true" column-one-title="Name"
+        <template v-if="allTeachers && allTeachers.length > 0">
+          <div class="grid grid-auto-fit gap-4 md:hidden pt-4" v-for="teacher in allTeachers" :key="teacher.id">
+            <BaseMobileDataTable :column-one-text="teacher.name" :column-two-text="teacher.full_name"
+              :column-three-text="teacher.number_of_students" :not-clickable="true" column-one-title="Name"
               column-two-title="Email Address" column-three-title="Classroom">
               <template #button>
-                <button @click="handleViewTeacher(teacherItem.id)"
+                <button @click="handleViewTeacher(teacher.id)"
                   class="flex items-center text-xs px-2 py-1 space-x-2 text-blue-700 font-bold border bg-blue-200 hover:bg-blue-900 hover:text-yellow-100 rounded-full">
                   <span class="">view</span>
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
@@ -123,7 +114,7 @@
                     <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                   </svg>
                 </button>
-                <button @click="handleEditTeacher(teacherItem.id)"
+                <button @click="handleEditTeacher(teacher.id)"
                   class="flex items-center text-xs px-2 py-1 space-x-2 text-green-700 font-bold border bg-green-200 hover:bg-green-500 hover:text-white rounded-full">
                   <span class="">edit</span>
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
@@ -132,7 +123,7 @@
                       d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" />
                   </svg>
                 </button>
-                <button @click="handleDeleteTeacher(teacherItem.id)"
+                <button @click="handleDeleteTeacher(teacher.id)"
                   class="flex items-center text-xs px-2 py-1 space-x-2 text-red-700 font-bold border bg-red-200 hover:bg-red-700 hover:text-red-200 rounded-full">
                   <span class="">delete</span>
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
@@ -165,51 +156,39 @@
         </div>
       </template>
       <template #form>
-        <div class="pt-8 mx-1">
-          <p class="text-sm font-medium font-roboto">class Information</p>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <div class="pt-8 mx-1 space-y-3">
+          <p class="text-sm font-medium font-roboto">Teacher Information</p>
+          <div class="grid grid-auto-fit gap-3">
             <div>
-              <BaseInput label="class Name" placeholder="Enter class Name" type="text" class="w-full"
-                :disabled="modalTitle === 'View class'" :modalInput="true" v-model="singleClassDetails.name" />
-              <span v-if="errors && errors.name && errors.name.length > 0" class="text-red-500 text-sm pl-4">
-                {{ errors.name[0] }}
+              <BaseInput v-model="teacherDetails.firstname" label="First Name" placeholder="Enter First Name" type="text"
+                class="w-full" :modalInput="true" />
+              <span v-if="errors && errors.firstname && errors.firstname.length > 0" class="text-red-500 text-sm pl-4">
+                {{ errors.firstname[0] }}
+              </span>
+            </div>
+            <div>
+              <BaseInput v-model="teacherDetails.lastname" label="Last Name" placeholder="Enter Last Name" type="text"
+                class="w-full" :modalInput="true" />
+              <span v-if="errors && errors.lastname && errors.lastname.length > 0" class="text-red-500 text-sm pl-4">
+                {{ errors.lastname[0] }}
               </span>
             </div>
           </div>
-        </div>
-        <div class="pt-5 mx-1">
-          <p class="text-sm font-medium font-roboto">
-            Head Teacher Information
-          </p>
           <div class="grid grid-auto-fit gap-3">
             <div>
-              <label for="role" class="text-xs">Name</label>
-              <div class="relative flex items-center text-gray-300 focus-within:text-tegbale-blue mb-1"
-                :class="{ 'mt-1': modalInput }">
-                <select v-model="singleClassDetails.head_teacher_id" :disabled="modalTitle === 'View class'"
-                  class="border border-gray-300 rounded-2xl leading-5 mt-2 pr-3 pl-10 py-2 w-full hover:border-gray-400 focus:outline-none focus:border-none focus:ring-1 focus:border-gray-400 placeholder:text-[12px] placeholder:tracking-wide placeholder:opacity-50 placeholder:content-center text-black">
-                  <option selected disabled value="">
-                    Select Head Teacher
-                  </option>
-
-                  <option v-for="user in teacherStore.teachers.data" :value="user.id" :key="user.fullname">
-                    {{ user.fullname }}
-                  </option>
-                </select>
-              </div>
-              <span v-if="errors &&
-                errors.head_teacher_id &&
-                errors.head_teacher_id.length > 0
-                " class="text-red-500 text-sm pl-4">
-                {{ errors.head_teacher_id[0] }}
+              <BaseInput v-model="teacherDetails.email" label="Email Address" placeholder="Enter email Address"
+                type="email" class="w-full" :modalInput="true" />
+              <span v-if="errors && errors.email && errors.email.length > 0" class="text-red-500 text-sm pl-4">
+                {{ errors.email[0] }}
               </span>
             </div>
+            <selectGender v-model="teacherDetails.gender" :errors="errors" />
           </div>
         </div>
       </template>
       <template #button>
         <div class="block md:flex items-center md:justify-end md:space-x-4 space-y-3 md:space-y-0 py-10">
-          <button @click.prevent="triggerDeleteModal" :loading="isLoading" v-if="modalTitle == 'View class'"
+          <button @click.prevent="triggerDeleteModal" :loading="isLoading" v-if="modalTitle == 'View Teacher'"
             class="inline-flex justify-center bg-red-600 text-white font-medium font-roboto py-2 px-16 w-full md:max-w-fit rounded-3xl hover:bg-red-400">
             <p class="flex items-center" v-if="isLoading">
               <svg class="w-5 h-5 mr-3 -ml-1 text-white animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none"
@@ -227,7 +206,7 @@
             class="bg-tegbale-text-gray text-white font-medium font-roboto py-2 px-16 w-full md:max-w-fit rounded-3xl hover:bg-gray-400">
             Cancel
           </button>
-          <button @click="saveClassDetails" v-if="modalTitle !== 'View class'" :loading="isLoading"
+          <button @click="saveTeacherDetails" v-if="modalTitle !== 'View Teacher'" :loading="isLoading"
             class="inline-flex justify-center bg-tegbale-blue text-white font-medium font-roboto py-2 px-10 w-full md:max-w-fit rounded-3xl hover:bg-blue-900">
             <p class="flex items-center" v-if="isLoading">
               <svg class="w-5 h-5 mr-3 -ml-1 text-white animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none"
@@ -240,7 +219,7 @@
               Loading...
             </p>
             <span v-else>{{
-              modalTitle == "Add class" ? "Add class" : "Save Changes"
+              modalTitle == "Add New Teacher" ? "Add Teacher" : "Save Changes"
             }}</span>
           </button>
         </div>
@@ -290,23 +269,23 @@
 
 <script setup>
 import BasePageTitle from "@/components/BaseComponents/BasePageTitle.vue";
+import selectGender from "@/components/selectGender.vue";
 import BaseDataTable from "@/components/BaseComponents/BaseDataTable.vue";
 import BaseDeleteModal from "@/components/BaseComponents/BaseDeleteModal.vue";
 import BaseMobileDataTable from "@/components/BaseComponents/BaseMobileDataTable.vue";
 import BaseModal from "@/components/BaseComponents/BaseModal.vue";
 import BaseInput from "@/components/BaseComponents/BaseInput.vue";
 
-import BaseSelectInput from "@/components/BaseComponents/BaseSelectInput.vue";
+// import BaseSelectInput from "@/components/BaseComponents/BaseSelectInput.vue";
 import { onClickOutside } from "@vueuse/core";
 
 import { dataParser } from "@/helpers/export-data.js";
 
-import { ref, computed, reactive, onMounted, defineEmits } from "vue";
+import { ref, computed, onMounted, defineEmits } from "vue";
 import ExportBtnDropdown from "@/components/exportBtnDropdown.vue";
 import NoDataCard from "@/components/NoDataCard.vue";
 
 // import store
-import { useClassroom } from "@/stores/classrooms";
 import { useTeacher } from "@/stores/teachers";
 import { useUserStore } from "@/stores/users";
 import { useToastStore } from "@/stores/toast-store";
@@ -316,7 +295,6 @@ import { useToastStore } from "@/stores/toast-store";
 const emit = defineEmits(["emitId"]);
 
 // declare the stores
-const classStore = useClassroom();
 const teacherStore = useTeacher();
 const usersStore = useUserStore();
 const toastStore = useToastStore();
@@ -326,7 +304,7 @@ const isDeleting = ref(false);
 const isSaving = ref(false);
 const showDropdown = ref(false);
 const modalActive = ref(false);
-const TeacherLists = ref(null);
+const allTeachers = ref(null);
 const loadingData = ref(false);
 const deleteActive = ref(false);
 
@@ -337,68 +315,7 @@ const isCreating = ref(false);
 const teacherId = ref(null);
 const header = ref(["id", "Name", "Email Address", "Classroom"]);
 
-const teacherData = reactive({
-  name: "",
-  head_teacher_id: null,
-  studentCount: "",
-  teacherCount: "",
-});
-
-const singleClassDetails = reactive({
-  name: "",
-  head_teacher_id: null,
-});
-
-const teachersArray = ref();
-
-// validation rules
-const saveClassDetails = async () => {
-  try {
-    if (modalTitle.value == "Add class") {
-      isLoading.value = true;
-      await classStore.createClassroom(singleClassDetails);
-      await fetchAllClassrooms();
-
-      modalActive.value = false;
-
-      // call the toast store to show the toast
-      toastStore.showToast({
-        title: "Hurray!",
-        message: "class added successfully",
-        type: "success",
-        timeout: 4000,
-      });
-    } else {
-      isSaving.value = true;
-      await classStore.updateClassroom(teacherId.value, singleClassDetails);
-      await fetchAllClassrooms();
-      modalActive.value = false;
-
-      // call the toast store to show the toast
-      toastStore.showToast({
-        title: "Hurray!",
-        message: "class updated successfully",
-        type: "success",
-        timeout: 4000,
-      });
-    }
-  } catch (error) {
-    // populate the error bag
-    errors.value = error.fieldErrors;
-
-    // call the toast store to show the toast
-    toastStore.showToast({
-      title: "Ooops!",
-      message: error.message || "Unable to add or Update",
-      type: "error",
-      timeout: 4000,
-    });
-  } finally {
-    isLoading.value = false;
-    isSaving.value = false;
-    // modalActive.value = false
-  }
-};
+const teacherDetails = ref({});
 
 // handleDeleteTeacher
 const handleDeleteTeacher = (id) => {
@@ -415,19 +332,19 @@ const cancelDelete = () => {
   deleteActive.value = false;
 };
 
-// delete teacherItem
+// delete teacher
 const deleteData = async () => {
   isDeleting.value = true;
 
   try {
-    const { data } = await classStore.deleteAClassroom(teacherId.value);
-    // fetch the latest data of classroom
-    await fetchAllClassrooms();
-    console.log(data);
+    const { data } = await teacherStore.deleteATeacher(teacherId.value);
+    // fetch the latest data of teachers
+    await fetchAllTeachers();
+    // console.log(data);
     // call the toast store to show the toast
     toastStore.showToast({
       title: "Hurray!",
-      message: "class deleted successfully",
+      message: "Teachers deleted successfully",
       type: "success",
       timeout: 4000,
     });
@@ -436,7 +353,7 @@ const deleteData = async () => {
     // call the toast store to show the toast
     toastStore.showToast({
       title: "Ooops!",
-      message: "delete class failed",
+      message: error.message || "delete Teacher failed",
       type: "error",
       timeout: 4000,
     });
@@ -471,21 +388,17 @@ const handleEditTeacher = async (id) => {
   modalActive.value = !modalActive.value;
   console.log(teacherId.value);
   try {
-    const { data } = await classStore.fetchAClassroomById(id);
-    singleClassDetails.head_teacher_id = data.head_teacher.id;
-    singleClassDetails.name = data.name;
+    const { data } = await teacherStore.fetchATeacherByID(id);
 
-    // teacherData.teacherCount = data.number_of_teachers;
-    // teacherData.studentCount = data.number_of_students;
-    // teacherData.headTeacher = data.location;
-    // teacherData.classname = data.name;
-    // teacherId.value = data.id
+    teacherDetails.value = data;
+
   } catch (error) {
-    console.log(error);
+    // populate the error bag
+    errors.value = error.fieldErrors;
     // call the toast store to show the toast
     toastStore.showToast({
       title: "Ooops!",
-      message: "Unable to Fetch class details",
+      message: error.message || "Unable to Fetch Teacher details",
       type: "error",
       timeout: 4000,
     });
@@ -497,7 +410,8 @@ const fetchAllTeachers = async () => {
   loadingData.value = true;
   try {
     const res = await teacherStore.fetchAllTeachers();
-    TeacherLists.value = res.data.data;
+    allTeachers.value = res.data.data;
+    console.log(res.data);
   } catch (error) {
     console.log(error);
     // call the toast store to show the toast
@@ -512,7 +426,56 @@ const fetchAllTeachers = async () => {
   }
 };
 
+// handle saveTeacherDetails
+const saveTeacherDetails = async () => {
+  isSaving.value = true;
+  try {
+    if (modalTitle.value === 'Add New Teacher') {
 
+      // call the create Teacher from store
+      const data = await teacherStore.createTeacher(teacherDetails.value);
+
+      // fetch the latest data of teachers
+      await fetchAllTeachers();
+      // call the toast store to show the toast
+      toastStore.showToast({
+        title: "Hurray!",
+        message: data.message || "Teachers created successfully",
+        type: "success",
+        timeout: 4000,
+      });
+
+    } else {
+      // call the update Teacher from store
+      const data = await teacherStore.updateTeacher(teacherId.value, teacherDetails.value);
+
+      // fetch the latest data of teachers
+      await fetchAllTeachers();
+
+      toastStore.showToast({
+        title: "Hurray!",
+        message: data.message || "Teachers updated successfully",
+        type: "success",
+        timeout: 4000,
+      });
+    }
+    // close the modal
+    closeModal();
+  } catch (error) {
+
+    // populate the error bag
+    errors.value = error.fieldErrors;
+    // call the toast store to show the toast
+    toastStore.showToast({
+      title: "Ooops!",
+      message: error.message || "save Teachers failed",
+      type: "error",
+      timeout: 4000,
+    });
+  } finally {
+    isSaving.value = false;
+  }
+}
 
 
 // view a single teacher details
@@ -524,10 +487,9 @@ const handleViewTeacher = async (id) => {
 
   try {
     const { data } = await teacherStore.fetchATeacherByID(id);
-    console.log(JSON.stringify(data, null, 2))
+    teacherDetails.value = data;
 
   } catch (error) {
-    console.log(error);
     // call the toast store to show the toast
     toastStore.showToast({
       title: "Ooops!",
@@ -549,12 +511,12 @@ const dataExport = (value) => {
 
       break;
     case "csv":
-      dataParser().exportDataFromJSON(TeacherLists.value, docName, value);
+      dataParser().exportDataFromJSON(allTeachers.value, docName, value);
 
       break;
     default:
       // code block
-      dataParser().exportDataFromJSON(TeacherLists.value, null, null);
+      dataParser().exportDataFromJSON(allTeachers.value, null, null);
   }
 };
 
@@ -563,7 +525,7 @@ const modalTitle = computed(() => {
   if (isEditing.value) {
     return "Edit Teacher";
   } else if (isCreating.value) {
-    return "Add Teacher";
+    return "Add New Teacher";
   } else {
     return "View Teacher";
   }
@@ -571,8 +533,8 @@ const modalTitle = computed(() => {
 
 // create a new array of nested arrays to use in generating pdf file
 const rowArray = computed(() => {
-  // remove the created_at key from each object in the TeacherLists array
-  let newArray = TeacherLists.value.map(({ created_at, ...rest }) => {
+  // remove the created_at key from each object in the allTeachers array
+  let newArray = allTeachers.value.map(({ created_at, ...rest }) => {
     return rest;
   });
 

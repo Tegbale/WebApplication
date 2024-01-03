@@ -1,21 +1,15 @@
 <template>
   <Teleport to="body">
     <transition name="modal-outter">
-      <div
-        v-show="modalActive"
-        class="fixed inset-0 h-full w-full bg-black bg-opacity-40 flex justify-center items-center px-8 z-40"
-      >
+      <div v-show="modalActive"
+        class="fixed inset-0 h-full w-full bg-black bg-opacity-40 flex justify-center items-center px-8 z-40">
         <transition name="modal-inner">
-          <div
-            v-if="modalActive"
-            class="bg-white p-10 w-full rounded-lg overflow-hidden"
-            :class="isCropper ? 'max-w-sm' : 'max-w-screen-md'"
-            v-on-click-outside="closeMode"
-          >
+          <div v-if="modalActive" class="bg-white p-10 w-full rounded-lg overflow-hidden"
+            :class="isCropper ? 'max-w-sm' : 'max-w-screen-md'" v-on-click-outside="closeMode">
             <div class="w-full">
               <slot name="title" />
             </div>
-            <div class="w-full overflow-y-auto max-h-[calc(100vh-4rem)]">
+            <div class="w-full overflow-y-auto max-h-[calc(100vh-6rem)]">
               <slot name="form" />
             </div>
             <div class="w-full">
@@ -45,7 +39,7 @@ defineProps({
 
   closeMode: {
     type: Function,
-    default: () => {},
+    default: () => { },
   },
 });
 </script>

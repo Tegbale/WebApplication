@@ -37,7 +37,7 @@ const teacher = {
   },
 
   // delete a teacher instance..
-  deleteAClassroom(teacherId) {
+  deleteATeacher(teacherId) {
     return api().delete(`/account/schooladmin/teacher/${teacherId}`, {
       headers: {
         Authorization: "Bearer " + localStorage.getItem("token"),

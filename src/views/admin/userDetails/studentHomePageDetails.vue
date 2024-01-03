@@ -5,19 +5,18 @@
         <th class="p-3 text-sm font-semibold tracking-wide text-left text-tegbale-text-gray">
           S/N
         </th>
-        <th class="p-3 text-sm font-semibold tracking-wide text-left text-tegbale-text-gray">
+        <th colspan="3" class="p-3 text-sm font-semibold tracking-wide text-left text-tegbale-text-gray">
           Name
         </th>
-        <th class="p-3 text-sm font-semibold tracking-wide text-left text-tegbale-text-gray">
-          Email Address
+
+        <th colspan="2" class="p-3 text-sm font-semibold tracking-wide text-left text-tegbale-text-gray">
+          Classroom
         </th>
         <th class="p-3 text-sm font-semibold tracking-wide text-left text-tegbale-text-gray">
-          Gender
+          Guardian
         </th>
-        <th class="p-3 text-sm font-semibold tracking-wide text-left text-tegbale-text-gray">
-          Ward Names
-        </th>
-        <th class="flex flex-col p-3">
+
+        <th class="flex items-end flex-col p-3">
           <!-- Dropdown menu -->
 
           <ExportBtnDropdown ref="dropdownRef" :show-dropdown="showDropdown" @show-dropdown="handleShowDropdown" />
@@ -25,40 +24,32 @@
       </tr>
     </template>
     <template #table-body>
-
-      <template v-if="allGuardians && allGuardians.length > 0">
-        <tr class="border-b-2 border-gray-100 hover:bg-gray-50" v-for="(guardian, i) in allGuardians" :key="guardian.id">
+      <!-- <pre>{{ students }}</pre> -->
+      <template v-if="students && students.length > 0">
+        <tr class="border-b-2 border-gray-100 hover:bg-gray-50" v-for="(student, index) in students" :key="student.id">
           <td class="p-3 text-sm text-tegbale-text-gray font-roboto">
-            {{ i + 1 }}
+            {{ index + 1 }}
           </td>
-          <td class="p-3 text-sm text-tegbale-text-gray font-roboto cursor-pointer hover:text-tegbale-blue">
-            {{ guardian.fullname }}
+          <td colspan="3" class="p-3 text-sm text-tegbale-text-gray font-roboto">
+            {{ student.fullname }}
           </td>
-          <td class="p-3 text-sm text-tegbale-text-gray font-roboto">
-            {{ guardian.email }}
+          <td colspan="2" class="p-3 text-sm text-tegbale-text-gray font-roboto">
+            {{ student.classroom ? student.classroom.name + ' classroom' : "" }}
           </td>
-          <td class="p-3 text-sm text-tegbale-text-gray font-roboto">
-            {{ guardian.gender }}
-          </td>
-          <td class="p-3 text-sm text-tegbale-text-gray font-roboto">
-            <select name="" id="" class="border-transparent focus:border-transparent focus:ring-0">
-              <option v-for="ward in guardian.wards" :key="ward.id">
-                {{ ward.full_name }}
-              </option>
-            </select>
+          <td class="p-3 text-sm text-tegbale-text-gray font-roboto capitalize">
+            {{ student.guardians && student.guardians.length > 0 ? student.guardians[0].full_name : "--" }}
           </td>
           <td class="flex justify-end p-3 space-x-2">
-            <button class="text-sm p-1 text-blue-700 font-bold hover:bg-blue-200 hover:rounded-full"
-              @click="handleAttachWard(guardian.id)">
+            <!-- <button class="text-sm p-1 text-blue-700 font-bold hover:bg-blue-200 hover:rounded-full">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                 stroke="currentColor" class="w-5 h-5">
                 <path stroke-linecap="round" stroke-linejoin="round"
-                  d="M18 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0ZM3 19.235v-.11a6.375 6.375 0 0 1 12.75 0v.109A12.318 12.318 0 0 1 9.374 21c-2.331 0-4.512-.645-6.374-1.766Z" />
+                  d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
               </svg>
-
-            </button>
+            </button> -->
             <button class="text-sm p-1 text-tegbale-green font-bold hover:bg-green-200 hover:rounded-full"
-              @click="handleEditGuardian(guardian.id)">
+              @click="handleEditStudent(student.id)">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                 stroke="currentColor" class="w-5 h-5">
                 <path stroke-linecap="round" stroke-linejoin="round"
@@ -66,7 +57,7 @@
               </svg>
             </button>
             <button class="text-sm p-1 text-red-700 font-bold hover:bg-red-200 hover:rounded-full"
-              @click.prevent="handleRemoveGuardian(guardian.id)">
+              @click.prevent="handleRemoveStudent(student.id)">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                 stroke="currentColor" class="w-5 h-5">
                 <path stroke-linecap="round" stroke-linejoin="round"
@@ -77,43 +68,31 @@
         </tr>
       </template>
       <tr v-else>
-        <td colspan="6" class="text-center py-6 h-52 text-tegbale-text-gray text-xl font-roboto font-medium">
-          No Guardian has been added...
+        <td colspan="8" class="text-center py-6 h-52 text-tegbale-text-gray text-xl font-roboto font-medium">
+          No Student has been added...
         </td>
       </tr>
     </template>
   </BaseDataTable>
-
   <!-- mobile data table cards -->
-  <template v-if="allGuardians && allGuardians.length > 0">
-    <div class="grid grid-auto-fit gap-4 md:hidden pt-4" v-for="guardian in allGuardians" :key="guardian.id">
-      <BaseMobileDataTable :column-one-text="guardian.name" :column-two-text="guardian.email"
-        :column-three-text="guardian.phone" :select="true" column-one-title="Name" column-two-title="Email"
-        column-three-title="Phone">
-        <template #select>
-          <div class="flex items-center">
-            wards:
-            <select name="" id="" class="border-transparent focus:border-transparent focus:ring-0">
-              <option v-for="ward in guardian.wards" :key="ward.id">
-                {{ ward.full_name }}
-              </option>
-            </select>
-          </div>
-        </template>
+  <template v-if="students && students.length > 0">
+    <div class="grid grid-auto-fit gap-4 md:hidden pt-4" v-for="student in students" :key="student.id">
+      <BaseMobileDataTable :column-one-text="student.fullname" column-two-title="Gender" :column-two-text="student.gender"
+        :notClickable="true" column-one-title="Name">
         <template #button>
-          <button
-            class="flex items-center text-xs px-2 py-1 space-x-2 text-blue-700 font-bold border bg-blue-200 hover:bg-blue-900 hover:text-yellow-100 rounded-full"
-            @click="handleAttachWard(guardian.id)">
-            <span class="">Add ward</span>
+          <!-- <button
+            class="flex items-center text-xs px-2 py-1 space-x-2 text-blue-700 font-bold border bg-blue-200 hover:bg-blue-900 hover:text-yellow-100 rounded-full">
+            <span class="">view</span>
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
               stroke="currentColor" class="w-5 h-5">
               <path stroke-linecap="round" stroke-linejoin="round"
-                d="M18 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0ZM3 19.235v-.11a6.375 6.375 0 0 1 12.75 0v.109A12.318 12.318 0 0 1 9.374 21c-2.331 0-4.512-.645-6.374-1.766Z" />
+                d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
             </svg>
-          </button>
+          </button> -->
           <button
             class="flex items-center text-xs px-2 py-1 space-x-2 text-green-700 font-bold border bg-green-200 hover:bg-green-500 hover:text-white rounded-full"
-            @click="handleEditGuardian(guardian.id)">
+            @click="handleEditStudent(student.id)">
             <span class="">edit</span>
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
               stroke="currentColor" class="w-5 h-5">
@@ -123,7 +102,7 @@
           </button>
           <button
             class="flex items-center text-xs px-2 py-1 space-x-2 text-red-700 font-bold border bg-red-200 hover:bg-red-700 hover:text-red-200 rounded-full"
-            @click.prevent="handleRemoveGuardian(guardian.id)">
+            @click.prevent="handleRemoveStudent(student.id)">
             <span class="">delete</span>
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
               stroke="currentColor" class="w-5 h-5">
@@ -136,11 +115,12 @@
     </div>
   </template>
   <div
-    class="flex items-center justify-center text-center h-52 md:hidden text-tegbale-text-gray text-xl font-roboto font-medium">
-    <p>No Guardian has been added</p>
+    class="flex items-center justify-center text-center h-52 md:hidden text-tegbale-text-gray text-xl font-roboto font-medium"
+    v-else>
+    <p>No student has been added</p>
   </div>
-  <div class="">
-    <!--  -->
+  <div class="flex justify-center items-center py-4 mt-4">
+
   </div>
   <BaseModal :modalActive="modalActive" :closeMode="closeModal">
     <template #title>
@@ -157,42 +137,41 @@
       </div>
     </template>
     <template #form>
-      <div class="pt-8 mx-1">
-        <p class="text-sm font-medium font-roboto">{{ modalTitle == 'Edit Guardian' ? 'Guardian Information' : '' }}</p>
-        <div class="grid grid-auto-fit gap-3" v-if="modalTitle == 'Edit Guardian'">
+      <div class="pt-8 mx-1 space-y-3">
+        <p class="text-sm font-medium font-roboto">Student Information</p>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
           <div>
-            <BaseInput v-model="singleGuardianDetails.firstname" label="First Name" placeholder="Enter First Name"
-              type="text" class="w-full" :modalInput="true" />
+            <BaseInput label="First Name" placeholder="Enter Student First Name" type="text" class="w-full"
+              :disabled="modalTitle === 'View Student'" :modalInput="true" v-model="singleStudentDetails.firstname" />
+            <span v-if="errors && errors.firstname && errors.firstname.length > 0" class="text-red-500 text-sm pl-4">
+              {{ errors.firstname[0] }}
+            </span>
           </div>
           <div>
-            <BaseInput v-model="singleGuardianDetails.lastname" label="Last Name" placeholder="Enter Last Name"
-              type="text" class="w-full" :modalInput="true" />
+            <BaseInput label="Last Name" placeholder="Enter Student Last Name" type="text" class="w-full"
+              :disabled="modalTitle === 'View Student'" :modalInput="true" v-model="singleStudentDetails.lastname" />
+            <span v-if="errors && errors.lastname && errors.lastname.length > 0" class="text-red-500 text-sm pl-4">
+              {{ errors.lastname[0] }}
+            </span>
           </div>
         </div>
-        <div class="grid grid-auto-fit gap-3" v-if="modalTitle == 'Edit Guardian'">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
           <div>
             <label class="text-xs">Gender</label>
-            <select v-model="singleGuardianDetails.gender"
+            <select v-model="singleStudentDetails.gender" :disabled="modalTitle === 'View Student'"
               class="border border-gray-300 rounded-2xl leading-5 mt-2 pr-3 pl-10 py-2 w-full hover:border-gray-400 focus:outline-none focus:border-none focus:ring-1 focus:border-gray-400 placeholder:text-[12px] placeholder:tracking-wide placeholder:opacity-50 placeholder:content-center text-black">
-              <option selected disabled value="">Select A Gender</option>
 
               <option v-for="gender in genderArray" :value="gender.value" :key="gender.text">{{
                 gender.text }}
               </option>
             </select>
           </div>
-        </div>
-        <div class="grid grid-auto-fit gap-3" v-if="modalTitle == 'Attach Ward'">
           <div>
-            <label class="text-xs">Ward</label>
-            <select v-model="student_id"
-              class="border border-gray-300 rounded-2xl leading-5 mt-2 pr-3 pl-10 py-2 w-full hover:border-gray-400 focus:outline-none focus:border-none focus:ring-1 focus:border-gray-400 placeholder:text-[12px] placeholder:tracking-wide placeholder:opacity-50 placeholder:content-center text-black">
-              <option selected disabled value="">Select Student</option>
-
-              <option v-for="user in students" :value="user.id" :key="user.fullname">{{
-                user.fullname }}
-              </option>
-            </select>
+            <BaseInput label="Class" placeholder="" type="text" class="w-full" :disabled="modalTitle === 'View Student'"
+              :modalInput="true" v-model="singleStudentDetails.classroom.name" />
+            <span v-if="errors && errors.lastname && errors.lastname.length > 0" class="text-red-500 text-sm pl-4">
+              {{ errors.lastname[0] }}
+            </span>
           </div>
         </div>
       </div>
@@ -217,21 +196,7 @@
           class="bg-tegbale-text-gray text-white font-medium font-roboto py-2 px-16 w-full md:max-w-fit rounded-3xl hover:bg-gray-400">
           Cancel
         </button>
-        <button @click="saveGuardianDetails" v-if="modalTitle == 'Edit Guardian'" :loading="isLoading"
-          class="inline-flex justify-center bg-tegbale-blue text-white font-medium font-roboto py-2 px-10 w-full md:max-w-fit rounded-3xl hover:bg-blue-900">
-          <p class="flex items-center" v-if="isLoading">
-            <svg class="w-5 h-5 mr-3 -ml-1 text-white animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none"
-              viewBox="0 0 24 24">
-              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-              <path class="opacity-75" fill="currentColor"
-                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-              </path>
-            </svg>
-            Loading...
-          </p>
-          <span v-else>Save Changes</span>
-        </button>
-        <button @click="attachWardToGuardian" v-if="modalTitle == 'Attach Ward'" :loading="isLoading"
+        <button @click="saveStudentDetails" v-if="modalTitle !== 'View class'" :loading="isLoading"
           class="inline-flex justify-center bg-tegbale-blue text-white font-medium font-roboto py-2 px-10 w-full md:max-w-fit rounded-3xl hover:bg-blue-900">
           <p class="flex items-center" v-if="isLoading">
             <svg class="w-5 h-5 mr-3 -ml-1 text-white animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none"
@@ -263,7 +228,7 @@
     </template>
     <template #form>
       <div class="mt-2 mb-4 text-sm sm:text-base">
-        <p>Are You sure you want to remove this Guardian?</p>
+        <p>Are You sure you want to remove this Student From this Class?</p>
       </div>
     </template>
     <template #button>
@@ -296,33 +261,27 @@ const genderArray = [
   { text: "Female", value: "female" },
 ]
 
-// imports
+
 import BaseDataTable from "@/components/BaseComponents/BaseDataTable.vue";
-import BaseMobileDataTable from "@/components/BaseComponents/BaseMobileDataTable.vue"
-import BaseInput from "@/components/BaseComponents/BaseInput.vue";;
+import BaseMobileDataTable from "@/components/BaseComponents/BaseMobileDataTable.vue";
+import ExportBtnDropdown from "@/components/exportBtnDropdown.vue";
 import BaseDeleteModal from "@/components/BaseComponents/BaseDeleteModal.vue";
 import BaseModal from "@/components/BaseComponents/BaseModal.vue";
-import ExportBtnDropdown from "@/components/exportBtnDropdown.vue";
+import BaseInput from "@/components/BaseComponents/BaseInput.vue";
 import { onClickOutside } from "@vueuse/core";
-
-import { computed, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 
 // import stores
-import { useUserStore } from "@/stores/users";
-import { useGuardian } from "@/stores/guardians";
 import { useToastStore } from "@/stores/toast-store";
 import { useStudent } from "@/stores/students";
 
 // declare the stores
-const usersStore = useUserStore();
-const guardianStore = useGuardian();
 const toastStore = useToastStore();
 const studentStore = useStudent();
 
 // pagination variables
 const currentPage = ref(1);
-const guardianId = ref(null);
-const student_id = ref(null);
+const studentId = ref(null);
 const isLoading = ref(false);
 const isDeleting = ref(false);
 const isEditing = ref(false);
@@ -331,10 +290,10 @@ const modalActive = ref(false);
 const deleteActive = ref(false);
 const showDropdown = ref(false);
 const dropdownRef = ref(null);
-
 const errors = ref(null);
-const singleGuardianDetails = ref(null);
+const singleStudentDetails = ref(null);
 
+// const allStudents = ref({});
 onClickOutside(dropdownRef, () => {
   showDropdown.value = false;
 });
@@ -343,38 +302,28 @@ const handleShowDropdown = () => {
   showDropdown.value = !showDropdown.value;
 };
 
-// computed properties
-const modalTitle = computed(() => {
-  if (isEditing.value) {
-    return "Edit Guardian";
-
-  } else {
-    return "Attach Ward";
-  }
-});
 // computed prop to get the students
 const students = computed(() => {
   return studentStore.getStudents;
 });
 
-// computed prop to get the payload to attach a student to a guardian
-const assignPayload = computed(() => {
-  return {
-    guardian_id: guardianId.value,
-    student_id: student_id.value
+// computed properties
+const modalTitle = computed(() => {
+  if (isEditing.value) {
+    return "Edit Student";
+  } else if (isCreating.value) {
+    return "Add Student";
+  } else {
+    return "View Student";
   }
 });
 
-// computed prop to get the guardians
-const allGuardians = computed(() => {
-  return guardianStore.getGuardians;
-});
-
-const fetchAllGuardians = async () => {
+// fetch all students of a school
+const fetchStudents = async () => {
   try {
-    await guardianStore.fetchAllGuardians();
+    await studentStore.fetchAllStudents();
   } catch (error) {
-    // console.log(error);
+    console.log(error);
     toastStore.showToast({
       title: "Ooops!",
       message: error.message || "Unable to Fetch School details",
@@ -384,51 +333,12 @@ const fetchAllGuardians = async () => {
   }
 }
 
-// handle attach ward
-const handleAttachWard = async (id) => {
-  // assign new guardian to a student
-
-  modalActive.value = !modalActive.value;
-  guardianId.value = id;
-
-};
-
-// attach ward 
-const attachWardToGuardian = async () => {
-
+// handle edit a student instance
+const handleEditStudent = async (id) => {
+  studentId.value = id;
   try {
-    const data = await studentStore.attachParentToStudent(assignPayload.value);
-
-    // fetch all guardians
-    fetchAllGuardians();
-    // close modal
-    closeModal();
-    // call the toast store to show the toast
-    toastStore.showToast({
-      title: "Hurray!",
-      message: data.message || "Ward has been attached to Guardian",
-      type: "success",
-      timeout: 4000,
-    });
-
-    // console.log(assignPayload.value);
-  } catch (error) {
-    toastStore.showToast({
-      title: "Ooops!",
-      message: error.message || "Unable to attach Ward to Guardian",
-      type: "error",
-      timeout: 4000,
-    });
-  }
-}
-
-
-// handle edit a guardian instance
-const handleEditGuardian = async (id) => {
-  guardianId.value = id;
-  try {
-    const { data } = await guardianStore.fetchAGuardianByID(id);
-    singleGuardianDetails.value = data;
+    const { data } = await studentStore.fetchAStudentByID(id);
+    singleStudentDetails.value = data;
     isEditing.value = true;
     modalActive.value = !modalActive.value;
   } catch (error) {
@@ -436,17 +346,17 @@ const handleEditGuardian = async (id) => {
     // call the toast store to show the toast
     toastStore.showToast({
       title: "Ooops!",
-      message: error.message || "Unable to Fetch Guardian details",
+      message: error.message || "Unable to Fetch Student details",
       type: "error",
       timeout: 4000,
     });
   }
 };
 
-// handle delete Guardian
-const handleRemoveGuardian = (id) => {
+// handle delete Student from a class
+const handleRemoveStudent = (id) => {
   deleteActive.value = true;
-  guardianId.value = id;
+  studentId.value = id;
 }
 
 // close the delete modal component
@@ -454,18 +364,18 @@ const cancelDelete = () => {
   deleteActive.value = false;
 };
 
-// delete Guardian data
+// delete student data
 const deleteData = async () => {
   isDeleting.value = true;
 
   try {
-    const data = await guardianStore.deleteAGuardian(guardianId.value);
-    // fetch the latest guardian data
-    await fetchAllGuardians();
+    const data = await studentStore.deleteAStudent(studentId.value);
+    // fetch the latest students data
+    await fetchStudents();
     // call the toast store to show the toast
     toastStore.showToast({
       title: "Hurray!",
-      message: data.message || "Guardian has been deleted successfully",
+      message: data.message || "Student has been deleted successfully",
       type: "success",
       timeout: 4000,
     });
@@ -474,12 +384,12 @@ const deleteData = async () => {
     // call the toast store to show the toast
     toastStore.showToast({
       title: "Ooops!",
-      message: error.message || "Failed to delete Guardian",
+      message: error.message || "Failed to delete student",
       type: "error",
       timeout: 4000,
     });
   } finally {
-    fetchAllGuardians();
+    fetchStudents();
     isDeleting.value = false;
     deleteActive.value = false;
   }
@@ -489,20 +399,22 @@ const deleteData = async () => {
 const closeModal = () => {
   modalActive.value = false;
   isEditing.value = false;
+  isCreating.value = false;
 };
 
-const saveGuardianDetails = async () => {
+const saveStudentDetails = async () => {
   try {
-    isSaving.value = true;
-    const data = await guardianStore.updateGuardian(guardianId.value, singleGuardianDetails.value);
 
-    await fetchAllGuardians();
+    isSaving.value = true;
+    const data = await studentStore.updateStudent(studentId.value, singleStudentDetails.value);
+    console.log(data);
+    await fetchStudents();
     modalActive.value = false;
 
     // call the toast store to show the toast
     toastStore.showToast({
       title: "Hurray!",
-      message: data.message || "Guardian updated successfully",
+      message: "Student updated successfully",
       type: "success",
       timeout: 4000,
     });
@@ -514,7 +426,7 @@ const saveGuardianDetails = async () => {
     // call the toast store to show the toast
     toastStore.showToast({
       title: "Ooops!",
-      message: error.message || "Unable to Update Guardian",
+      message: error.message || "Unable to add or Update",
       type: "error",
       timeout: 4000,
     });
@@ -525,6 +437,10 @@ const saveGuardianDetails = async () => {
   }
 
 };
+onMounted(() => {
+  //  
+})
+
 </script>
 
 <style lang="scss" scoped></style>

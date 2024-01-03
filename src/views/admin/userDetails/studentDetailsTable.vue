@@ -18,8 +18,8 @@
     </template>
     <template #table-body>
       <!-- <pre>{{ allStudents }}</pre> -->
-      <template v-if="allStudents && allStudents.length > 0">
-        <tr class="border-b-2 border-gray-100 hover:bg-gray-50" v-for="(student, index) in allStudents" :key="student.id">
+      <template v-if="allStudents.data && allStudents.data.length > 0">
+        <tr class="border-b-2 border-gray-100 hover:bg-gray-50" v-for="(student, index) in allStudents.data" :key="student.id">
           <td class="p-3 text-sm text-tegbale-text-gray font-roboto">
             {{ index + 1 }}
           </td>
@@ -61,8 +61,8 @@
     </template>
   </BaseDataTable>
   <!-- mobile data table cards -->
-  <template v-if="allStudents && allStudents.length > 0">
-    <div class="grid grid-auto-fit gap-4 md:hidden pt-4" v-for="student in allStudents" :key="student.id">
+  <template v-if="allStudents.data && allStudents.data.length > 0">
+    <div class="grid grid-auto-fit gap-4 md:hidden pt-4" v-for="student in allStudents.data" :key="student.id">
       <BaseMobileDataTable :column-one-text="student.full_name" column-two-title="Gender"
         :column-two-text="student.gender" :notClickable="true" column-one-title="Name">
         <template #button>
@@ -235,11 +235,12 @@ const deleteData = async () => {
 
 // fetch all Members in a class using the classroomId
 const fetchAllMembers = async () => {
+
   await classStore.fetchAllMembersInAClass(classroomId);
 }
 
 onMounted(() => {
-  allStudents.value = classStore.getAllStudentsInAClass.data;
+  allStudents.value = classStore.getAllStudentsInAClass;
 })
 
 </script>

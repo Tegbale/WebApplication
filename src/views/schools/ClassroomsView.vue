@@ -761,7 +761,7 @@ const handleViewClass = async (id) => {
   isEditing.value = false;
   isCreating.value = false;
   // await usersStore.getAllUsers();
-  modalActive.value = !modalActive.value;
+  // modalActive.value = !modalActive.value;
 
   try {
     const { data } = await classStore.fetchAClassroomById(id);
@@ -773,6 +773,7 @@ const handleViewClass = async (id) => {
     // classData.headTeacher = data.location;
     // classData.classname = data.name;
     // classId.value = data.id
+    modalActive.value = !modalActive.value;
   } catch (error) {
     console.log(error);
     // call the toast store to show the toast

@@ -8,8 +8,17 @@ export const useStudent = defineStore("SchoolAdminStudent", {
   state: () => ({
     students: null,
     student: null,
+    attachedParent: null,
   }),
-  getters: {},
+  getters: {
+
+    getStudents(state) {
+      return state.students.data || [];
+    },
+    getStudent(state) {
+      return state.student;
+    },
+  },
   actions: {
     async createStudent(payload) {
       const { data } = await student.addAStudent(payload);
@@ -36,10 +45,22 @@ export const useStudent = defineStore("SchoolAdminStudent", {
       return data;
     },
     async deleteAStudent(studentId) {
-      const { data } = await student.deleteAClassroom(studentId);
-      this.students = data.data;
+      const { data } = await student.deleteAStudent(studentId);
+      // this.students = data.data;
       return data;
     },
+
+    async attachParentToStudent(payload) {
+      const { data } = await student.attachParentToStudent(payload);
+      this.attachedParent = data.data;
+      return data;
+    },
+
+    async detachParentFromStudent(payload) {
+      const { data } = await student.detachParentFromStudent(payload);
+      this.attachedParent = data.data;
+      return data;
+    }
   },
   persist: true,
 });

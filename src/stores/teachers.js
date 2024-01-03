@@ -36,7 +36,7 @@ export const useTeacher = defineStore("SchoolAdminTeacher", {
       return data;
     },
     async deleteATeacher(teacherId) {
-      const { data } = await teacher.deleteAClassroom(teacherId);
+      const { data } = await teacher.deleteATeacher(teacherId);
       this.teachers = data.data;
       return data;
     },
