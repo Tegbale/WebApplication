@@ -1,278 +1,149 @@
 <template>
-    <div class="mt-20">
-      <BaseCard>
-        <h5 class="text-gray-500 text-lg py-4 px-2 font-roboto font-semibold">
-          Personal Information
-        </h5>
-        <BaseCropperModal
-          v-if="showModal"
-          :minAspectRatioProp="{ width: 8, height: 8 }"
-          :maxAspectRatioProp="{ width: 8, height: 8 }"
-          @croppedImageData="setCroppedImageData"
-          @showModal="showModal = false"
-          :closeModal="closeModal"
-        />
-        <div class="px-2 pt-2 pb-4">
-          <div
-            class="relative border border-spacing-2 bg-gray-100 w-36 h-36 rounded-full flex justify-center items-center text-4xl tracking-wide font-roboto font-semibold text-gray-500"
-          >
-            <img
-              v-if="hasProfilePic"
-              :src="image"
-              alt="user profile pic"
-              class="w-full rounded-full"
-            />
-            <span v-else>{{ getInitials }}</span>
-            <button
-              @click="showModal = true"
-              class="absolute bg-slate-600 p-2 rounded-full bottom-2 right-0"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke-width="1.0"
-                stroke="currentColor"
-                class="w-5 h-5 text-gray-50"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125"
-                />
+  <div class="pt-4 max-w-2xl space-y-6">
+    <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
+      <div class="border-b border-gray-50 px-6 py-4">
+        <h2 class="text-base font-semibold text-tegbale-navy-blue font-roboto">Profile Information</h2>
+      </div>
+      <div class="px-6 py-6">
+        <div class="flex flex-wrap items-center gap-5 mb-6">
+          <div class="relative flex h-20 w-20 flex-shrink-0 items-center justify-center rounded-full bg-tegbale-blue text-white text-2xl font-semibold font-roboto select-none overflow-hidden">
+            <img v-if="userStore.avatar" :src="userStore.avatar" alt="avatar" class="h-full w-full object-cover" />
+            <span v-else>{{ userStore.initials }}</span>
+          </div>
+          <div>
+            <p class="text-lg font-semibold text-tegbale-navy-blue font-roboto">{{ userStore.firstName }} {{ userStore.lastName }}</p>
+            <span class="mt-1 inline-block rounded-full bg-tegbale-blue/10 px-3 py-0.5 text-xs font-roboto text-tegbale-blue">School Admin</span>
+          </div>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="flex flex-col gap-1">
+            <label class="text-xs text-tegbale-text-gray font-roboto">First Name</label>
+            <div class="rounded-full border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm font-roboto text-gray-700">{{ userStore.firstName || '—' }}</div>
+          </div>
+          <div class="flex flex-col gap-1">
+            <label class="text-xs text-tegbale-text-gray font-roboto">Last Name</label>
+            <div class="rounded-full border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm font-roboto text-gray-700">{{ userStore.lastName || '—' }}</div>
+          </div>
+          <div class="flex flex-col gap-1 sm:col-span-2">
+            <label class="text-xs text-tegbale-text-gray font-roboto">Email Address</label>
+            <div class="rounded-full border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm font-roboto text-gray-700">{{ userStore.email || '—' }}</div>
+          </div>
+          <div class="flex flex-col gap-1">
+            <label class="text-xs text-tegbale-text-gray font-roboto">Phone</label>
+            <div class="rounded-full border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm font-roboto text-gray-700">{{ userStore.phone || '—' }}</div>
+          </div>
+          <div class="flex flex-col gap-1">
+            <label class="text-xs text-tegbale-text-gray font-roboto">School</label>
+            <div class="rounded-full border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm font-roboto text-gray-700">{{ userStore.schoolName || '—' }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
+      <div class="border-b border-gray-50 px-6 py-4">
+        <h2 class="text-base font-semibold text-tegbale-navy-blue font-roboto">Change Password</h2>
+      </div>
+      <div class="px-6 py-6 space-y-4">
+        <div class="flex flex-col gap-1">
+          <label class="text-xs text-tegbale-text-gray font-roboto">Current Password</label>
+          <div class="relative">
+            <input v-model="pwForm.currentPassword" :type="showCurrent ? 'text' : 'password'" placeholder="Enter current password"
+              class="w-full rounded-full border border-gray-200 px-4 py-2.5 pr-10 text-sm font-roboto text-gray-700 placeholder:text-tegbale-text-gray focus:border-tegbale-blue focus:outline-none focus:ring-1 focus:ring-tegbale-blue/20" />
+            <button type="button" class="absolute right-3 top-1/2 -translate-y-1/2 text-tegbale-text-gray hover:text-gray-600" @click="showCurrent = !showCurrent">
+              <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
               </svg>
             </button>
           </div>
+          <span v-if="pwV$.currentPassword.$error" class="text-xs text-red-500 pl-2 font-roboto">{{ pwV$.currentPassword.$errors[0].$message }}</span>
         </div>
-        <hr />
-        <div class="px-2 pt-2 pb-8">
-          <div class="grid grid-auto-fit gap-3">
-            <div>
-              <BaseInput
-                label="First Name"
-                placeholder="Enter First Name"
-                type="text"
-                class="w-full"
-                :modalInput="true"
-                v-model="firstname"
-              />
-              <span
-                v-if="v$.firstname.$errors.length > 0"
-                class="text-red-500 text-sm pl-4"
-              >
-                {{ v$.firstname.$errors[0].$message }}
-              </span>
-            </div>
-            <div>
-              <BaseInput
-                label="Last Name"
-                placeholder="Enter Last Name"
-                type="text"
-                class="w-full"
-                :modalInput="true"
-                v-model="lastname"
-              />
-              <span
-                v-if="v$.lastname.$errors.length > 0"
-                class="text-red-500 text-sm pl-4"
-              >
-                {{ v$.lastname.$errors[0].$message }}
-              </span>
-            </div>
-          </div>
-          <div>
-            <BaseInput
-              label="Email Address"
-              placeholder="Enter Your email"
-              type="email"
-              class="w-full"
-              :modalInput="true"
-              v-model="email"
-            />
-            <span
-              v-if="v$.email.$errors.length > 0"
-              class="text-red-500 text-sm pl-4"
-            >
-              {{ v$.email.$errors[0].$message }}
-            </span>
-          </div>
-          <div>
-            <BaseInput
-              label="Phone Number"
-              placeholder="Enter Your Number"
-              type="email"
-              class="w-full"
-              :modalInput="true"
-              v-model="phone"
-            />
-            <span
-              v-if="v$.phone.$errors.length > 0"
-              class="text-red-500 text-sm pl-4"
-            >
-              {{ v$.phone.$errors[0].$message }}
-            </span>
-          </div>
-          <div class="py-6">
-            <button
-              @click="updateAdminDetails"
-              :disabled="v$.$invalid"
-              class="bg-tegbale-blue text-white font-medium font-roboto py-2 px-16 w-full md:max-w-fit rounded-3xl hover:bg-blue-900"
-              :class="
-                v$.$invalid
-                  ? 'cursor-not-allowed bg-gray-300 hover:bg-gray-300'
-                  : 'bg-tegbale-blue hover:bg-blue-900'
-              "
-            >
-              <p class="flex items-center" v-if="isLoading">
-                <svg
-                  class="w-5 h-5 mr-3 -ml-1 text-white animate-spin"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                >
-                  <circle
-                    class="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    stroke-width="4"
-                  ></circle>
-                  <path
-                    class="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                  ></path>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="flex flex-col gap-1">
+            <label class="text-xs text-tegbale-text-gray font-roboto">New Password</label>
+            <div class="relative">
+              <input v-model="pwForm.newPassword" :type="showNew ? 'text' : 'password'" placeholder="New password"
+                class="w-full rounded-full border border-gray-200 px-4 py-2.5 pr-10 text-sm font-roboto text-gray-700 placeholder:text-tegbale-text-gray focus:border-tegbale-blue focus:outline-none focus:ring-1 focus:ring-tegbale-blue/20" />
+              <button type="button" class="absolute right-3 top-1/2 -translate-y-1/2 text-tegbale-text-gray hover:text-gray-600" @click="showNew = !showNew">
+                <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
                 </svg>
-                Saving...
-              </p>
-              <span v-else>Save Changes</span>
-            </button>
+              </button>
+            </div>
+            <span v-if="pwV$.newPassword.$error" class="text-xs text-red-500 pl-2 font-roboto">{{ pwV$.newPassword.$errors[0].$message }}</span>
+          </div>
+          <div class="flex flex-col gap-1">
+            <label class="text-xs text-tegbale-text-gray font-roboto">Confirm New Password</label>
+            <input v-model="pwForm.confirmPassword" :type="showNew ? 'text' : 'password'" placeholder="Confirm new password"
+              class="w-full rounded-full border border-gray-200 px-4 py-2.5 text-sm font-roboto text-gray-700 placeholder:text-tegbale-text-gray focus:border-tegbale-blue focus:outline-none focus:ring-1 focus:ring-tegbale-blue/20" />
+            <span v-if="pwV$.confirmPassword.$error" class="text-xs text-red-500 pl-2 font-roboto">{{ pwV$.confirmPassword.$errors[0].$message }}</span>
           </div>
         </div>
-      </BaseCard>
+        <div v-if="pwForm.newPassword" class="space-y-1">
+          <div class="flex gap-1">
+            <div v-for="n in 4" :key="n" class="h-1.5 flex-1 rounded-full transition-colors" :class="strength >= n ? strengthColor : 'bg-gray-100'" />
+          </div>
+          <p class="text-xs font-roboto" :class="strengthTextColor">{{ strengthLabel }}</p>
+        </div>
+        <div class="flex justify-end pt-2">
+          <button :disabled="isLoading || pwV$.$invalid" @click="changePassword"
+            class="rounded-full bg-tegbale-blue px-8 py-2.5 text-sm font-roboto font-medium text-white hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-50 transition-colors">
+            {{ isLoading ? 'Updating...' : 'Update Password' }}
+          </button>
+        </div>
+      </div>
     </div>
+  </div>
 </template>
 
 <script setup>
-import BaseCard from "@/components/BaseComponents/BaseCard.vue";
-import BaseCropperModal from "@/components/BaseComponents/BaseCropperModal.vue";
-import BaseInput from "@/components/BaseComponents/BaseInput.vue";
-import { useVuelidate } from "@vuelidate/core";
-import { helpers } from "@vuelidate/validators";
-import { onMounted, ref, computed } from "vue";
-import { useUsersStore } from "@/stores/user-store";
-import { useRouter } from "vue-router";
-import { useToastStore } from "@/stores/toast-store";
+import { ref, computed, reactive } from 'vue'
+import { useVuelidate } from '@vuelidate/core'
+import { required, minLength, helpers } from '@vuelidate/validators'
+import { useUsersStore } from '@/stores/user-store'
+import { useToastStore } from '@/stores/toast-store'
+import userApi from '@/api/user'
 
-const hasProfilePic = ref(null);
-const isLoading = ref(false);
-const showModal = ref(false);
-const firstname = ref(null);
-const lastname = ref(null);
-const email = ref(null);
-const phone = ref(null);
-let imageData = null;
-let image = ref(null);
-const userStore = useUsersStore();
-const router = useRouter();
-const toastStore = useToastStore();
+const userStore = useUsersStore()
+const toastStore = useToastStore()
+const isLoading = ref(false)
+const showCurrent = ref(false)
+const showNew = ref(false)
 
-const rules = {
-  firstname: {
-    required: helpers.withMessage("This field is required", (v) => !!v),
-  },
-  lastname: {
-    required: helpers.withMessage("This field is required", (v) => !!v),
-  },
-  email: {
-    required: helpers.withMessage("This field is required", (v) => !!v),
-    email: helpers.withMessage("Please enter a valid email", (v) => !!v),
-  },
-  phone: {
-    required: helpers.withMessage("This field is required", (v) => !!v),
-  },
-};
+const pwForm = reactive({ currentPassword: '', newPassword: '', confirmPassword: '' })
+const sameAsNew = helpers.withMessage('Passwords do not match', (val) => val === pwForm.newPassword)
+const pwRules = {
+  currentPassword: { required: helpers.withMessage('Current password is required', required) },
+  newPassword: { required: helpers.withMessage('New password is required', required), minLength: helpers.withMessage('At least 8 characters', minLength(8)) },
+  confirmPassword: { required: helpers.withMessage('Please confirm your password', required), sameAsNew },
+}
+const pwV$ = useVuelidate(pwRules, pwForm)
 
-// computed properties to get the initials of the user
-const getInitials = computed(() => {
-  if (userStore.firstname && userStore.lastname) {
-    return `${userStore.firstname[0]}${userStore.lastname[0]}`;
-  }
-  return null;
-});
+const strength = computed(() => {
+  const p = pwForm.newPassword; if (!p) return 0
+  let s = 0
+  if (p.length >= 8) s++; if (/[A-Z]/.test(p)) s++; if (/[0-9]/.test(p)) s++; if (/[^A-Za-z0-9]/.test(p)) s++
+  return s
+})
+const strengthColor = computed(() => ['bg-red-400', 'bg-orange-400', 'bg-yellow-400', 'bg-tegbale-green'][strength.value - 1] ?? 'bg-gray-100')
+const strengthTextColor = computed(() => ['text-red-500', 'text-orange-500', 'text-yellow-600', 'text-tegbale-green'][strength.value - 1] ?? 'text-gray-400')
+const strengthLabel = computed(() => ['Weak', 'Fair', 'Good', 'Strong'][strength.value - 1] ?? '')
 
-//validate the login data...
-const v$ = useVuelidate(rules, { firstname, lastname, email, phone });
-
-onMounted(() => {
-  firstname.value = userStore.firstname || null;
-  lastname.value = userStore.lastname || null;
-  email.value = userStore.email || null;
-  phone.value = userStore.phone || null;
-  image.value = userStore.photo || null;
-
-  if (image.value) {
-    hasProfilePic.value = true;
-  } else {
-    hasProfilePic.value = false;
-  }
-});
-
-// function to set cropped image data
-const setCroppedImageData = (data) => {
-  imageData = data;
-  image.value = data.imageURL;
-  hasProfilePic.value = true;
-};
-
-// function to close modal
-const closeModal = () => {
-  showModal.value = false;
-};
-
-// update user(admin) details
-const updateAdminDetails = async () => {
-  isLoading.value = true;
-
-  let data = new FormData();
-  data.append("firstname", firstname.value);
-  data.append("lastname", lastname.value);
-  data.append("email", email.value);
-  data.append("phone", phone.value);
-  data.append("photo", imageData.file);
-
-  const result = await v$.value.$validate();
-  if (result) {
-    try {
-      // update profile details
-      await userStore.updateUserDetail(data);
-      // fetch updated user details
-      await userStore.fetchUserDetails();
-      // redirect to dashboard
-      router.push({ name: "adminDashboard" });
-      // call the toast store to show the toast
-      toastStore.showToast({
-        title: "Updated!",
-        message: "Your details updated successfully",
-        type: "success",
-        timeout: 3000,
-      });
-    } catch (error) {
-      //errors.value = error.response?.data.errors;
-      console.log(error);
-      // call the toast store to show the toast
-      toastStore.showToast({
-        title: "Ooops!",
-        message: "Your details Update was Unsuccessful",
-        type: "error",
-        timeout: 3000,
-      });
-    } finally {
-      isLoading.value = false;
-    }
-  }
-};
+const changePassword = async () => {
+  const valid = await pwV$.value.$validate()
+  if (!valid) return
+  isLoading.value = true
+  try {
+    await userApi.changePassword({ currentPassword: pwForm.currentPassword, newPassword: pwForm.newPassword })
+    pwForm.currentPassword = ''; pwForm.newPassword = ''; pwForm.confirmPassword = ''
+    pwV$.value.$reset()
+    toastStore.showToast({ title: 'Done', message: 'Password updated successfully', type: 'success', timeout: 3000 })
+  } catch (error) {
+    toastStore.showToast({ title: 'Error', message: typeof error === 'string' ? error : 'Failed to update password', type: 'error', timeout: 4000 })
+  } finally { isLoading.value = false }
+}
 </script>
 
 <style lang="scss" scoped></style>

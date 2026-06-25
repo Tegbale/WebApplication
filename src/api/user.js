@@ -1,35 +1,27 @@
-import api from "./axios";
+import api from './axios'
 
 export default {
   login(payload) {
-    return api().post("/login", payload);
+    return api().post('/auth/login', payload)
   },
 
-  // fetch admin details
-  fetchUserDetails() {
-    return api().get("/account/profile", {
-      headers: {
-        Authorization: "Bearer " + localStorage.getItem("token"),
-      },
-    });
+  register(payload) {
+    return api().post('/auth/register', payload)
   },
 
-  // update admin details
-  updateUserDetails(payload) {
-    return api().post("/account/profile", payload, {
-      headers: {
-        Authorization: "Bearer " + localStorage.getItem("token"),
-      },
-    });
+  getMe() {
+    return api().get('/auth/me')
   },
 
-  // Request password reset
-  requestPasswordReset(payload) {
-    return api().post("/request-reset-password", payload);
+  logout(refreshToken) {
+    return api().post('/auth/logout', { refreshToken })
   },
 
-  // Reset password
-  resetPassword(payload) {
-    return api().post("/reset-password", payload);
+  refreshToken(refreshToken) {
+    return api().post('/auth/refresh', { refreshToken })
   },
-};
+
+  changePassword(payload) {
+    return api().patch('/auth/change-password', payload)
+  },
+}

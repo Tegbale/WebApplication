@@ -43,19 +43,8 @@ const router = createRouter({
                 transition: 'slide-down'
             },
         },
-        {
-            path: "/register",
-            name: "register",
-            // route level code-splitting
-            // this generates a separate chunk (Register.[hash].js) for this route
-            // which is lazy-loaded when the route is visited.
-            component: () =>
-                import ("../views/Auth/RegisterView.vue"),
-            meta: {
-                middleware: [guest],
-                transition: 'slide-down'
-            },
-        },
+        // /register removed — access is request-based, not self-signup
+        { path: '/register', redirect: '/' },
     ],
 });
 

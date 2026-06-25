@@ -1,100 +1,50 @@
-// stores/user-store.js
-import { defineStore } from "pinia";
-import admin from "@/api/admin";
+// Staff store (school-scoped)
+import { defineStore } from 'pinia'
+import staffApi from '@/api/admin'
 
-export const useAdminsStore = defineStore("admin", {
-    state: () => ({
-        id: null,
-        firstname: null,
-        lastname: null,
-        fullname: null,
-        phone: null,
-        gender: null,
-        role: null,
-        photo: null,
-        email: null,
+export const useAdminsStore = defineStore('admin', {
+  state: () => ({
+    staff: [],
+    meta: { total: 0, page: 1, limit: 20, totalPages: 0 },
+    loading: false,
+  }),
 
-        users: [],
-        schools: [],
-    }),
+  getters: {
+    allUsers: (state) => state.staff,
+  },
 
-    getters: {
-        allUsers(state) {
-            return state.users;
-        },
-    },
-    actions: {
-        // create a user
-        async createNewUser(payload) {
-            const res = await admin.createUser(payload);
-            this.setUserDetails(res);
-
-            return res;
-        },
-
-        async setUserDetails(res) {
-            (this.$state.id = res.data.data.id),
-            (this.$state.firstname = res.data.data.firstname),
-            (this.$state.lastname = res.data.data.lastname),
-            (this.$state.fullname = res.data.data.fullname),
-            (this.$state.phone = res.data.data.phone),
-            (this.$state.email = res.data.data.email),
-            (this.$state.gender = res.data.data.gender),
-            (this.$state.role = res.data.data.role);
-        },
-
-        // update user details by id
-        async updateUserDetailById(id, payload) {
-            const res = await admin.updateUserDetailById(id, payload);
-
-            this.setUserDetails(res);
-            return res;
-        },
-
-        // get a user by id
-        async getUserById(id) {
-            const res = await admin.getUser(id);
-            this.setUserDetails(res);
-            return res;
-        },
-
-        clearUserDetails() {
-            (this.$state.id = null),
-            (this.$state.firstname = null),
-            (this.$state.lastname = null),
-            (this.$state.fullname = null),
-            (this.$state.phone = null),
-            (this.$state.email = null),
-            (this.$state.gender = null),
-            (this.$state.email_verification_status = null),
-            (this.$state.token = null),
-            (this.$state.role = null),
-            (this.$state.photo = null);
-            this.$state.profile.user_id = null;
-        },
-
-        // get user by role
-        async getUserByRole(role) {
-            const res = await admin.getUserByRole(role);
-            this.setUserDetails(res);
-            return res;
-        },
-
-        // get all users
-        async getAllUsers() {
-            const { data } = await admin.getAllUsers();
-            const usersArray = data.data.data;
-
-            // filter out the superadmin where role is superadmin
-            const filteredUsers = usersArray.filter((user) => {
-                return user.role !== "superadmin";
-            });
-
-            this.$state.users = filteredUsers;
-
-            return data;
-        },
+  actions: {
+    async fetchAllStaff(params) {
+      this.loading = true
+      try {
+        const { data } = await staffApi.getAllStaff(params)
+        this.staff = data.data
+        this.meta = data.meta
+      } finally {
+        this.loading = false
+      }
     },
 
-    persist: true,
-});
+    async createStaff(payload) {
+      const { data } = await staffApi.createStaff(payload)
+      const result = data.data
+      this.staff.unshift(result.user ?? result)
+      this.meta.total++
+      return result
+    },
+
+    async updateStaff(id, payload) {
+      const { data } = await staffApi.updateStaff(id, payload)
+      const idx = this.staff.findIndex((s) => s.id === id)
+      if (idx !== -1) this.staff[idx] = { ...this.staff[idx], ...data.data }
+      return data.data
+    },
+
+    async toggleStatus(id) {
+      const { data } = await staffApi.toggleStaffStatus(id)
+      const idx = this.staff.findIndex((s) => s.id === id)
+      if (idx !== -1) this.staff[idx].isActive = data.data.isActive
+      return data.data
+    },
+  },
+})

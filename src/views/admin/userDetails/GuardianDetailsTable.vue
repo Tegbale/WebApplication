@@ -1,197 +1,77 @@
 <template>
-  <BaseDataTable class="hidden md:block">
-    <template #table-header>
-      <tr>
-        <th
-          class="p-3 text-sm font-semibold tracking-wide text-left text-tegbale-text-gray"
-        >
-          S/N
-        </th>
-        <th
-          class="p-3 text-sm font-semibold tracking-wide text-left text-tegbale-text-gray"
-        >
-          Name
-        </th>
-        <th
-          class="p-3 text-sm font-semibold tracking-wide text-left text-tegbale-text-gray"
-        >
-          Email Address
-        </th>
-        <th
-          class="p-3 text-sm font-semibold tracking-wide text-left text-tegbale-text-gray"
-        >
-          Phone Number
-        </th>
-        <th
-          class="p-3 text-sm font-semibold tracking-wide text-left text-tegbale-text-gray"
-        >
-          Ward Names
-        </th>
-        <th class="flex flex-col p-3">
-          <!-- Dropdown menu -->
+  <div>
+    <div v-if="loading" class="flex justify-center items-center h-52">
+      <svg aria-hidden="true" class="inline w-10 h-10 text-white animate-spin fill-blue-600" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor" />
+        <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentFill" />
+      </svg>
+    </div>
 
-          <ExportBtnDropdown
-            ref="dropdownRef"
-            :show-dropdown="showDropdown"
-            @show-dropdown="handleShowDropdown"
-          />
-        </th>
-      </tr>
-    </template>
-    <template #table-body>
-      <template v-if="GuardiansArray.length > 0">
-        <tr
-          class="border-b-2 border-gray-100 hover:bg-gray-50"
-          v-for="guardian in GuardiansArray"
-          :key="guardian.id"
-        >
-          <td class="p-3 text-sm text-tegbale-text-gray font-roboto">
-            {{ guardian.id }}
-          </td>
-          <td
-            class="p-3 text-sm text-tegbale-text-gray font-roboto cursor-pointer hover:text-tegbale-blue"
-          >
-            {{ guardian.name }}
-          </td>
-          <td class="p-3 text-sm text-tegbale-text-gray font-roboto">
-            {{ guardian.email }}
-          </td>
-          <td class="p-3 text-sm text-tegbale-text-gray font-roboto">
-            {{ guardian.phone }}
-          </td>
-          <td class="p-3 text-sm text-tegbale-text-gray font-roboto">
-            <select
-              name=""
-              id=""
-              class="border-transparent focus:border-transparent focus:ring-0"
-            >
-              <option v-for="ward in guardian.wards" :key="ward.id">
-                {{ ward.name }}
-              </option>
-            </select>
-          </td>
-          <td class="flex justify-end p-3 space-x-2"></td>
+    <BaseDataTable v-else class="hidden md:block">
+      <template #table-header>
+        <tr>
+          <th class="p-3 text-sm font-semibold tracking-wide text-left text-tegbale-text-gray">S/N</th>
+          <th class="p-3 text-sm font-semibold tracking-wide text-left text-tegbale-text-gray">Name</th>
+          <th class="p-3 text-sm font-semibold tracking-wide text-left text-tegbale-text-gray">Email Address</th>
+          <th class="p-3 text-sm font-semibold tracking-wide text-left text-tegbale-text-gray">Phone Number</th>
+          <th class="p-3 text-sm font-semibold tracking-wide text-left text-tegbale-text-gray">Wards</th>
         </tr>
       </template>
-      <tr v-else>
-        <td
-          colspan="5"
-          class="flex items-center justify-center text-center h-52 text-tegbale-text-gray text-xl font-roboto font-medium"
-        >
-          No Guardian has been added
-        </td>
-      </tr>
-    </template>
-  </BaseDataTable>
-
-  <!-- mobile data table cards -->
-  <template v-if="GuardiansArray.length > 0">
-    <div
-      class="grid grid-auto-fit gap-4 md:hidden pt-4"
-      v-for="guardian in GuardiansArray"
-      :key="guardian.id"
-    >
-      <BaseMobileDataTable
-        :column-one-text="guardian.name"
-        :column-two-text="guardian.email"
-        :column-three-text="guardian.phone"
-        :select="true"
-        column-one-title="Name"
-        column-two-title="Email"
-        column-three-title="Phone"
-      >
-        <template #select>
-          <div class="flex items-center">
-            wards:
-            <select
-              name=""
-              id=""
-              class="border-transparent focus:border-transparent focus:ring-0"
-            >
-              <option v-for="ward in guardian.wards" :key="ward.id">
-                {{ ward.name }}
-              </option>
-            </select>
-          </div>
+      <template #table-body>
+        <template v-if="parents.length > 0">
+          <tr class="border-b-2 border-gray-100 hover:bg-gray-50" v-for="(p, i) in parents" :key="p.id">
+            <td class="p-3 text-sm text-tegbale-text-gray font-roboto">{{ i + 1 }}</td>
+            <td class="p-3 text-sm text-tegbale-text-gray font-roboto">{{ p.user.firstName }} {{ p.user.lastName }}</td>
+            <td class="p-3 text-sm text-tegbale-text-gray font-roboto">{{ p.user.email }}</td>
+            <td class="p-3 text-sm text-tegbale-text-gray font-roboto">{{ p.user.phone || '—' }}</td>
+            <td class="p-3 text-sm text-tegbale-text-gray font-roboto">
+              <select v-if="p.wards?.length" class="border-transparent focus:border-transparent focus:ring-0">
+                <option v-for="ward in p.wards" :key="ward.id">{{ ward.firstName }} {{ ward.lastName }}</option>
+              </select>
+              <span v-else>—</span>
+            </td>
+          </tr>
         </template>
-      </BaseMobileDataTable>
-    </div>
-  </template>
+        <tr v-else>
+          <td colspan="5" class="text-center h-40 text-tegbale-text-gray font-roboto">No guardians found</td>
+        </tr>
+      </template>
+    </BaseDataTable>
+
+    <template v-if="parents.length > 0">
+      <div class="grid grid-auto-fit gap-4 md:hidden pt-4" v-for="p in parents" :key="p.id">
+        <BaseMobileDataTable
+          :column-one-text="`${p.user.firstName} ${p.user.lastName}`"
+          :column-two-text="p.user.email"
+          :column-three-text="p.user.phone || '—'"
+          :notClickable="true"
+          column-one-title="Name"
+          column-two-title="Email"
+          column-three-title="Phone"
+        />
+      </div>
+    </template>
+  </div>
 </template>
 
 <script setup>
-import BaseDataTable from "@/components/BaseComponents/BaseDataTable.vue";
-import BaseMobileDataTable from "@/components/BaseComponents/BaseMobileDataTable.vue";
-import ExportBtnDropdown from "@/components/exportBtnDropdown.vue";
-import { onClickOutside } from "@vueuse/core";
+import BaseDataTable from '@/components/BaseComponents/BaseDataTable.vue'
+import BaseMobileDataTable from '@/components/BaseComponents/BaseMobileDataTable.vue'
+import { ref, onMounted } from 'vue'
+import parentsApi from '@/api/parents'
 
-import { ref } from "vue";
+const parents = ref([])
+const loading = ref(false)
 
-const showDropdown = ref(false);
-
-const dropdownRef = ref(null);
-
-const GuardiansArray = ref([
-  {
-    id: 1,
-    name: "John Doe",
-    email: "john@test.com",
-    phone: "08012345678",
-    wards: [
-      {
-        id: 1,
-        name: "Ebube Shola",
-      },
-      {
-        id: 2,
-        name: "Christiana Oluwaseun",
-      },
-    ],
-  },
-  {
-    id: 2,
-    name: "John Doe",
-    email: "john@test.com",
-    phone: "08012345678",
-    wards: [
-      {
-        id: 1,
-        name: "Ebube Shola",
-      },
-      {
-        id: 2,
-        name: "Christiana Oluwaseun",
-      },
-    ],
-  },
-  {
-    id: 3,
-    name: "John Doe",
-    email: "john@test.com",
-    phone: "08012345678",
-    wards: [
-      {
-        id: 1,
-        name: "Ebube Shola",
-      },
-      {
-        id: 2,
-        name: "Christiana Oluwaseun",
-      },
-    ],
-  },
-]);
-
-onClickOutside(dropdownRef, () => {
-  showDropdown.value = false;
-});
-
-const handleShowDropdown = () => {
-  showDropdown.value = !showDropdown.value;
-};
-// show ward list for a guardian on click of ward name
-
-// computed properties
+onMounted(async () => {
+  loading.value = true
+  try {
+    const { data } = await parentsApi.getParents({ limit: 100 })
+    parents.value = data.data
+  } catch {} finally {
+    loading.value = false
+  }
+})
 </script>
 
 <style lang="scss" scoped></style>

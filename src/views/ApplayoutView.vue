@@ -1,281 +1,102 @@
 <template>
-  <div
-    
-    class="flex mx-auto w-full relative"
-  >
+  <div class="flex mx-auto w-full relative">
+    <!-- Sidebar -->
     <aside
-      class="absolute inset-0 transform md:transform-none md:opacity-100 duration-200 md:relative z-10 bg-white border-r border-gray-200 w-60"
-      :class="{
-        'translate-x-0 ease-in opacity-100': isOpen,
-        '-translate-x-full ease-out opacity-0': !isOpen,
-      }"
+      class="fixed inset-y-0 left-0 z-30 flex w-60 flex-col bg-white border-r border-gray-100 transition-transform duration-200"
+      :class="isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'"
     >
-      <div class="fixed">
-        <div class="flex items-center justify-between">
-          <div class="flex flex-1 items-center">
-            <div class="flex flex-1 justify-between items-center">
-              <div
-                class="logo-wrapper p-2 flex-1"
-                @click.prevent="isOpen = true"
-              >
-                <div
-                  class="logo rounded-full flex justify-center items-center text-white text-4xl font-bold font-poppins bg-tegbale-blue mx-0"
-                >
-                  T
-                </div>
-                <p class="px-2 text-xl font-bold font-roboto text-tegbale-blue">
-                  Tegbale
-                </p>
-              </div>
-              <div
-                @click.prevent="isOpen = false"
-                class="rounded-full hover:bg-gray-200 text-tegbale-blue font-medium p-2 cursor-pointer md:hidden"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke-width="1.5"
-                  stroke="currentColor"
-                  class="w-8 h-8"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                </svg>
-              </div>
-            </div>
-          </div>
+      <!-- Logo -->
+      <div class="flex items-center gap-3 px-5 py-5">
+        <div class="flex h-9 w-9 items-center justify-center rounded-full bg-tegbale-blue text-white font-bold font-poppins text-lg">
+          T
         </div>
-        <nav class="mt-10">
-          <ul class="flex flex-1 flex-col space-y-4">
-            <li class="flex-1 items-center">
-              <router-link
-                to="/admin/dashboard"
-                active-class="bg-tegbale-blue text-white rounded-xl"
-                class="flex items-center pl-4 pr-4 py-2 text-tegbale-text-gray hover:bg-tegbale-blue hover:text-white hover:rounded-xl"
-              >
-                <span class="flex justify-center items-center">
-                  <svg
-                    width="10"
-                    height="10"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="w-5 h-5"
-                  >
-                    <path
-                      d="M8.88889 20H2.22222C1 20 0 19 0 17.7778V2.22222C0 1 1 0 2.22222 0H8.88889V20ZM11.1111 20H17.7778C19 20 20 19 20 17.7778V10H11.1111V20ZM20 7.77778V2.22222C20 1 19 0 17.7778 0H11.1111V7.77778H20Z"
-                      fill="currentColor"
-                    />
-                  </svg>
-                  <span class="mx-4 text-base font-normal font-roboto"
-                    >Dashboard</span
-                  >
-                </span>
-              </router-link>
-            </li>
-            <li class="flex-1 items-center">
-              <router-link
-                to="/admin/schools"
-                active-class="bg-tegbale-blue text-white rounded-xl"
-                class="flex items-center pl-4 pr-4 py-2 text-tegbale-text-gray w-full, hover:bg-tegbale-blue hover:text-white hover:rounded-xl"
-              >
-                <span class="flex justify-center items-center">
-                  <svg
-                    width="23"
-                    height="20"
-                    viewBox="0 0 23 20"
-                    fill="currentColor"
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="w-5 h-5"
-                  >
-                    <path
-                      d="M21.1111 8.88889H18.8889V2.22222H20V0H2.22222V2.22222H3.33333V8.88889H1.11111C0.816426 8.88889 0.533811 9.00595 0.325437 9.21433C0.117063 9.4227 0 9.70532 0 10V20H22.2222V10C22.2222 9.70532 22.1052 9.4227 21.8968 9.21433C21.6884 9.00595 21.4058 8.88889 21.1111 8.88889ZM13.3333 17.7778V13.3333H8.88889V17.7778H5.55556V2.22222H16.6667V17.7778H13.3333Z"
-                      fill="currentColor"
-                    />
-                    <path
-                      d="M7.77783 4.44446H10.0001V6.66668H7.77783V4.44446ZM12.2223 4.44446H14.4445V6.66668H12.2223V4.44446ZM7.77783 8.8889H10.0001V11.1111H7.77783V8.8889ZM12.2223 8.8889H14.4445V11.1111H12.2223V8.8889Z"
-                      fill="currentColor"
-                    />
-                  </svg>
-                  <span class="mx-4 text-base font-normal font-roboto"
-                    >Schools</span
-                  >
-                </span>
-              </router-link>
-            </li>
-            <li class="flex-1 items-center">
-              <router-link
-                to="/admin/users"
-                active-class="bg-tegbale-blue text-white rounded-xl"
-                class="flex items-center pl-4 pr-4 py-2 text-tegbale-text-gray w-full, hover:bg-tegbale-blue hover:text-white hover:rounded-xl"
-              >
-                <span class="flex justify-center items-center">
-                  <svg
-                    width="30"
-                    height="20"
-                    viewBox="0 0 30 20"
-                    fill="currentColor"
-                    class="w-5 h-5"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M30 13.25C30 14 28.5 14.5 26.75 14.75C25.625 12.625 23.375 11 20.75 9.875C21 9.5 21.25 9.25 21.5 8.875H22.5C26.375 8.75 30 11.125 30 13.25ZM8.5 8.75H7.5C3.625 8.75 0 11.125 0 13.25C0 14 1.5 14.5 3.25 14.75C4.375 12.625 6.625 11 9.25 9.875L8.5 8.75ZM15 10C17.75 10 20 7.75 20 5C20 2.25 17.75 0 15 0C12.25 0 10 2.25 10 5C10 7.75 12.25 10 15 10ZM15 11.25C9.875 11.25 5 14.5 5 17.5C5 20 15 20 15 20C15 20 25 20 25 17.5C25 14.5 20.125 11.25 15 11.25ZM22.125 7.5H22.5C24.625 7.5 26.25 5.875 26.25 3.75C26.25 1.625 24.625 0 22.5 0C21.875 0 21.375 0.125 20.875 0.375C21.875 1.625 22.5 3.25 22.5 5C22.5 5.875 22.375 6.75 22.125 7.5ZM7.5 7.5H7.875C7.625 6.75 7.5 5.875 7.5 5C7.5 3.25 8.125 1.625 9.125 0.375C8.625 0.125 8.125 0 7.5 0C5.375 0 3.75 1.625 3.75 3.75C3.75 5.875 5.375 7.5 7.5 7.5Z"
-                      fill="currentColor"
-                    />
-                  </svg>
-                  <span class="mx-4 text-base font-normal font-roboto"
-                    >Users</span
-                  >
-                </span>
-              </router-link>
-            </li>
-            <li class="flex-1 items-center">
-              <router-link
-                active-class="bg-tegbale-blue text-white rounded-xl"
-                to="/admin/settings"
-                class="flex items-center pl-4 pr-4 py-2 text-tegbale-text-gray w-full, hover:bg-tegbale-blue hover:text-white hover:rounded-xl"
-              >
-                <span class="flex justify-center items-center">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke-width="1.5"
-                    stroke="currentColor"
-                    class="w-5 h-5"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 010 .255c-.007.378.138.75.43.99l1.005.828c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.99l-1.004-.828a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281z"
-                    />
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                    />
-                  </svg>
-                  <span class="mx-4 text-base font-normal font-roboto"
-                    >Settings</span
-                  >
-                </span>
-              </router-link>
-            </li>
-          </ul>
-        </nav>
-        <div class="flex flex-col justify-center py-24">
-          <ul>
-            <li class="flex-1 items-center">
-              <button
-                @click.prevent="logout"
-                class="flex w-full items-center pl-4 pr-4 py-2 text-[#e77d7d] w-full, hover:bg-red-100 hover:rounded-xl"
-              >
-                <span class="flex justify-center items-center">
-                  <svg
-                    width="20"
-                    height="20"
-                    viewBox="0 0 20 20"
-                    fill="#D00808"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <g clip-path="url(#clip0_33_1882)">
-                      <g opacity="0.7">
-                        <path
-                          d="M3.75 18.75H11.25C11.5814 18.7497 11.8992 18.6179 12.1335 18.3835C12.3679 18.1492 12.4997 17.8314 12.5 17.5V15.625H11.25V17.5H3.75V2.5H11.25V4.375H12.5V2.5C12.4997 2.16858 12.3679 1.85083 12.1335 1.61648C11.8992 1.38213 11.5814 1.25033 11.25 1.25H3.75C3.41858 1.25033 3.10083 1.38213 2.86648 1.61648C2.63213 1.85083 2.50033 2.16858 2.5 2.5V17.5C2.50033 17.8314 2.63213 18.1492 2.86648 18.3835C3.10083 18.6179 3.41858 18.7497 3.75 18.75Z"
-                          fill="currentColor"
-                        />
-                        <path
-                          d="M12.8663 12.8663L15.1075 10.625H6.25V9.375H15.1075L12.8663 7.13375L13.75 6.25L17.5 10L13.75 13.75L12.8663 12.8663Z"
-                          fill="currentColor"
-                        />
-                      </g>
-                    </g>
-                    <defs>
-                      <clipPath id="clip0_33_1882">
-                        <rect width="20" height="20" fill="currentColor" />
-                      </clipPath>
-                    </defs>
-                  </svg>
-                  <span class="mx-4 text-base font-normal font-roboto"
-                    >Logout</span
-                  >
-                </span>
-              </button>
-            </li>
-          </ul>
-        </div>
-      </div>
-    </aside>
-    <div class="flex w-screen min-h-screen flex-col flex-grow relative z-0">
-      <div class="flex w-full items-center bg-white border-b fixed z-50">
-        <!-- hamburger menu -->
-        <button
-          @click.prevent="openMenu"
-          class="p-3 focus:outline-none rounded-full text-gray-500 hover:bg-gray-100 focus:bg-gray-200 md:hidden"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke-width="1.5"
-            stroke="currentColor"
-            class="w-6 h-6"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"
-            />
+        <span class="text-xl font-bold font-poppins text-tegbale-blue">Tegbale</span>
+        <button class="ml-auto rounded-full p-1 text-gray-400 hover:bg-gray-100 md:hidden" @click="isOpen = false">
+          <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
           </svg>
         </button>
-        <nav
-          class="flex w-full md:w-10/12 items-center justify-between md:justify-around py-4 font-roboto text-base font-normal text-tegbale-text-gray bg-white"
-        >
-          <div class="w-full sm:w-[30%] max-w-2xl">
-            <form action="">
-              <div
-                class="relative w-full flex items-center text-tegbale-text-gray focus-within:text-transparent"
-              >
-                <input
-                  type="text"
-                  name="search"
-                  placeholder="Search"
-                  autocomplete="off"
-                  aria-label="Search"
-                  class="pr-3 font-medium placeholder:text-tegbale-text-gray placeholder:pl-4 text-gray-700 rounded-2xl border-none ring-2 ring-gray-200 focus:ring-tegbale-blue focus:ring-2 w-full"
-                />
-                <div class="absolute w-10 block pointer-events-none">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke-width="1.5"
-                    stroke="currentColor"
-                    class="w-6 h-6 ml-1 pointer-events-none"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"
-                    />
-                  </svg>
-                </div>
-              </div>
-            </form>
-          </div>
-          <div class="flex items-center space-x-2 md:space-x-6">
-            <BadgeComponent class="hidden md:flex" />
-
-            <AvatarComponent class="flex" />
-          </div>
-        </nav>
       </div>
 
-      <main class="container mx-auto px-6 py-10">
+      <!-- Nav -->
+      <nav class="flex-1 overflow-y-auto px-3 py-4">
+        <ul class="space-y-1">
+          <li v-for="item in navItems" :key="item.name">
+            <router-link
+              :to="item.to"
+              active-class="bg-tegbale-blue text-white"
+              class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-roboto font-normal text-tegbale-text-gray transition-colors hover:bg-tegbale-blue hover:text-white"
+            >
+              <span class="h-5 w-5 flex-shrink-0" v-html="item.svgPath"></span>
+              {{ item.name }}
+            </router-link>
+          </li>
+        </ul>
+      </nav>
+
+      <!-- Logout -->
+      <div class="p-3 mb-4">
+        <button
+          class="flex items-center gap-3 px-3 py-2.5 text-sm font-roboto text-red-400 hover:text-red-500"
+          @click="logout"
+        >
+          <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+          </svg>
+          Logout
+        </button>
+      </div>
+    </aside>
+
+    <!-- Mobile overlay -->
+    <div v-if="isOpen" class="fixed inset-0 z-20 bg-black/30 md:hidden" @click="isOpen = false"></div>
+
+    <!-- Main content -->
+    <div class="flex w-full min-h-screen flex-col flex-grow md:pl-60">
+      <!-- Header -->
+      <header class="fixed top-0 right-0 left-0 md:left-60 z-20 flex h-16 items-center gap-4 bg-white px-4 md:px-6">
+        <!-- Hamburger -->
+        <button class="rounded-full p-2 text-gray-500 hover:bg-gray-100 md:hidden" @click="isOpen = true">
+          <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"/>
+          </svg>
+        </button>
+
+        <!-- Search -->
+        <div class="relative hidden max-w-xs flex-1 sm:block">
+          <svg class="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-tegbale-text-gray" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"/>
+          </svg>
+          <input
+            type="text"
+            placeholder="Search..."
+            class="w-full rounded-full border border-gray-200 bg-white py-2 pl-10 pr-4 text-sm font-roboto text-gray-700 placeholder:text-tegbale-text-gray focus:outline-none focus:ring-1 focus:ring-gray-300"
+          />
+        </div>
+
+        <div class="ml-auto flex items-center gap-4">
+          <!-- Notification bell -->
+          <button class="relative p-1 text-gray-500 hover:text-gray-700">
+            <svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0"/>
+            </svg>
+            <span class="absolute right-0.5 top-0.5 flex h-2 w-2 items-center justify-center rounded-full bg-red-500"></span>
+          </button>
+
+          <!-- User info -->
+          <div class="flex items-center gap-2">
+            <div class="flex h-9 w-9 items-center justify-center overflow-hidden rounded-full bg-gray-200">
+              <img v-if="userStore.avatar" :src="userStore.avatar" alt="avatar" class="h-full w-full object-cover" />
+              <span v-else class="text-sm font-semibold text-gray-600 font-roboto">{{ initials }}</span>
+            </div>
+            <span class="hidden text-sm font-medium text-tegbale-navy-blue font-roboto md:block">
+              {{ userStore.firstName }} {{ userStore.lastName }}
+            </span>
+          </div>
+        </div>
+      </header>
+
+      <main class="px-4 pt-20 pb-10 md:px-6">
         <slot />
       </main>
     </div>
@@ -283,62 +104,72 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
-import AvatarComponent from "../components/avatarComponent.vue";
-import BadgeComponent from "../components/badgeComponent.vue";
-import { useUsersStore } from "@/stores/user-store";
-import { useRouter } from "vue-router";
+import { ref, computed } from 'vue'
+import { useUsersStore } from '@/stores/user-store'
+import { useRouter } from 'vue-router'
 
-const userStore = useUsersStore();
-const router = useRouter();
+const userStore = useUsersStore()
+const router = useRouter()
+const isOpen = ref(false)
 
-const isOpen = ref(false);
+const initials = computed(() => {
+  const f = userStore.firstName?.[0] ?? ''
+  const l = userStore.lastName?.[0] ?? ''
+  return (f + l).toUpperCase() || 'SA'
+})
 
-// function to logout user
-const logout = () => {
-  localStorage.removeItem("token");
-  localStorage.removeItem("user");
+const logout = async () => {
+  await userStore.logout()
+  router.push({ name: 'login' })
+}
 
-  userStore.clearUserDetails();
-
-  router.push({ name: "home" });
-};
-
-// function to open menu
-const openMenu = () => {
-  isOpen.value = true;
-};
+const navItems = [
+  {
+    name: 'Dashboard',
+    to: '/admin/dashboard',
+    svgPath: `<svg fill="currentColor" viewBox="0 0 20 20" class="h-5 w-5"><path d="M8.889 20H2.222C1 20 0 19 0 17.778V2.222C0 1 1 0 2.222 0H8.889V20zm2.222 0h6.667C19 20 20 19 20 17.778V10h-8.889V20zM20 7.778V2.222C20 1 19 0 17.778 0H11.111v7.778H20z"/></svg>`,
+  },
+  {
+    name: 'Classrooms',
+    to: '/admin/classrooms',
+    svgPath: `<svg fill="currentColor" viewBox="0 0 24 24" class="h-5 w-5"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-9 11H7v-2h4v2zm6 0h-4v-2h4v2zm0-4H7V7h10v2z"/></svg>`,
+  },
+  {
+    name: 'Teachers',
+    to: '/admin/teachers',
+    svgPath: `<svg fill="currentColor" viewBox="0 0 30 20" class="h-5 w-5"><path d="M30 13.25C30 14 28.5 14.5 26.75 14.75 25.625 12.625 23.375 11 20.75 9.875c.25-.375.5-.625.75-1h1C26.375 8.75 30 11.125 30 13.25zM8.5 8.75H7.5C3.625 8.75 0 11.125 0 13.25 0 14 1.5 14.5 3.25 14.75 4.375 12.625 6.625 11 9.25 9.875L8.5 8.75zM15 10c2.75 0 5-2.25 5-5S17.75 0 15 0s-5 2.25-5 5 2.25 5 5 5zm0 1.25C9.875 11.25 5 14.5 5 17.5 5 20 15 20 15 20s10 0 10-2.5c0-3-4.875-6.25-10-6.25z"/></svg>`,
+  },
+  {
+    name: 'Students',
+    to: '/admin/students',
+    svgPath: `<svg fill="currentColor" viewBox="0 0 24 24" class="h-5 w-5"><path d="M5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82zM12 3L1 9l11 6 9-4.91V17h2V9L12 3z"/></svg>`,
+  },
+  {
+    name: 'Parents',
+    to: '/admin/parents',
+    svgPath: `<svg fill="currentColor" viewBox="0 0 24 24" class="h-5 w-5"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>`,
+  },
+  {
+    name: 'Staff',
+    to: '/admin/users',
+    svgPath: `<svg fill="currentColor" viewBox="0 0 24 24" class="h-5 w-5"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>`,
+  },
+  {
+    name: 'Events',
+    to: '/admin/events',
+    svgPath: `<svg fill="currentColor" viewBox="0 0 24 24" class="h-5 w-5"><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/></svg>`,
+  },
+  {
+    name: 'My School',
+    to: '/admin/schools',
+    svgPath: `<svg fill="currentColor" viewBox="0 0 24 24" class="h-5 w-5"><path d="M12 3L1 9l4 2.18V17h2v-4.82l1 .55V17c0 2.21 1.79 4 4 4s4-1.79 4-4v-4.27l2-.55V19h2v-7.82L23 9 12 3zm4 14c0 1.1-.9 2-2 2s-2-.9-2-2v-3.73l4 1.09V17z"/></svg>`,
+  },
+  {
+    name: 'Settings',
+    to: '/admin/settings',
+    svgPath: `<svg fill="currentColor" viewBox="0 0 24 24" class="h-5 w-5"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>`,
+  },
+]
 </script>
 
-<style lang="scss" scoped>
-aside {
-  // transition: width 0.3s ease-in-out;
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-  padding: 1rem;
-  color: #a9a9a9;
-
-  .logo-wrapper {
-    display: flex;
-    align-items: center;
-
-    .logo {
-      width: 3rem;
-      height: 3rem;
-    }
-
-    p {
-      font-family: "Roboto";
-      display: flex;
-      align-items: center;
-      text-align: center;
-    }
-  }
-
-  @media (max-width: 768px) {
-    position: fixed;
-    z-index: 10;
-  }
-}
-</style>
+<style lang="scss" scoped></style>

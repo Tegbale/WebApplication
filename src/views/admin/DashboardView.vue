@@ -1,80 +1,544 @@
 <template>
-  <div>
-    <div class="pt-20 pb-4">
-      <BasePageTitle pageTitle="Dashboard" />
+  <div class="pt-4 pb-10 space-y-6">
+
+    <!-- Welcome banner -->
+    <div class="relative overflow-hidden rounded-2xl bg-tegbale-navy-blue px-6 py-7 md:px-10 md:py-9">
+      <!-- Background decoration -->
+      <div class="pointer-events-none absolute -right-10 -top-10 h-48 w-48 rounded-full bg-white/5"></div>
+      <div class="pointer-events-none absolute -bottom-12 -right-4 h-56 w-56 rounded-full bg-tegbale-blue/20"></div>
+      <div class="pointer-events-none absolute left-1/2 bottom-0 h-32 w-32 rounded-full bg-white/5"></div>
+
+      <div class="relative flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        <div>
+          <p class="text-sm font-roboto text-white/60 mb-1">{{ todayLabel }}</p>
+          <h1 class="text-2xl md:text-3xl font-semibold font-roboto text-white leading-snug">
+            Good {{ greeting }}, {{ userStore.firstName }} 👋
+          </h1>
+          <p class="mt-1 text-sm font-roboto text-white/70">
+            {{ schoolStore.name ?? 'Your School' }}
+          </p>
+        </div>
+        <div class="flex flex-wrap gap-2 md:gap-3">
+          <router-link
+            to="/admin/students"
+            class="flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-sm font-roboto font-medium text-white hover:bg-white/20 transition-colors"
+          >
+            <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+            Add Student
+          </router-link>
+          <router-link
+            to="/admin/teachers"
+            class="flex items-center gap-2 rounded-full bg-tegbale-blue px-4 py-2 text-sm font-roboto font-medium text-white hover:bg-blue-500 transition-colors"
+          >
+            <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+            Add Teacher
+          </router-link>
+        </div>
+      </div>
     </div>
-    <div class="pt-10 grid grid-auto-fit-sm gap-8">
-      <DashboardCards :cardValue="totalSchools" cardTitle="schools" class="relative">
-        <template #icon>
-          <div
-            class="p-5 md:p-5 bg-tegbale-navy-blue rounded-lg border-none text-white flex justify-between items-center -top-[24px] absolute">
-            <svg width="23" height="20" viewBox="0 0 23 20" fill="currentColor" xmlns="http://www.w3.org/2000/svg"
-              class="w-8 h-8">
-              <path
-                d="M21.1111 8.88889H18.8889V2.22222H20V0H2.22222V2.22222H3.33333V8.88889H1.11111C0.816426 8.88889 0.533811 9.00595 0.325437 9.21433C0.117063 9.4227 0 9.70532 0 10V20H22.2222V10C22.2222 9.70532 22.1052 9.4227 21.8968 9.21433C21.6884 9.00595 21.4058 8.88889 21.1111 8.88889ZM13.3333 17.7778V13.3333H8.88889V17.7778H5.55556V2.22222H16.6667V17.7778H13.3333Z"
-                fill="currentColor" />
-              <path
-                d="M7.77783 4.44446H10.0001V6.66668H7.77783V4.44446ZM12.2223 4.44446H14.4445V6.66668H12.2223V4.44446ZM7.77783 8.8889H10.0001V11.1111H7.77783V8.8889ZM12.2223 8.8889H14.4445V11.1111H12.2223V8.8889Z"
-                fill="currentColor" />
-            </svg>
+
+    <!-- Stat cards -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div v-for="stat in stats" :key="stat.label" class="bg-white rounded-2xl shadow-sm p-5 flex flex-col gap-3">
+        <div class="flex items-center justify-between">
+          <div :class="['flex h-11 w-11 items-center justify-center rounded-xl', stat.bg]">
+            <span class="text-white" v-html="stat.icon"></span>
           </div>
-        </template>
-      </DashboardCards>
-      <DashboardCards :cardValue="totalStudents" cardTitle="Students" class="relative">
-        <template #icon>
-          <div
-            class="p-5 md:p-5 bg-tegbale-purple rounded-lg border-none text-white flex justify-between items-center -top-[24px] absolute">
-            <svg width="30" height="18" viewBox="0 0 30 18" fill="currentColor" xmlns="http://www.w3.org/2000/svg"
-              class="w-8 h-8">
-              <path
-                d="M15 0L14.7001 0.091025L2.72309 4.1038L0 5.0016L1.58576 5.50942V13.8933C1.01373 14.2258 0.627595 14.8323 0.627595 15.5414C0.627595 16.0496 0.829492 16.537 1.18887 16.8964C1.54825 17.2558 2.03568 17.4577 2.54392 17.4577C3.05216 17.4577 3.53958 17.2558 3.89896 16.8964C4.25834 16.537 4.46024 16.0496 4.46024 15.5414C4.46024 14.8323 4.0741 14.2258 3.50208 13.8933V6.17055L5.4184 6.79815V11.7087C5.4184 12.4944 5.89748 13.146 6.46662 13.5963C7.03577 14.0438 7.74289 14.3599 8.59182 14.6436C10.2916 15.2089 12.5318 15.5414 15 15.5414C17.4682 15.5414 19.7084 15.2098 21.4082 14.6426C22.2571 14.3599 22.9642 14.0438 23.5334 13.5953C24.1025 13.146 24.5816 12.4944 24.5816 11.7087V6.79815L27.2769 5.89939L30 5.0016L27.2759 4.10284L15.2989 0.091025L15 0ZM15 2.00735L23.9828 5.0016L15 7.99585L6.01725 5.0016L15 2.00735ZM7.33472 7.45736L14.7011 9.91217L15 10.0022L15.2999 9.91121L22.6653 7.4564V11.7087C22.6653 11.7183 22.6691 11.8294 22.3654 12.068C22.0626 12.3076 21.5193 12.6094 20.8084 12.847C19.3884 13.3194 17.2948 13.625 15 13.625C12.7052 13.625 10.6116 13.3203 9.19067 12.8461C8.48164 12.6094 7.9374 12.3066 7.63462 12.068C7.32993 11.8285 7.33472 11.7183 7.33472 11.7087V7.4564V7.45736Z"
-                fill="currentColor" />
-            </svg>
+          <span class="rounded-full px-2.5 py-1 text-xs font-roboto" :class="stat.badgeCls">{{ stat.badge }}</span>
+        </div>
+        <div>
+          <p class="text-2xl font-semibold font-roboto text-tegbale-navy-blue leading-none">
+            <span v-if="statsLoading" class="inline-block h-6 w-12 animate-pulse rounded bg-gray-200"></span>
+            <span v-else>{{ counts[stat.key] }}</span>
+          </p>
+          <p class="mt-1 text-xs font-roboto text-tegbale-text-gray">{{ stat.label }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main two-column layout -->
+    <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+
+      <!-- Left: posts feed (spans 2 cols) -->
+      <div class="xl:col-span-2 space-y-4">
+        <h2 class="text-base font-semibold font-roboto text-tegbale-navy-blue">School Feed</h2>
+
+        <!-- Create post box -->
+        <div class="bg-white rounded-2xl shadow-sm p-4">
+          <div class="flex items-start gap-3 mb-3">
+            <div class="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-tegbale-navy-blue text-white text-xs font-semibold font-roboto">
+              {{ userStore.initials || 'SA' }}
+            </div>
+            <div class="relative flex-1">
+              <textarea
+                v-model="newPostContent"
+                @input="onPostInput"
+                placeholder="Share an update, announcement, or reminder… Use @name to mention someone"
+                rows="3"
+                class="w-full resize-none rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm font-roboto text-gray-700 placeholder:text-tegbale-text-gray focus:bg-white focus:outline-none focus:ring-1 focus:ring-tegbale-blue transition-colors"
+              />
+              <!-- @mention dropdown -->
+              <div
+                v-if="mention.inputId === 'new-post' && mention.results.length"
+                class="absolute left-0 right-0 top-full z-20 mt-1 rounded-xl border border-gray-100 bg-white shadow-lg overflow-hidden"
+              >
+                <button
+                  v-for="user in mention.results"
+                  :key="user.id"
+                  @mousedown.prevent="insertMention(user)"
+                  class="flex w-full items-center gap-3 px-4 py-2.5 hover:bg-gray-50 text-left"
+                >
+                  <div class="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-tegbale-blue/10 text-xs font-medium text-tegbale-blue">
+                    {{ user.firstName[0] }}{{ user.lastName[0] }}
+                  </div>
+                  <div>
+                    <p class="text-sm text-gray-700 leading-none">{{ user.firstName }} {{ user.lastName }}</p>
+                    <p class="text-xs text-tegbale-text-gray mt-0.5 capitalize">{{ roleLabel(user.role) }}</p>
+                  </div>
+                </button>
+              </div>
+            </div>
           </div>
-        </template>
-      </DashboardCards>
-      <DashboardCards :cardValue="totalTeachers" cardTitle="teachers" class="relative">
-        <template #icon>
-          <div
-            class="p-5 md:p-5 bg-tegbale-green rounded-lg border-none text-white flex justify-between items-center -top-[24px] absolute">
-            <svg width="30" height="24" viewBox="0 0 30 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"
-              class="w-8 h-8">
-              <path
-                d="M9.75005 16.5C9.63802 16.5 9.52599 16.5164 9.41912 16.5511C8.81162 16.7484 8.17271 16.875 7.50006 16.875C6.8274 16.875 6.1885 16.7484 5.58053 16.5511C5.47366 16.5164 5.36209 16.5 5.25006 16.5C2.34101 16.5 -0.015393 18.8662 7.57254e-05 21.779C0.00663821 23.0099 1.01867 23.9999 2.25007 23.9999H12.75C13.9814 23.9999 14.9935 23.0099 15 21.779C15.0155 18.8662 12.6591 16.5 9.75005 16.5ZM7.50006 15C9.98536 15 12 12.9853 12 10.5C12 8.01467 9.98536 5.99999 7.50006 5.99999C5.01475 5.99999 3.00007 8.01467 3.00007 10.5C3.00007 12.9853 5.01475 15 7.50006 15ZM27.75 0H9.75005C8.50927 0 7.50006 1.04297 7.50006 2.32453V4.49999C8.59787 4.49999 9.61411 4.8178 10.5 5.33436V2.99999H27V16.5H24V13.5H18V16.5H14.4263C15.3216 17.2823 15.9788 18.3154 16.2868 19.5H27.75C28.9908 19.5 30 18.457 30 17.1754V2.32453C30 1.04297 28.9908 0 27.75 0Z"
-                fill="currentColor" />
-              <path
-                d="M10.9334 5.33334H13.6V8H10.9334V5.33334ZM16.2667 5.33334H18.9333V8H16.2667V5.33334ZM10.9334 10.6667H13.6V13.3333H10.9334V10.6667ZM16.2667 10.6667H18.9333V13.3333H16.2667V10.6667Z"
-                fill="currentColor" />
-            </svg>
+          <div class="flex items-center justify-end border-t border-gray-100 pt-3">
+            <button
+              @click="submitPost"
+              :disabled="!newPostContent.trim() || postSubmitting"
+              class="flex items-center gap-2 rounded-full bg-tegbale-blue px-5 py-2 text-sm font-roboto font-medium text-white disabled:opacity-50 hover:bg-blue-600 transition-colors"
+            >
+              <svg v-if="postSubmitting" class="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/></svg>
+              {{ postSubmitting ? 'Posting...' : 'Post Update' }}
+            </button>
           </div>
-        </template>
-      </DashboardCards>
-      <DashboardCards :cardValue="totalParents" cardTitle="parents" class="relative">
-        <template #icon>
-          <div
-            class="p-5 md:p-5 bg-tegbale-blue rounded-lg border-none text-white flex justify-between items-center -top-[24px] absolute">
-            <svg width="30" height="34" viewBox="0 0 30 34" fill="currentColor" xmlns="http://www.w3.org/2000/svg"
-              class="w-8 h-8">
-              <path
-                d="M13.4719 12.1054C12.1983 13.0501 10.6558 13.5623 9.07014 13.567C7.41985 13.567 5.90578 13.0136 4.667 12.1054C3.60275 12.9923 2.54134 14.2623 1.67292 15.8275C-0.346312 19.4644 -0.569094 23.1949 1.17627 24.1626C1.95388 24.6054 2.77406 24.2733 3.61978 23.4588C3.46145 24.3364 3.38214 25.2263 3.38281 26.118C3.38281 30.287 5.00046 33.6557 6.99131 33.6557C8.19178 33.6557 8.78634 32.4283 9.07156 30.551C9.35535 32.4155 9.95133 33.6557 11.1433 33.6557C13.1256 33.6557 14.7561 30.2856 14.7561 26.118C14.7561 25.1815 14.6681 24.2875 14.5177 23.4602C15.3691 24.2762 16.1864 24.6139 16.9668 24.1655C18.708 23.1977 18.4823 19.4686 16.4645 15.8303C15.5989 14.2637 14.5347 12.9952 13.4704 12.1083L13.4719 12.1054ZM9.06872 12.148C9.86637 12.1477 10.6562 11.9903 11.393 11.6848C12.1298 11.3793 12.7992 10.9317 13.3631 10.3675C13.9269 9.80325 14.3741 9.1335 14.6791 8.39646C14.984 7.65942 15.1409 6.86953 15.1406 6.07188C15.1403 5.27423 14.9829 4.48445 14.6774 3.74762C14.3719 3.01079 13.9243 2.34136 13.3601 1.77753C12.7958 1.2137 12.1261 0.766531 11.389 0.461542C10.652 0.156553 9.86211 -0.000279156 9.06446 3.73006e-07C7.45316 0.000564918 5.90807 0.641194 4.76911 1.78096C3.63015 2.92072 2.9906 4.46625 2.99116 6.07756C2.99173 7.68886 3.63236 9.23394 4.77212 10.3729C5.91188 11.5119 7.45741 12.1514 9.06872 12.1509V12.148ZM24.2051 19.9099C26.345 19.9099 28.0818 18.1731 28.0818 16.0304C28.0818 13.8877 26.3421 12.148 24.2037 12.148C23.1742 12.1484 22.1869 12.5575 21.4589 13.2856C20.7309 14.0136 20.3217 15.0008 20.3213 16.0304C20.3221 17.0599 20.7316 18.0471 21.4599 18.7748C22.1882 19.5025 23.1756 19.9113 24.2051 19.9113V19.9099ZM28.9304 22.2612C28.377 21.2608 27.6987 20.4491 27.0176 19.8815C26.2229 20.4633 25.258 20.8181 24.2037 20.8181C23.148 20.8181 22.1802 20.4633 21.3899 19.8815C20.7087 20.4491 20.0305 21.2608 19.4742 22.2612C18.1829 24.5855 18.041 26.9694 19.1564 27.5881C19.653 27.8719 20.178 27.659 20.7172 27.1397C20.6186 27.7005 20.5692 28.2688 20.5697 28.8382C20.5697 31.5059 21.6027 33.6586 22.8755 33.6586C23.6418 33.6586 24.0249 32.8739 24.2066 31.6748C24.3882 32.8668 24.7685 33.6571 25.5319 33.6571C26.7991 33.6571 27.8406 31.5031 27.8406 28.8382C27.8406 28.2423 27.7838 27.669 27.6873 27.1411C28.2308 27.6619 28.7544 27.879 29.2539 27.5909C30.3636 26.9751 30.2188 24.5898 28.9304 22.2654V22.2612Z"
-                fill="currentColor" />
-            </svg>
+        </div>
+
+        <!-- Feed skeleton -->
+        <div v-if="postsStore.loading" class="space-y-4">
+          <div v-for="i in 3" :key="i" class="bg-white rounded-2xl shadow-sm p-5 space-y-3 animate-pulse">
+            <div class="flex items-center gap-3">
+              <div class="h-10 w-10 rounded-full bg-gray-200" />
+              <div class="space-y-1.5 flex-1">
+                <div class="h-3 w-32 rounded bg-gray-200" />
+                <div class="h-2.5 w-20 rounded bg-gray-100" />
+              </div>
+            </div>
+            <div class="h-4 w-full rounded bg-gray-100" />
+            <div class="h-4 w-3/4 rounded bg-gray-100" />
           </div>
-        </template>
-      </DashboardCards>
+        </div>
+
+        <!-- Empty state -->
+        <div v-else-if="!postsStore.posts.length" class="bg-white rounded-2xl shadow-sm flex flex-col items-center justify-center py-14 px-6 text-center">
+          <div class="flex h-16 w-16 items-center justify-center rounded-2xl bg-gray-50 mb-4">
+            <svg class="h-8 w-8 text-gray-300" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 01.865-.501 48.172 48.172 0 003.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z"/></svg>
+          </div>
+          <p class="text-sm font-medium text-gray-500 font-roboto">No posts yet</p>
+          <p class="text-xs text-tegbale-text-gray mt-1 font-roboto">Be the first to share an update with your school.</p>
+        </div>
+
+        <!-- Post cards -->
+        <div v-else class="space-y-4">
+          <div v-for="post in postsStore.posts" :key="post.id" class="bg-white rounded-2xl shadow-sm p-5">
+            <!-- Post header -->
+            <div class="flex items-start justify-between gap-3 mb-3">
+              <div class="flex items-center gap-3">
+                <div class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-tegbale-blue text-white text-sm font-semibold font-roboto">
+                  {{ initials(post.author) }}
+                </div>
+                <div>
+                  <p class="text-sm font-semibold text-tegbale-navy-blue font-roboto leading-tight">
+                    {{ post.author.firstName }} {{ post.author.lastName }}
+                  </p>
+                  <div class="flex items-center gap-1.5 mt-0.5">
+                    <span class="inline-block rounded-full px-2 py-0.5 text-xs font-roboto bg-gray-100 text-tegbale-text-gray capitalize">{{ roleLabel(post.author.role) }}</span>
+                    <span class="text-tegbale-text-gray text-xs">·</span>
+                    <span class="text-xs text-tegbale-text-gray font-roboto">{{ formatTime(post.createdAt) }}</span>
+                  </div>
+                </div>
+              </div>
+              <button
+                v-if="canDeletePost(post)"
+                @click="deletePost(post.id)"
+                class="text-gray-300 hover:text-red-400 transition-colors p-1 flex-shrink-0"
+                title="Delete post"
+              >
+                <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"/></svg>
+              </button>
+            </div>
+
+            <!-- Post content -->
+            <p class="text-sm text-gray-700 font-roboto leading-relaxed mb-4 whitespace-pre-wrap" v-html="highlightMentions(post.content)"></p>
+
+            <!-- Comment toggle -->
+            <div class="flex items-center gap-4 border-t border-gray-100 pt-3 mb-3">
+              <button @click="toggleComments(post)" class="flex items-center gap-1.5 text-sm text-tegbale-text-gray font-roboto hover:text-tegbale-blue transition-colors">
+                <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.625 9.75a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375m-13.5 3.01c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 01.865-.501 48.172 48.172 0 003.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z"/></svg>
+                {{ post._count?.comments ?? post.comments?.length ?? 0 }} {{ (post._count?.comments ?? 0) === 1 ? 'Comment' : 'Comments' }}
+              </button>
+            </div>
+
+            <!-- Comments section -->
+            <div v-if="post.showComments" class="mb-3">
+              <div v-if="post.loadingComments" class="space-y-2 mb-3">
+                <div v-for="i in 2" :key="i" class="flex items-start gap-2 animate-pulse">
+                  <div class="h-7 w-7 rounded-full bg-gray-200 flex-shrink-0" />
+                  <div class="flex-1 space-y-1">
+                    <div class="h-2.5 w-24 rounded bg-gray-200" />
+                    <div class="h-2.5 w-full rounded bg-gray-100" />
+                  </div>
+                </div>
+              </div>
+              <div v-else-if="post.comments?.length" class="space-y-3 mb-3">
+                <CommentThread
+                  v-for="comment in post.comments"
+                  :key="comment.id"
+                  :comment="comment"
+                  :post-id="post.id"
+                  :current-user="userStore"
+                  @reply="onReply"
+                  @delete="onDeleteComment"
+                />
+              </div>
+              <p v-else class="text-xs text-tegbale-text-gray font-roboto mb-3">No comments yet.</p>
+            </div>
+
+            <!-- Reply input -->
+            <div class="relative">
+              <div
+                v-if="mention.inputId === post.id && mention.results.length"
+                class="absolute left-0 right-0 bottom-full z-20 mb-1 rounded-xl border border-gray-100 bg-white shadow-lg overflow-hidden"
+              >
+                <button
+                  v-for="user in mention.results"
+                  :key="user.id"
+                  @mousedown.prevent="insertMention(user)"
+                  class="flex w-full items-center gap-3 px-4 py-2.5 hover:bg-gray-50 text-left"
+                >
+                  <div class="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-tegbale-blue/10 text-xs font-medium text-tegbale-blue">
+                    {{ user.firstName[0] }}{{ user.lastName[0] }}
+                  </div>
+                  <p class="text-sm text-gray-700">{{ user.firstName }} {{ user.lastName }}</p>
+                </button>
+              </div>
+              <div class="flex items-center gap-2">
+                <div class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-tegbale-navy-blue text-white text-xs font-semibold font-roboto">
+                  {{ userStore.initials || 'SA' }}
+                </div>
+                <div class="flex flex-1 items-center gap-2 rounded-full border border-gray-200 bg-gray-50 px-4 py-2 focus-within:border-tegbale-blue focus-within:bg-white transition-colors">
+                  <input
+                    v-model="replyInputs[post.id]"
+                    type="text"
+                    :placeholder="replyTargets[post.id] ? 'Replying...' : 'Write a comment...'"
+                    class="flex-1 bg-transparent text-sm font-roboto text-gray-700 placeholder:text-tegbale-text-gray focus:outline-none"
+                    @input="onReplyInput(post.id)"
+                    @keyup.enter="submitComment(post.id)"
+                    @blur="clearMentionIfBlur(post.id)"
+                  />
+                  <button v-if="replyTargets[post.id]" @click="clearReplyTarget(post.id)" class="text-xs text-tegbale-text-gray hover:text-gray-600">✕</button>
+                  <button @click="submitComment(post.id)" :disabled="!replyInputs[post.id]?.trim()" class="text-tegbale-blue disabled:opacity-40 hover:text-blue-700">
+                    <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right sidebar -->
+      <div class="space-y-5">
+
+        <!-- Quick actions -->
+        <div class="bg-white rounded-2xl shadow-sm p-5">
+          <h3 class="text-sm font-semibold font-roboto text-tegbale-navy-blue mb-4">Quick Actions</h3>
+          <div class="grid grid-cols-2 gap-2">
+            <router-link
+              v-for="action in quickActions"
+              :key="action.label"
+              :to="action.to"
+              class="flex flex-col items-center gap-2 rounded-xl border border-gray-100 p-3.5 hover:border-tegbale-blue/30 hover:bg-blue-50/40 transition-colors group"
+            >
+              <div :class="['flex h-9 w-9 items-center justify-center rounded-xl transition-colors', action.bg, 'group-hover:scale-105']" style="transition: transform 0.15s">
+                <span v-html="action.icon" class="text-white"></span>
+              </div>
+              <p class="text-xs font-roboto text-tegbale-text-gray text-center leading-tight">{{ action.label }}</p>
+            </router-link>
+          </div>
+        </div>
+
+        <!-- Upcoming events -->
+        <div class="bg-white rounded-2xl shadow-sm p-5">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-sm font-semibold font-roboto text-tegbale-navy-blue">Upcoming Events</h3>
+            <router-link to="/admin/events" class="text-xs font-roboto text-tegbale-blue hover:underline">View all</router-link>
+          </div>
+
+          <div v-if="eventsLoading" class="space-y-3">
+            <div v-for="i in 3" :key="i" class="flex gap-3 animate-pulse">
+              <div class="h-12 w-12 rounded-xl bg-gray-100 flex-shrink-0" />
+              <div class="flex-1 space-y-1.5 pt-1">
+                <div class="h-3 w-3/4 rounded bg-gray-200" />
+                <div class="h-2.5 w-1/2 rounded bg-gray-100" />
+              </div>
+            </div>
+          </div>
+
+          <div v-else-if="!upcomingEvents.length" class="flex flex-col items-center py-6 text-center">
+            <svg class="h-10 w-10 text-gray-200 mb-2" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5"/></svg>
+            <p class="text-xs text-tegbale-text-gray font-roboto">No upcoming events</p>
+            <router-link to="/admin/events" class="mt-2 text-xs text-tegbale-blue hover:underline font-roboto">Create one →</router-link>
+          </div>
+
+          <div v-else class="space-y-3">
+            <div
+              v-for="event in upcomingEvents"
+              :key="event.id"
+              class="flex items-start gap-3 rounded-xl border border-gray-50 bg-gray-50/50 p-3 hover:bg-gray-50 transition-colors"
+            >
+              <div class="flex h-12 w-12 flex-shrink-0 flex-col items-center justify-center rounded-xl bg-tegbale-blue/10 text-tegbale-blue">
+                <span class="text-base font-bold font-roboto leading-none">{{ eventDay(event.startDate) }}</span>
+                <span class="text-xs font-roboto leading-none mt-0.5 opacity-70">{{ eventMonth(event.startDate) }}</span>
+              </div>
+              <div class="flex-1 min-w-0">
+                <p class="text-sm font-medium text-gray-700 font-roboto truncate">{{ event.title }}</p>
+                <p v-if="event.location" class="text-xs text-tegbale-text-gray font-roboto mt-0.5 truncate">📍 {{ event.location }}</p>
+                <p class="text-xs text-tegbale-text-gray font-roboto mt-0.5">{{ formatEventTime(event.startDate) }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- School info snapshot -->
+        <div class="bg-white rounded-2xl shadow-sm p-5">
+          <h3 class="text-sm font-semibold font-roboto text-tegbale-navy-blue mb-4">School Info</h3>
+          <div class="space-y-3 text-sm font-roboto">
+            <div class="flex items-center gap-3">
+              <div class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-gray-50">
+                <svg class="h-4 w-4 text-tegbale-text-gray" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.26 10.147a60.436 60.436 0 00-.491 6.347A48.627 48.627 0 0112 20.904a48.627 48.627 0 018.232-4.41 60.46 60.46 0 00-.491-6.347m-15.482 0a50.57 50.57 0 00-2.658-.813A59.905 59.905 0 0112 3.493a59.902 59.902 0 0110.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.697 50.697 0 0112 13.489a50.702 50.702 0 017.74-3.342M6.75 15a.75.75 0 100-1.5.75.75 0 000 1.5zm0 0v-3.675A55.378 55.378 0 0112 8.443m-7.007 11.55A5.981 5.981 0 006.75 15.75v-1.5"/></svg>
+              </div>
+              <p class="text-gray-700 truncate">{{ schoolStore.name ?? '—' }}</p>
+            </div>
+            <div v-if="schoolStore.email" class="flex items-center gap-3">
+              <div class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-gray-50">
+                <svg class="h-4 w-4 text-tegbale-text-gray" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75"/></svg>
+              </div>
+              <p class="text-gray-700 truncate">{{ schoolStore.email }}</p>
+            </div>
+            <div v-if="schoolStore.address" class="flex items-start gap-3">
+              <div class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-gray-50">
+                <svg class="h-4 w-4 text-tegbale-text-gray" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z"/></svg>
+              </div>
+              <p class="text-gray-700 leading-snug">{{ schoolStore.address }}</p>
+            </div>
+            <router-link to="/admin/my-school" class="mt-1 flex items-center gap-1.5 text-xs font-roboto text-tegbale-blue hover:underline">
+              View school settings →
+            </router-link>
+          </div>
+        </div>
+
+      </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import BasePageTitle from "@/components/BaseComponents/BasePageTitle.vue";
-import DashboardCards from "../../components/dashboardCards.vue";
-import { ref } from "vue";
+import { reactive, ref, computed, onMounted } from 'vue'
+import { useUsersStore } from '@/stores/user-store'
+import { useSchoolStore } from '@/stores/school-store'
+import { useParentsStore } from '@/stores/parents-store'
+import { usePostsStore } from '@/stores/posts-store'
+import { useEventsStore } from '@/stores/events-store'
+import adminApi from '@/api/admin'
+import CommentThread from '@/components/CommentThread.vue'
 
-const totalSchools = ref(12);
-const totalStudents = ref(250);
-const totalTeachers = ref(46);
-const totalParents = ref(84);
+const userStore = useUsersStore()
+const schoolStore = useSchoolStore()
+const parentsStore = useParentsStore()
+const postsStore = usePostsStore()
+const eventsStore = useEventsStore()
+
+// --- Greeting ---
+const now = new Date()
+const hour = now.getHours()
+const greeting = hour < 12 ? 'morning' : hour < 17 ? 'afternoon' : 'evening'
+const todayLabel = now.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
+
+// --- Stats ---
+const counts = reactive({ classrooms: 0, students: 0, teachers: 0, parents: 0 })
+const statsLoading = ref(true)
+const eventsLoading = ref(true)
+const upcomingEvents = ref([])
+
+const stats = [
+  {
+    key: 'classrooms', label: 'Classrooms', bg: 'bg-tegbale-navy-blue',
+    badge: 'Rooms', badgeCls: 'bg-blue-50 text-tegbale-navy-blue',
+    icon: `<svg width="20" height="18" viewBox="0 0 23 20" fill="currentColor"><path d="M21.111 8.889H18.889V2.222H20V0H2.222v2.222h1.111v6.667H1.111C.816 8.889.534 9.006.325 9.214.117 9.423 0 9.705 0 10v10h22.222V10c0-.295-.117-.577-.325-.786-.208-.208-.49-.325-.786-.325zM13.333 17.778V13.333H8.889v4.445H5.556V2.222h11.111v15.556h-3.334z"/><path d="M7.778 4.444h2.222v2.223H7.778V4.444zm4.444 0h2.222v2.223h-2.222V4.444zM7.778 8.889h2.222V11.11H7.778V8.889zm4.444 0h2.222V11.11h-2.222V8.889z"/></svg>`,
+  },
+  {
+    key: 'students', label: 'Students', bg: 'bg-tegbale-purple',
+    badge: 'Enrolled', badgeCls: 'bg-purple-50 text-purple-600',
+    icon: `<svg fill="currentColor" viewBox="0 0 24 24" width="22" height="22"><path d="M5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82zM12 3L1 9l11 6 9-4.91V17h2V9L12 3z"/></svg>`,
+  },
+  {
+    key: 'teachers', label: 'Teachers', bg: 'bg-tegbale-green',
+    badge: 'Staff', badgeCls: 'bg-green-50 text-green-600',
+    icon: `<svg fill="currentColor" viewBox="0 0 24 24" width="22" height="22"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-9 11H7v-2h4v2zm6 0h-4v-2h4v2zm0-4H7V7h10v2z"/></svg>`,
+  },
+  {
+    key: 'parents', label: 'Parents', bg: 'bg-tegbale-blue',
+    badge: 'Guardians', badgeCls: 'bg-blue-50 text-tegbale-blue',
+    icon: `<svg fill="currentColor" viewBox="0 0 24 24" width="22" height="22"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>`,
+  },
+]
+
+const quickActions = [
+  { label: 'Add Student', to: '/admin/students', bg: 'bg-tegbale-purple', icon: `<svg fill="currentColor" viewBox="0 0 24 24" width="18" height="18"><path d="M5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82zM12 3L1 9l11 6 9-4.91V17h2V9L12 3z"/></svg>` },
+  { label: 'Add Teacher', to: '/admin/teachers', bg: 'bg-tegbale-green', icon: `<svg fill="currentColor" viewBox="0 0 24 24" width="18" height="18"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-9 11H7v-2h4v2zm6 0h-4v-2h4v2zm0-4H7V7h10v2z"/></svg>` },
+  { label: 'Add Parent', to: '/admin/parents', bg: 'bg-tegbale-blue', icon: `<svg fill="currentColor" viewBox="0 0 24 24" width="18" height="18"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>` },
+  { label: 'New Event', to: '/admin/events', bg: 'bg-tegbale-navy-blue', icon: `<svg fill="currentColor" viewBox="0 0 24 24" width="18" height="18"><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/></svg>` },
+  { label: 'Classrooms', to: '/admin/classrooms', bg: 'bg-orange-400', icon: `<svg fill="currentColor" viewBox="0 0 24 24" width="18" height="18"><path d="M12 3L1 9l11 6 9-4.91V17h2V9L12 3zm-2 13.55V19h-4v-2.45L4 15.45 12 11l8 4.45-8 4.55-2-1.45z"/></svg>` },
+  { label: 'My School', to: '/admin/my-school', bg: 'bg-rose-400', icon: `<svg fill="currentColor" viewBox="0 0 24 24" width="18" height="18"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>` },
+]
+
+// --- @mention ---
+const mention = reactive({ inputId: null, results: [], loading: false })
+let mentionTimer = null
+const MENTION_RE = /@([A-Za-z][\w.]*)$/
+
+function getMentionQuery(value) {
+  const m = value.match(MENTION_RE)
+  return m ? m[1] : null
+}
+
+async function runMentionSearch(query, inputId) {
+  mention.inputId = inputId
+  mention.loading = true
+  try {
+    const res = await adminApi.searchUsers(query)
+    if (mention.inputId === inputId) mention.results = res.data?.data ?? []
+  } catch { mention.results = [] } finally { mention.loading = false }
+}
+
+function onPostInput() {
+  clearTimeout(mentionTimer)
+  const query = getMentionQuery(newPostContent.value)
+  if (!query) { mention.inputId = null; mention.results = []; return }
+  mentionTimer = setTimeout(() => runMentionSearch(query, 'new-post'), 250)
+}
+
+function onReplyInput(postId) {
+  clearTimeout(mentionTimer)
+  const query = getMentionQuery(replyInputs[postId] ?? '')
+  if (!query) { if (mention.inputId === postId) { mention.inputId = null; mention.results = [] } return }
+  mentionTimer = setTimeout(() => runMentionSearch(query, postId), 250)
+}
+
+function insertMention(user) {
+  const handle = `@${user.firstName.toLowerCase()}.${user.lastName.toLowerCase()} `
+  if (mention.inputId === 'new-post') {
+    newPostContent.value = newPostContent.value.replace(MENTION_RE, handle)
+  } else {
+    const postId = mention.inputId
+    replyInputs[postId] = (replyInputs[postId] ?? '').replace(MENTION_RE, handle)
+  }
+  mention.inputId = null; mention.results = []
+}
+
+function clearMentionIfBlur(postId) {
+  setTimeout(() => { if (mention.inputId === postId) { mention.inputId = null; mention.results = [] } }, 150)
+}
+
+// --- Posts ---
+const newPostContent = ref('')
+const postSubmitting = ref(false)
+const replyInputs = reactive({})
+const replyTargets = reactive({})
+
+function initials(author) { return ((author.firstName?.[0] ?? '') + (author.lastName?.[0] ?? '')).toUpperCase() || '?' }
+function roleLabel(role) { return ({ SCHOOL_ADMIN: 'Admin', STAFF: 'Staff', TEACHER: 'Teacher', PARENT: 'Parent', SUPER_ADMIN: 'Super Admin' }[role] ?? role) }
+
+function formatTime(iso) {
+  if (!iso) return ''
+  const d = new Date(iso), n = new Date()
+  if (d.toDateString() === n.toDateString()) return 'Today · ' + d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+  return d.toLocaleDateString([], { day: '2-digit', month: 'short' }) + ' · ' + d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+}
+
+function highlightMentions(content) {
+  if (!content) return ''
+  return content.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/@([A-Za-z][\w.]*)/g, '<span class="text-tegbale-blue font-medium">@$1</span>')
+}
+
+function canDeletePost(post) { return userStore.role === 'SCHOOL_ADMIN' || post.author?.id === userStore.id }
+
+async function submitPost() {
+  if (!newPostContent.value.trim()) return
+  postSubmitting.value = true
+  try { await postsStore.create(newPostContent.value.trim()); newPostContent.value = ''; mention.inputId = null; mention.results = [] }
+  finally { postSubmitting.value = false }
+}
+
+async function deletePost(id) {
+  if (!confirm('Delete this post?')) return
+  await postsStore.remove(id)
+}
+
+async function toggleComments(post) {
+  post.showComments = !post.showComments
+  if (post.showComments && !post.comments) {
+    post.loadingComments = true
+    try { await postsStore.loadComments(post.id) } finally { post.loadingComments = false }
+  }
+}
+
+async function submitComment(postId) {
+  const content = replyInputs[postId]?.trim()
+  if (!content) return
+  const parentId = replyTargets[postId] ?? null
+  const post = postsStore.posts.find((p) => p.id === postId)
+  if (post && !post.showComments) {
+    post.showComments = true
+    if (!post.comments) { post.loadingComments = true; try { await postsStore.loadComments(postId) } finally { post.loadingComments = false } }
+  }
+  await postsStore.addComment(postId, content, parentId)
+  replyInputs[postId] = ''; delete replyTargets[postId]; mention.inputId = null; mention.results = []
+}
+
+function onReply({ postId, commentId }) { replyTargets[postId] = commentId; replyInputs[postId] = replyInputs[postId] ?? '' }
+async function onDeleteComment({ postId, commentId }) { if (!confirm('Delete this comment?')) return; await postsStore.removeComment(postId, commentId) }
+function clearReplyTarget(postId) { delete replyTargets[postId] }
+
+// --- Events helpers ---
+function eventDay(d) { return new Date(d).getDate() }
+function eventMonth(d) { return new Date(d).toLocaleDateString('en-GB', { month: 'short' }) }
+function formatEventTime(d) { return new Date(d).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }
+
+// --- Mount ---
+onMounted(async () => {
+  statsLoading.value = true
+  try {
+    if (userStore.schoolId) {
+      const school = await schoolStore.fetchSchool(userStore.schoolId)
+      counts.classrooms = school._count?.classrooms ?? 0
+      counts.students = school._count?.students ?? 0
+      counts.teachers = school._count?.staff ?? 0
+    }
+  } catch {} finally { statsLoading.value = false }
+
+  try {
+    await parentsStore.fetchAll({ limit: 1 })
+    counts.parents = parentsStore.meta.total
+  } catch {}
+
+  eventsLoading.value = true
+  try {
+    await eventsStore.fetchAll({ status: 'UPCOMING', limit: 4, page: 1 })
+    upcomingEvents.value = eventsStore.events.slice(0, 4)
+  } catch {} finally { eventsLoading.value = false }
+
+  try { await postsStore.fetchAll() } catch {}
+})
 </script>
 
 <style lang="scss" scoped></style>

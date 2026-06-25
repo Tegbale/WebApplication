@@ -1,90 +1,57 @@
-import { defineStore } from "pinia";
+import { defineStore } from 'pinia'
+import schoolApi from '@/api/school'
 
-import school from "@/api/school";
+export const useSchoolStore = defineStore('school', {
+  state: () => ({
+    id: null,
+    name: null,
+    email: null,
+    phone: null,
+    address: null,
+    logo: null,
+    isActive: null,
+    createdAt: null,
+    _count: null,
+  }),
 
-export const useSchoolStore = defineStore("school", {
-    state: () => ({
-        id: null,
-        name: null,
-        address: null,
-        phone: null,
-        contact_email: null,
-        contact_name: null,
-        location: null,
-        AllSchools: null,
+  getters: {
+    getSchoolDetails: (state) => ({
+      id: state.id,
+      name: state.name,
+      email: state.email,
+      phone: state.phone,
+      address: state.address,
     }),
+  },
 
-    getters: {
-        getSchoolDetails() {
-            return {
-                id: this.$state.id,
-                name: this.$state.name,
-                // address: this.$state.address,
-                // phone: this.$state.phone,
-                contact_email: this.$state.contact_email,
-                contact_name: this.$state.contact_name,
-                location: this.$state.location,
-            };
-        },
-
-        // get every school from the dB
-        getAllSchool() {
-            return this.$state.AllSchools
-        }
-    },
-    actions: {
-        async addSchool(payload) {
-            const { data } = await school.addSchool(payload);
-            let result = data.data;
-            this.setSchoolDetails(result);
-
-            return data;
-        },
-        // update a school
-        async updateSchool(id, payload) {
-            const { data } = await school.updateSchool(id, payload);
-            let result = data.data;
-            this.setSchoolDetails(result);
-            return data;
-        },
-
-        // get a school details
-        async fetchSchool(id) {
-            const { data } = await school.getSchool(id);
-            let schoolDetails = data.data;
-            this.setSchoolDetails(schoolDetails);
-
-            return data
-        },
-
-        // delete a school data
-        async deleteSchool(id) {
-            const { data } = await school.deleteSchoolById(id);
-
-            return data;
-        },
-
-        // set school details
-        async setSchoolDetails(data) {
-            (this.$state.id = data.id),
-            (this.$state.name = data.name),
-            // (this.$state.address = data.address),
-            // (this.$state.phone = data.phone),
-            (this.$state.contact_email = data.contact_email),
-            (this.$state.contact_name = data.contact_name),
-            (this.$state.location = data.location);
-        },
-        // fetch all schools in the database
-
-        async fetchAllSchools() {
-            const { data } = await school.fetchSchools();
-            return data
-        }
-
-    },
-    persist: {
-        storage: sessionStorage,
-        paths: ['id'],
+  actions: {
+    async fetchSchool(id) {
+      const { data } = await schoolApi.getSchool(id)
+      this._setSchool(data.data)
+      return data.data
     },
 
-});
+    async updateSchool(id, payload) {
+      const { data } = await schoolApi.updateSchool(id, payload)
+      this._setSchool(data.data)
+      return data.data
+    },
+
+    _setSchool(s) {
+      this.id = s.id
+      this.name = s.name
+      this.email = s.email
+      this.phone = s.phone ?? null
+      this.address = s.address ?? null
+      this.logo = s.logo ?? null
+      this.isActive = s.isActive
+      this.createdAt = s.createdAt
+      this._count = s._count ?? null
+    },
+  },
+
+  persist: {
+    storage: sessionStorage,
+    paths: ['id'],
+  },
+})

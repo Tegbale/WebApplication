@@ -1,13 +1,11 @@
-//middleware for admin routes using pinia store to check if role is superadmin
-
-import { useUsersStore } from "@/stores/user-store";
+import { useUsersStore } from '@/stores/user-store'
 
 export default function admin({ next, router }) {
-  const admin = useUsersStore();
+  const store = useUsersStore()
 
-  if (admin.role !== "superadmin") {
-    return router.push({ name: "login" });
+  if (!['SCHOOL_ADMIN', 'SUPER_ADMIN'].includes(store.role)) {
+    return router.push({ name: 'login' })
   }
 
-  return next();
+  return next()
 }

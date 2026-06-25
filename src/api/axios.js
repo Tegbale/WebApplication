@@ -1,47 +1,31 @@
-import axios from "axios";
+import axios from 'axios'
+import { useUsersStore } from '@/stores/user-store'
 
-const url = import.meta.env.VITE_API_URL;
+const client = axios.create({
+  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000/api',
+})
 
-export default () => {
-  //create an axios custom instance
-  const api = axios.create({
-    baseURL: url,
-  });
+// By the time any interceptor fires, all modules in the circular chain
+// (axios→store→api→axios) are fully initialized — safe to call useUsersStore() here.
+client.interceptors.request.use((config) => {
+  const store = useUsersStore()
+  if (store.accessToken) {
+    config.headers.Authorization = `Bearer ${store.accessToken}`
+  }
+  return config
+})
 
-  // create an interceptor to handle responses
-  api.interceptors.response.use(
-    (response) => response,
-    (error) => {
-      let error_message = null;
-      try {
-        if (error.response.status === 401) {
-          if (import.meta.env.NODE_ENV === "development")
-            console.log("you are unauthorized...401");
-          //  store.dispatch('auth/LogoutUser')
-        } else if (error.response.status === 400) {
-          if (import.meta.env.NODE_ENV === "development")
-            console.log("it's a bad request...400");
-        } else if (error.response.status === 404) {
-          if (import.meta.env.NODE_ENV === "development")
-            console.log("it was not found...404");
-        }
-
-        if (import.meta.env.NODE_ENV === "development") {
-          console.log(JSON.stringify(error.response, null, 2));
-        }
-
-        //console.log(JSON.stringify(error, null, 2))
-
-        error_message = error.response.data.message;
-      } catch (e) {
-        if (import.meta.env.NODE_ENV === "development") {
-          console.log("error in axios interceptor: " + e);
-        }
-      }
-
-      return Promise.reject(error_message);
+client.interceptors.response.use(
+  (res) => res,
+  (error) => {
+    const message = error.response?.data?.message ?? 'Something went wrong'
+    if (error.response?.status === 401) {
+      const store = useUsersStore()
+      store.clearUserDetails()
+      window.location.href = '/login'
     }
-  );
+    return Promise.reject(message)
+  }
+)
 
-  return api;
-};
+export default () => client

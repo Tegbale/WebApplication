@@ -8,7 +8,7 @@
     </div>
     <img
       class="w-8 h-8 md:w-10 md:h-10 rounded-full"
-      :src="userStore.photo"
+      :src="userStore.avatar"
       alt=""
       v-else
     />
@@ -27,27 +27,22 @@ const userStore = useUsersStore();
 const noPicture = ref(false);
 
 onMounted(() => {
-  if (userStore.photo) {
-    noPicture.value = false;
-  } else {
-    noPicture.value = true;
-  }
-});
-// computed properties to get the initials of the user
-const getInitials = computed(() => {
-  if (userStore.firstname && userStore.lastname) {
-    return `${userStore.firstname[0]}${userStore.lastname[0]}`;
-  }
-  return null;
+  noPicture.value = !userStore.avatar
 });
 
-//get the full name of the user
-const getFullName = computed(() => {
-  if (userStore.firstname && userStore.lastname) {
-    return `${userStore.firstname} ${userStore.lastname}`;
+const getInitials = computed(() => {
+  if (userStore.firstName && userStore.lastName) {
+    return `${userStore.firstName[0]}${userStore.lastName[0]}`
   }
-  return null;
-});
+  return null
+})
+
+const getFullName = computed(() => {
+  if (userStore.firstName && userStore.lastName) {
+    return `${userStore.firstName} ${userStore.lastName}`
+  }
+  return null
+})
 </script>
 
 <style lang="scss" scoped>

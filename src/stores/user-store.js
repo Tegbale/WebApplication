@@ -1,90 +1,73 @@
-// stores/user-store.js
-import { defineStore } from "pinia";
-import user from "@/api/user";
+import { defineStore } from 'pinia'
+import userApi from '@/api/user'
 
-export const useUsersStore = defineStore("user", {
+export const useUsersStore = defineStore('user', {
   state: () => ({
     id: null,
-    firstname: null,
-    lastname: null,
-    fullname: null,
-    phone: null,
-    gender: null,
-    role: null,
-    photo: null,
-    token: null,
+    firstName: null,
+    lastName: null,
     email: null,
-    email_verification_status: null,
-    profile: {
-      user_id: null,
-    },
+    phone: null,
+    role: null,
+    avatar: null,
+    schoolId: null,
+    accessToken: null,
+    refreshToken: null,
   }),
+
+  getters: {
+    isAuthenticated: (state) => !!state.id && !!state.accessToken,
+    fullName: (state) => state.firstName && state.lastName ? `${state.firstName} ${state.lastName}` : '',
+    initials: (state) => state.firstName && state.lastName ? `${state.firstName[0]}${state.lastName[0]}` : '',
+  },
+
   actions: {
     async login(payload) {
-      const res = await user.login(payload);
-      this.setUserDetails(res);
-
-      return res;
+      const { data } = await userApi.login(payload)
+      const { accessToken, refreshToken, user } = data.data
+      this.accessToken = accessToken
+      this.refreshToken = refreshToken
+      this._setUser(user)
+      return data
     },
 
-    async setUserDetails(res) {
-      (this.$state.id = res.data.data.id),
-        (this.$state.firstname = res.data.data.firstname),
-        (this.$state.lastname = res.data.data.lastname),
-        (this.$state.fullname = res.data.data.fullname),
-        (this.$state.phone = res.data.data.phone),
-        (this.$state.email = res.data.data.email),
-        (this.$state.gender = res.data.data.gender),
-        (this.$state.email_verification_status =
-          res.data.data.email_verification_status),
-        (this.$state.token = res.data.token),
-        (this.$state.role = res.data.data.role),
-        (this.$state.photo = res.data.data.photo);
+    async register(payload) {
+      const { data } = await userApi.register(payload)
+      const { accessToken, refreshToken, user } = data.data
+      this.accessToken = accessToken
+      this.refreshToken = refreshToken
+      this._setUser(user)
+      return data
     },
 
-    async updateUserDetail(payload) {
-      const res = await user.updateUserDetails(payload);
-      return res;
+    async fetchMe() {
+      const { data } = await userApi.getMe()
+      this._setUser(data.data)
+      return data.data
     },
 
-    async fetchUserDetails() {
-      const res = await user.fetchUserDetails();
+    async logout() {
+      try {
+        if (this.refreshToken) await userApi.logout(this.refreshToken)
+      } catch {}
+      this.clearUserDetails()
+    },
 
-      (this.$state.id = res.data.data.id),
-        (this.$state.firstname = res.data.data.firstname),
-        (this.$state.lastname = res.data.data.lastname),
-        (this.$state.fullname = res.data.data.fullname),
-        (this.$state.phone = res.data.data.phone),
-        (this.$state.email = res.data.data.email),
-        (this.$state.gender = res.data.data.gender);
-      this.$state.photo = res.data.data.photo;
+    _setUser(user) {
+      this.id = user.id
+      this.firstName = user.firstName
+      this.lastName = user.lastName
+      this.email = user.email
+      this.phone = user.phone ?? null
+      this.role = user.role
+      this.avatar = user.avatar ?? null
+      this.schoolId = user.schoolId ?? null
     },
 
     clearUserDetails() {
-      (this.$state.id = null),
-        (this.$state.firstname = null),
-        (this.$state.lastname = null),
-        (this.$state.fullname = null),
-        (this.$state.phone = null),
-        (this.$state.email = null),
-        (this.$state.gender = null),
-        (this.$state.email_verification_status = null),
-        (this.$state.token = null),
-        (this.$state.role = null),
-        (this.$state.photo = null);
-      this.$state.profile.user_id = null;
-    },
-
-    async requestPasswordReset(payload) {
-      const res = await user.requestPasswordReset(payload);
-      return res;
-    },
-
-    async resetPassword(payload) {
-      const res = await user.resetPassword(payload);
-      return res;
+      this.$reset()
     },
   },
 
   persist: true,
-});
+})
