@@ -16,9 +16,11 @@
           v-model="loginData.email"
           type="email"
           placeholder="Email Address"
+          autocomplete="email"
           class="w-full rounded-full border border-gray-200 py-3 pl-12 pr-4 text-sm font-roboto text-gray-700 placeholder:text-tegbale-text-gray focus:border-tegbale-blue focus:outline-none focus:ring-2 focus:ring-tegbale-blue/20"
           :class="{ 'border-red-400': v$.email.$error }"
           @blur="v$.email.$touch()"
+          @change="loginData.email = $event.target.value"
         />
         <p v-if="v$.email.$error" class="mt-1 pl-4 text-xs text-red-500">{{ v$.email.$errors[0].$message }}</p>
       </div>
@@ -34,9 +36,11 @@
           v-model="loginData.password"
           :type="showPassword ? 'text' : 'password'"
           placeholder="Password"
+          autocomplete="current-password"
           class="w-full rounded-full border border-gray-200 py-3 pl-12 pr-12 text-sm font-roboto text-gray-700 placeholder:text-tegbale-text-gray focus:border-tegbale-blue focus:outline-none focus:ring-2 focus:ring-tegbale-blue/20"
           :class="{ 'border-red-400': v$.password.$error }"
           @blur="v$.password.$touch()"
+          @change="loginData.password = $event.target.value"
         />
         <button
           type="button"
