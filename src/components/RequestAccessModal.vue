@@ -124,6 +124,39 @@
                 placeholder="Anything else you'd like us to know? (optional)"
                 class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm font-roboto text-gray-700 placeholder:text-tegbale-text-gray focus:border-tegbale-blue focus:outline-none focus:ring-2 focus:ring-tegbale-blue/20 resize-none"
               ></textarea>
+
+              <!-- Documents -->
+              <div class="rounded-xl border border-dashed border-gray-300 bg-gray-50 p-4">
+                <p class="text-xs font-semibold font-roboto text-tegbale-navy-blue mb-3">Required Documents</p>
+                <div class="space-y-3">
+                  <!-- CAC -->
+                  <div>
+                    <label class="text-xs font-roboto text-tegbale-text-gray block mb-1">
+                      CAC Certificate <span class="text-red-500">*</span>
+                    </label>
+                    <label class="flex items-center gap-2 cursor-pointer rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-sm font-roboto text-tegbale-text-gray hover:border-tegbale-blue transition-colors"
+                      :class="{ 'border-red-400': cacError }">
+                      <svg class="h-4 w-4 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                      <span class="truncate">{{ cacFile ? cacFile.name : 'Upload CAC document (PDF or image)' }}</span>
+                      <input type="file" class="hidden" accept=".pdf,.jpg,.jpeg,.png" @change="(e) => onFileChange(e, 'cac')" />
+                    </label>
+                    <p v-if="cacError" class="mt-1 pl-1 text-xs text-red-500">CAC certificate is required</p>
+                  </div>
+                  <!-- Govt Approval -->
+                  <div>
+                    <label class="text-xs font-roboto text-tegbale-text-gray block mb-1">
+                      Government Approval Document <span class="text-red-500">*</span>
+                    </label>
+                    <label class="flex items-center gap-2 cursor-pointer rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-sm font-roboto text-tegbale-text-gray hover:border-tegbale-blue transition-colors"
+                      :class="{ 'border-red-400': govtError }">
+                      <svg class="h-4 w-4 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                      <span class="truncate">{{ govtFile ? govtFile.name : 'Upload govt. approval doc (PDF or image)' }}</span>
+                      <input type="file" class="hidden" accept=".pdf,.jpg,.jpeg,.png" @change="(e) => onFileChange(e, 'govt')" />
+                    </label>
+                    <p v-if="govtError" class="mt-1 pl-1 text-xs text-red-500">Government approval document is required</p>
+                  </div>
+                </div>
+              </div>
             </div>
 
             <p v-if="errorMessage" class="mt-3 text-xs text-red-500 font-roboto">{{ errorMessage }}</p>
@@ -168,6 +201,11 @@ const form = reactive({
   message: '',
 })
 
+const cacFile = ref(null)
+const govtFile = ref(null)
+const cacError = ref(false)
+const govtError = ref(false)
+
 const isLoading = ref(false)
 const submitted = ref(false)
 const submittedSchoolName = ref('')
@@ -181,28 +219,38 @@ const rules = {
 }
 const v$ = useVuelidate(rules, form)
 
+const onFileChange = (event, type) => {
+  const file = event.target.files[0] ?? null
+  if (type === 'cac') { cacFile.value = file; cacError.value = false }
+  else { govtFile.value = file; govtError.value = false }
+}
+
 const handleSubmit = async () => {
   const valid = await v$.value.$validate()
-  if (!valid) return
+  cacError.value = !cacFile.value
+  govtError.value = !govtFile.value
+  if (!valid || cacError.value || govtError.value) return
 
   isLoading.value = true
   errorMessage.value = ''
   try {
-    const payload = {
-      schoolName: form.schoolName,
-      contactFirstName: form.contactFirstName,
-      contactLastName: form.contactLastName,
-      contactEmail: form.contactEmail,
-      contactPhone: form.contactPhone || undefined,
-      city: form.city || undefined,
-      country: form.country || undefined,
-      message: form.message || undefined,
-    }
-    await schoolRequestsApi.submit(payload)
+    const fd = new FormData()
+    fd.append('schoolName', form.schoolName)
+    fd.append('contactFirstName', form.contactFirstName)
+    fd.append('contactLastName', form.contactLastName)
+    fd.append('contactEmail', form.contactEmail)
+    if (form.contactPhone) fd.append('contactPhone', form.contactPhone)
+    if (form.city) fd.append('city', form.city)
+    if (form.country) fd.append('country', form.country)
+    if (form.message) fd.append('message', form.message)
+    fd.append('cacDocument', cacFile.value)
+    fd.append('govtDocument', govtFile.value)
+
+    await schoolRequestsApi.submit(fd)
     submittedSchoolName.value = form.schoolName
     submitted.value = true
   } catch (err) {
-    errorMessage.value = err?.response?.data?.message ?? 'Something went wrong. Please try again.'
+    errorMessage.value = typeof err === 'string' ? err : 'Something went wrong. Please try again.'
   } finally {
     isLoading.value = false
   }
@@ -210,10 +258,13 @@ const handleSubmit = async () => {
 
 const close = () => {
   emit('close')
-  // Reset after transition ends
   setTimeout(() => {
     submitted.value = false
     errorMessage.value = ''
+    cacFile.value = null
+    govtFile.value = null
+    cacError.value = false
+    govtError.value = false
     v$.value.$reset()
     Object.assign(form, { schoolName: '', contactFirstName: '', contactLastName: '', contactEmail: '', contactPhone: '', city: '', country: '', message: '' })
   }, 300)
