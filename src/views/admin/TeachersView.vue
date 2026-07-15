@@ -52,7 +52,7 @@
               <td class="px-6 py-4 text-tegbale-text-gray hidden lg:table-cell">{{ teacher.phone || '—' }}</td>
               <td class="px-6 py-4">
                 <div class="flex items-center gap-3">
-                  <button class="text-tegbale-blue hover:text-blue-700" title="View" @click="viewTeacher = teacher">
+                  <button class="text-tegbale-blue hover:text-blue-700" title="View" @click="router.push({ name: 'teacherDetail', params: { id: teacher.id } })">
                     <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
                   </button>
                   <button class="text-tegbale-green hover:text-green-700" title="Edit" @click="openEdit(teacher)">
@@ -74,32 +74,6 @@
             </tr>
           </tbody>
         </table>
-      </div>
-    </div>
-
-    <!-- View modal -->
-    <div v-if="viewTeacher" class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4" @click.self="viewTeacher = null">
-      <div class="w-full max-w-lg bg-white rounded-2xl shadow-xl">
-        <div class="flex items-center justify-between border-b border-gray-100 px-6 py-4">
-          <h3 class="text-lg font-semibold text-tegbale-navy-blue font-roboto">View Teacher</h3>
-          <button class="rounded-full p-1 text-tegbale-text-gray hover:bg-gray-100" @click="viewTeacher = null">
-            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-          </button>
-        </div>
-        <div class="px-6 py-5 space-y-3 text-sm font-roboto">
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div class="flex flex-col gap-1"><p class="text-xs text-tegbale-text-gray">First Name</p><p class="rounded-full border border-gray-200 px-4 py-2.5 text-gray-700">{{ viewTeacher.firstName }}</p></div>
-            <div class="flex flex-col gap-1"><p class="text-xs text-tegbale-text-gray">Last Name</p><p class="rounded-full border border-gray-200 px-4 py-2.5 text-gray-700">{{ viewTeacher.lastName }}</p></div>
-            <div class="flex flex-col gap-1"><p class="text-xs text-tegbale-text-gray">Email Address</p><p class="rounded-full border border-gray-200 px-4 py-2.5 text-gray-700">{{ viewTeacher.email }}</p></div>
-            <div class="flex flex-col gap-1"><p class="text-xs text-tegbale-text-gray">Phone</p><p class="rounded-full border border-gray-200 px-4 py-2.5 text-gray-700">{{ viewTeacher.phone || '—' }}</p></div>
-            <div class="flex flex-col gap-1"><p class="text-xs text-tegbale-text-gray">Status</p>
-              <p class="rounded-full border px-4 py-2.5" :class="viewTeacher.isActive ? 'border-green-200 text-green-600' : 'border-red-200 text-red-500'">{{ viewTeacher.isActive ? 'Active' : 'Inactive' }}</p>
-            </div>
-          </div>
-          <div class="flex justify-end pt-2">
-            <button class="rounded-full bg-gray-400 px-6 py-2.5 text-sm font-roboto font-medium text-white hover:bg-gray-500" @click="viewTeacher = null">Close</button>
-          </div>
-        </div>
       </div>
     </div>
 
@@ -168,7 +142,8 @@
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue'
+import { ref, reactive, computed, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { useVuelidate } from '@vuelidate/core'
 import { required, email, helpers } from '@vuelidate/validators'
 import adminApi from '@/api/admin'
@@ -177,11 +152,12 @@ import ExportDropdown from '@/components/BaseComponents/ExportDropdown.vue'
 import ImportModal from '@/components/ImportModal.vue'
 import TempPasswordModal from '@/components/TempPasswordModal.vue'
 
+const router = useRouter()
+
 const toastStore = useToastStore()
 
 const teachers = ref([])
 const loading = ref(false)
-const viewTeacher = ref(null)
 const showModal = ref(false)
 const showImport = ref(false)
 const editingId = ref(null)
@@ -200,7 +176,6 @@ const rules = computed(() => ({
   } : {},
 }))
 
-import { computed, onMounted } from 'vue'
 const v$ = useVuelidate(rules, form)
 
 const exportColumns = [
