@@ -57,6 +57,12 @@ const routes = [
     meta: { middleware: [admin, auth] },
   },
   {
+    path: "/admin/posts",
+    name: "adminPosts",
+    components: { default: () => import("../views/admin/PostsView.vue") },
+    meta: { middleware: [admin, auth] },
+  },
+  {
     path: "/admin/messages",
     name: "adminMessages",
     components: { default: () => import("../views/admin/MessagesView.vue") },

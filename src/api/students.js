@@ -16,6 +16,15 @@ export default {
   deleteStudent(id) {
     return api().delete(`/students/${id}`)
   },
+
+  getOne(id) {
+    return api().get(`/students/${id}`)
+  },
+
+  assignClassroom(id, classroomId) {
+    return api().patch(`/students/${id}/classroom`, { classroomId })
+  },
+
   bulkImport(formData) {
     return api().post('/students/bulk-import', formData, { headers: { 'Content-Type': 'multipart/form-data' } })
   },
