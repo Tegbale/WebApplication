@@ -160,6 +160,16 @@ const navItems = [
     svgPath: `<svg fill="currentColor" viewBox="0 0 24 24" class="h-5 w-5"><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/></svg>`,
   },
   {
+    name: 'Messages',
+    to: '/admin/messages',
+    svgPath: `<svg fill="currentColor" viewBox="0 0 24 24" class="h-5 w-5"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/></svg>`,
+  },
+  {
+    name: 'Notifications',
+    to: '/admin/notifications',
+    svgPath: `<svg fill="currentColor" viewBox="0 0 24 24" class="h-5 w-5"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>`,
+  },
+  {
     name: 'My School',
     to: '/admin/schools',
     svgPath: `<svg fill="currentColor" viewBox="0 0 24 24" class="h-5 w-5"><path d="M12 3L1 9l4 2.18V17h2v-4.82l1 .55V17c0 2.21 1.79 4 4 4s4-1.79 4-4v-4.27l2-.55V19h2v-7.82L23 9 12 3zm4 14c0 1.1-.9 2-2 2s-2-.9-2-2v-3.73l4 1.09V17z"/></svg>`,
