@@ -53,6 +53,20 @@ export const useUsersStore = defineStore('user', {
       this.clearUserDetails()
     },
 
+    async updateProfile(payload) {
+      const { data } = await userApi.updateProfile(payload)
+      this._setUser(data.data)
+      return data.data
+    },
+
+    async uploadAvatar(file) {
+      const fd = new FormData()
+      fd.append('avatar', file)
+      const { data } = await userApi.uploadAvatar(fd)
+      this._setUser(data.data)
+      return data.data
+    },
+
     _setUser(user) {
       this.id = user.id
       this.firstName = user.firstName

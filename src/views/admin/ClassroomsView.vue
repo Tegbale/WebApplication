@@ -184,7 +184,7 @@
               <label class="text-xs text-tegbale-text-gray">Add Teacher</label>
               <select v-model="selectedTeacherId" class="rounded-full border border-gray-200 px-4 py-2.5 text-gray-700 focus:border-tegbale-blue focus:outline-none focus:ring-1 focus:ring-tegbale-blue/20 bg-white">
                 <option value="">Select a teacher</option>
-                <option v-for="t in availableTeachers" :key="t.id" :value="t.teacherProfile?.id">
+                <option v-for="t in availableTeachers" :key="t.id" :value="t.id">
                   {{ t.firstName }} {{ t.lastName }}
                 </option>
               </select>
@@ -249,8 +249,8 @@ const assigning = ref(false)
 const removingId = ref(null)
 
 const availableTeachers = computed(() => {
-  const assignedIds = new Set(assignedTeachers.value.map(t => t.id))
-  return allTeachers.value.filter(t => t.teacherProfile && !assignedIds.has(t.teacherProfile.id))
+  const assignedUserIds = new Set(assignedTeachers.value.map(t => t.user.id))
+  return allTeachers.value.filter(t => t.role === 'TEACHER' && !assignedUserIds.has(t.id))
 })
 
 const form = reactive({ name: '', level: '' })

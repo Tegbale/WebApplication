@@ -15,6 +15,7 @@
 
     <div v-if="loading" class="space-y-4">
       <div class="h-48 rounded-2xl bg-white animate-pulse" />
+      <div class="h-32 rounded-2xl bg-white animate-pulse" />
     </div>
 
     <div v-else-if="!teacher" class="bg-white rounded-2xl shadow-sm p-12 text-center text-tegbale-text-gray font-roboto">
@@ -25,9 +26,9 @@
       <!-- Profile card -->
       <div class="bg-white rounded-2xl shadow-sm p-6">
         <div class="flex flex-wrap items-start gap-5 mb-6">
-          <!-- Avatar -->
-          <div class="flex h-20 w-20 flex-shrink-0 items-center justify-center rounded-full bg-tegbale-blue/10 text-tegbale-blue text-2xl font-bold font-roboto">
-            {{ initials }}
+          <div class="flex h-20 w-20 flex-shrink-0 items-center justify-center rounded-full bg-tegbale-blue/10 text-tegbale-blue text-2xl font-bold font-roboto overflow-hidden">
+            <img v-if="teacher.avatar" :src="teacher.avatar" alt="avatar" class="h-full w-full object-cover" />
+            <span v-else>{{ initials }}</span>
           </div>
           <div class="flex-1 min-w-0">
             <h2 class="text-2xl font-semibold font-roboto text-tegbale-navy-blue">{{ teacher.firstName }} {{ teacher.lastName }}</h2>
@@ -39,6 +40,9 @@
                 :class="teacher.isActive ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-600'"
               >
                 {{ teacher.isActive ? 'Active' : 'Inactive' }}
+              </span>
+              <span v-if="classrooms.length" class="inline-block rounded-full px-3 py-0.5 text-xs font-roboto bg-purple-50 text-purple-600">
+                {{ classrooms.length }} classroom{{ classrooms.length !== 1 ? 's' : '' }}
               </span>
             </div>
           </div>
@@ -74,6 +78,27 @@
           </div>
         </div>
       </div>
+
+      <!-- Assigned Classrooms -->
+      <div class="bg-white rounded-2xl shadow-sm p-6">
+        <h3 class="text-base font-semibold font-roboto text-tegbale-navy-blue mb-4">Assigned Classrooms</h3>
+        <div v-if="classrooms.length" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div
+            v-for="cls in classrooms"
+            :key="cls.id"
+            class="flex items-center gap-3 rounded-2xl border border-gray-100 bg-gray-50 px-4 py-3"
+          >
+            <div class="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-tegbale-blue/10">
+              <svg class="h-4 w-4 text-tegbale-blue" fill="currentColor" viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-9 11H7v-2h4v2zm6 0h-4v-2h4v2zm0-4H7V7h10v2z"/></svg>
+            </div>
+            <div class="min-w-0">
+              <p class="text-sm font-roboto font-medium text-tegbale-navy-blue truncate">{{ cls.name }}</p>
+              <p v-if="cls.level" class="text-xs font-roboto text-tegbale-text-gray">{{ cls.level }}</p>
+            </div>
+          </div>
+        </div>
+        <p v-else class="text-sm font-roboto text-tegbale-text-gray italic">Not assigned to any classroom yet.</p>
+      </div>
     </div>
   </div>
 </template>
@@ -95,6 +120,8 @@ const initials = computed(() => {
   const l = teacher.value?.lastName?.[0] ?? ''
   return (f + l).toUpperCase() || '?'
 })
+
+const classrooms = computed(() => teacher.value?.teacherProfile?.classrooms ?? [])
 
 const formatDate = (d) => d
   ? new Date(d).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })

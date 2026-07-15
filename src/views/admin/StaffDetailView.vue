@@ -24,8 +24,9 @@
     <div v-else class="space-y-5">
       <div class="bg-white rounded-2xl shadow-sm p-6">
         <div class="flex flex-wrap items-start gap-5 mb-6">
-          <div class="flex h-20 w-20 flex-shrink-0 items-center justify-center rounded-full bg-tegbale-blue/10 text-tegbale-blue text-2xl font-bold font-roboto">
-            {{ initials }}
+          <div class="flex h-20 w-20 flex-shrink-0 items-center justify-center rounded-full bg-tegbale-blue/10 text-tegbale-blue text-2xl font-bold font-roboto overflow-hidden">
+            <img v-if="member.avatar" :src="member.avatar" alt="avatar" class="h-full w-full object-cover" />
+            <span v-else>{{ initials }}</span>
           </div>
           <div class="flex-1 min-w-0">
             <h2 class="text-2xl font-semibold font-roboto text-tegbale-navy-blue">{{ member.firstName }} {{ member.lastName }}</h2>

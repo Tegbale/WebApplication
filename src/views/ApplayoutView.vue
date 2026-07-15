@@ -77,24 +77,58 @@
           />
         </div>
 
-        <div class="ml-auto flex items-center gap-4">
+        <div class="ml-auto flex items-center gap-3">
           <!-- Notification bell -->
-          <button class="relative p-1 text-gray-500 hover:text-gray-700">
+          <router-link to="/admin/notifications" class="relative p-1.5 text-gray-500 hover:text-tegbale-blue transition-colors">
             <svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0"/>
             </svg>
-            <span class="absolute right-0.5 top-0.5 flex h-2 w-2 items-center justify-center rounded-full bg-red-500"></span>
-          </button>
+            <span class="absolute right-0.5 top-0.5 h-2 w-2 rounded-full bg-red-500"></span>
+          </router-link>
 
-          <!-- User info -->
-          <div class="flex items-center gap-2">
-            <div class="flex h-9 w-9 items-center justify-center overflow-hidden rounded-full bg-gray-200">
-              <img v-if="userStore.avatar" :src="userStore.avatar" alt="avatar" class="h-full w-full object-cover" />
-              <span v-else class="text-sm font-semibold text-gray-600 font-roboto">{{ initials }}</span>
-            </div>
-            <span class="hidden text-sm font-medium text-tegbale-navy-blue font-roboto md:block">
-              {{ userStore.firstName }} {{ userStore.lastName }}
-            </span>
+          <!-- Avatar dropdown -->
+          <div class="relative" ref="avatarMenuRef">
+            <button
+              class="flex items-center gap-2 rounded-full focus:outline-none focus:ring-2 focus:ring-tegbale-blue/20"
+              @click="avatarMenuOpen = !avatarMenuOpen"
+            >
+              <div class="flex h-9 w-9 items-center justify-center overflow-hidden rounded-full bg-tegbale-blue text-white">
+                <img v-if="userStore.avatar" :src="userStore.avatar" alt="avatar" class="h-full w-full object-cover" />
+                <span v-else class="text-sm font-semibold font-roboto">{{ initials }}</span>
+              </div>
+              <span class="hidden text-sm font-medium text-tegbale-navy-blue font-roboto md:block">
+                {{ userStore.firstName }} {{ userStore.lastName }}
+              </span>
+              <svg class="hidden h-4 w-4 text-gray-400 md:block" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
+              </svg>
+            </button>
+
+            <transition enter-active-class="transition duration-100 ease-out" enter-from-class="scale-95 opacity-0" enter-to-class="scale-100 opacity-100" leave-active-class="transition duration-75 ease-in" leave-from-class="scale-100 opacity-100" leave-to-class="scale-95 opacity-0">
+              <div v-if="avatarMenuOpen" class="absolute right-0 top-full mt-2 w-48 origin-top-right rounded-2xl bg-white shadow-lg ring-1 ring-black/5 z-50 overflow-hidden">
+                <div class="px-4 py-3 border-b border-gray-50">
+                  <p class="text-xs font-roboto font-semibold text-tegbale-navy-blue truncate">{{ userStore.firstName }} {{ userStore.lastName }}</p>
+                  <p class="text-xs font-roboto text-tegbale-text-gray truncate mt-0.5">{{ userStore.email }}</p>
+                </div>
+                <div class="py-1">
+                  <router-link
+                    to="/admin/settings"
+                    class="flex items-center gap-2 px-4 py-2.5 text-sm font-roboto text-gray-700 hover:bg-gray-50"
+                    @click="avatarMenuOpen = false"
+                  >
+                    <svg class="h-4 w-4 text-tegbale-text-gray" fill="currentColor" viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+                    Settings
+                  </router-link>
+                  <button
+                    class="flex w-full items-center gap-2 px-4 py-2.5 text-sm font-roboto text-red-500 hover:bg-red-50"
+                    @click="handleLogout"
+                  >
+                    <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+                    Logout
+                  </button>
+                </div>
+              </div>
+            </transition>
           </div>
         </div>
       </header>
@@ -107,13 +141,15 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useUsersStore } from '@/stores/user-store'
 import { useRouter } from 'vue-router'
 
 const userStore = useUsersStore()
 const router = useRouter()
 const isOpen = ref(false)
+const avatarMenuOpen = ref(false)
+const avatarMenuRef = ref(null)
 
 const initials = computed(() => {
   const f = userStore.firstName?.[0] ?? ''
@@ -121,10 +157,21 @@ const initials = computed(() => {
   return (f + l).toUpperCase() || 'SA'
 })
 
-const logout = async () => {
+const handleLogout = async () => {
+  avatarMenuOpen.value = false
   await userStore.logout()
   router.push({ name: 'login' })
 }
+
+const logout = handleLogout
+
+const onClickOutside = (e) => {
+  if (avatarMenuRef.value && !avatarMenuRef.value.contains(e.target)) {
+    avatarMenuOpen.value = false
+  }
+}
+onMounted(() => document.addEventListener('mousedown', onClickOutside))
+onUnmounted(() => document.removeEventListener('mousedown', onClickOutside))
 
 const navGroups = [
   {
