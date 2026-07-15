@@ -60,6 +60,11 @@
                       <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
                     </svg>
                   </button>
+                  <button class="text-purple-500 hover:text-purple-700" title="Manage Teachers" @click="openManageTeachers(classroom)">
+                    <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    </svg>
+                  </button>
                   <button class="text-tegbale-green hover:text-green-700" title="Edit" @click="openEdit(classroom)">
                     <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
@@ -147,6 +152,59 @@
       </div>
     </div>
 
+    <!-- Manage Teachers modal -->
+    <div v-if="manageTarget" class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4" @click.self="manageTarget = null">
+      <div class="w-full max-w-lg bg-white rounded-2xl shadow-xl">
+        <div class="flex items-center justify-between border-b border-gray-100 px-6 py-4">
+          <h3 class="text-lg font-semibold text-tegbale-navy-blue font-roboto">Manage Teachers — {{ manageTarget.name }}</h3>
+          <button class="rounded-full p-1 text-tegbale-text-gray hover:bg-gray-100" @click="manageTarget = null">
+            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+          </button>
+        </div>
+        <div class="px-6 py-5 space-y-4 text-sm font-roboto">
+          <div>
+            <p class="text-xs text-tegbale-text-gray mb-2">Assigned Teachers</p>
+            <div v-if="managingLoading" class="h-8 rounded-full bg-gray-100 animate-pulse w-32" />
+            <div v-else-if="assignedTeachers.length" class="flex flex-wrap gap-2">
+              <span
+                v-for="t in assignedTeachers" :key="t.id"
+                class="inline-flex items-center gap-1.5 rounded-full bg-blue-50 border border-blue-100 px-3 py-1.5 text-xs text-tegbale-blue"
+              >
+                {{ t.user.firstName }} {{ t.user.lastName }}
+                <button :disabled="removingId === t.id" @click="removeAssignedTeacher(t.id)" class="ml-0.5 rounded-full hover:bg-blue-100 p-0.5 disabled:opacity-50">
+                  <svg class="h-3 w-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+              </span>
+            </div>
+            <p v-else class="text-tegbale-text-gray italic text-xs">No teachers assigned yet.</p>
+          </div>
+
+          <div class="flex gap-2">
+            <div class="flex-1 flex flex-col gap-1">
+              <label class="text-xs text-tegbale-text-gray">Add Teacher</label>
+              <select v-model="selectedTeacherId" class="rounded-full border border-gray-200 px-4 py-2.5 text-gray-700 focus:border-tegbale-blue focus:outline-none focus:ring-1 focus:ring-tegbale-blue/20 bg-white">
+                <option value="">Select a teacher</option>
+                <option v-for="t in availableTeachers" :key="t.id" :value="t.teacherProfile?.id">
+                  {{ t.firstName }} {{ t.lastName }}
+                </option>
+              </select>
+            </div>
+            <button
+              :disabled="!selectedTeacherId || assigning"
+              @click="assignTeacher"
+              class="self-end rounded-full bg-tegbale-blue px-5 py-2.5 text-sm font-roboto font-medium text-white hover:bg-blue-600 disabled:opacity-50"
+            >
+              {{ assigning ? '...' : 'Assign' }}
+            </button>
+          </div>
+
+          <div class="flex justify-end pt-1">
+            <button class="rounded-full bg-gray-400 px-6 py-2.5 text-sm font-roboto font-medium text-white hover:bg-gray-500" @click="manageTarget = null">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Import modal -->
     <ImportModal
       v-if="showImport"
@@ -160,12 +218,13 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, computed, onMounted } from 'vue'
 import { useVuelidate } from '@vuelidate/core'
 import { required, helpers } from '@vuelidate/validators'
 import { useUsersStore } from '@/stores/user-store'
 import { useToastStore } from '@/stores/toast-store'
 import classroomsApi from '@/api/classrooms'
+import adminApi from '@/api/admin'
 import ExportDropdown from '@/components/BaseComponents/ExportDropdown.vue'
 import ImportModal from '@/components/ImportModal.vue'
 
@@ -179,6 +238,20 @@ const showImport = ref(false)
 const editTarget = ref(null)
 const viewTarget = ref(null)
 const saving = ref(false)
+
+// Manage Teachers state
+const manageTarget = ref(null)
+const assignedTeachers = ref([])
+const allTeachers = ref([])
+const selectedTeacherId = ref('')
+const managingLoading = ref(false)
+const assigning = ref(false)
+const removingId = ref(null)
+
+const availableTeachers = computed(() => {
+  const assignedIds = new Set(assignedTeachers.value.map(t => t.id))
+  return allTeachers.value.filter(t => t.teacherProfile && !assignedIds.has(t.teacherProfile.id))
+})
 
 const form = reactive({ name: '', level: '' })
 
@@ -242,6 +315,63 @@ const deleteClassroom = async (id) => {
     await fetchClassrooms()
   } catch {
     toastStore.showToast({ title: 'Error', message: 'Failed to delete classroom', type: 'error', timeout: 4000 })
+  }
+}
+
+const openManageTeachers = async (classroom) => {
+  manageTarget.value = classroom
+  selectedTeacherId.value = ''
+  assignedTeachers.value = []
+  allTeachers.value = []
+  managingLoading.value = true
+  try {
+    const [detailRes, teachersRes] = await Promise.all([
+      classroomsApi.getOne(classroom.id),
+      adminApi.getAllStaff({ role: 'TEACHER', limit: 100 }),
+    ])
+    assignedTeachers.value = detailRes.data.data?.teachers ?? []
+    allTeachers.value = teachersRes.data.data ?? []
+  } catch {
+    toastStore.showToast({ title: 'Error', message: 'Failed to load teachers', type: 'error', timeout: 3000 })
+  } finally {
+    managingLoading.value = false
+  }
+}
+
+const refreshManageDetail = async () => {
+  if (!manageTarget.value) return
+  try {
+    const res = await classroomsApi.getOne(manageTarget.value.id)
+    assignedTeachers.value = res.data.data?.teachers ?? []
+  } catch {}
+}
+
+const assignTeacher = async () => {
+  if (!selectedTeacherId.value || !manageTarget.value) return
+  assigning.value = true
+  try {
+    await classroomsApi.assignTeacher(manageTarget.value.id, selectedTeacherId.value)
+    toastStore.showToast({ title: 'Assigned', message: 'Teacher assigned to classroom', type: 'success', timeout: 3000 })
+    selectedTeacherId.value = ''
+    await Promise.all([refreshManageDetail(), fetchClassrooms()])
+  } catch (err) {
+    toastStore.showToast({ title: 'Error', message: err?.response?.data?.message ?? 'Failed to assign teacher', type: 'error', timeout: 4000 })
+  } finally {
+    assigning.value = false
+  }
+}
+
+const removeAssignedTeacher = async (teacherId) => {
+  if (!manageTarget.value) return
+  removingId.value = teacherId
+  try {
+    await classroomsApi.removeTeacher(manageTarget.value.id, teacherId)
+    toastStore.showToast({ title: 'Removed', message: 'Teacher removed from classroom', type: 'success', timeout: 3000 })
+    await Promise.all([refreshManageDetail(), fetchClassrooms()])
+  } catch {
+    toastStore.showToast({ title: 'Error', message: 'Failed to remove teacher', type: 'error', timeout: 4000 })
+  } finally {
+    removingId.value = null
   }
 }
 
