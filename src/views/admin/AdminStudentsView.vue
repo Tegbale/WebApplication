@@ -52,7 +52,7 @@
               <td class="px-6 py-4 text-tegbale-text-gray hidden lg:table-cell capitalize">{{ student.gender ?? '—' }}</td>
               <td class="px-6 py-4">
                 <div class="flex items-center gap-3">
-                  <button class="text-tegbale-blue hover:text-blue-700" title="View" @click="viewTarget = student">
+                  <button class="text-tegbale-blue hover:text-blue-700" title="View" @click="router.push({ name: 'studentDetail', params: { id: student.id } })">
                     <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
                       <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
@@ -76,30 +76,6 @@
             </tr>
           </tbody>
         </table>
-      </div>
-    </div>
-
-    <!-- View modal -->
-    <div v-if="viewTarget" class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4" @click.self="viewTarget = null">
-      <div class="w-full max-w-lg bg-white rounded-2xl shadow-xl">
-        <div class="flex items-center justify-between border-b border-gray-100 px-6 py-4">
-          <h3 class="text-lg font-semibold text-tegbale-navy-blue font-roboto">View Student</h3>
-          <button class="rounded-full p-1 text-tegbale-text-gray hover:bg-gray-100" @click="viewTarget = null">
-            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-          </button>
-        </div>
-        <div class="px-6 py-5 space-y-3 text-sm font-roboto">
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div class="flex flex-col gap-1"><p class="text-xs text-tegbale-text-gray">First Name</p><p class="rounded-full border border-gray-200 px-4 py-2.5 text-gray-700">{{ viewTarget.firstName }}</p></div>
-            <div class="flex flex-col gap-1"><p class="text-xs text-tegbale-text-gray">Last Name</p><p class="rounded-full border border-gray-200 px-4 py-2.5 text-gray-700">{{ viewTarget.lastName }}</p></div>
-            <div class="flex flex-col gap-1"><p class="text-xs text-tegbale-text-gray">Classroom</p><p class="rounded-full border border-gray-200 px-4 py-2.5 text-gray-700">{{ viewTarget.classroom?.name ?? '—' }}</p></div>
-            <div class="flex flex-col gap-1"><p class="text-xs text-tegbale-text-gray">Gender</p><p class="rounded-full border border-gray-200 px-4 py-2.5 text-gray-700 capitalize">{{ viewTarget.gender ?? '—' }}</p></div>
-            <div class="flex flex-col gap-1"><p class="text-xs text-tegbale-text-gray">Date of Birth</p><p class="rounded-full border border-gray-200 px-4 py-2.5 text-gray-700">{{ viewTarget.dateOfBirth ? viewTarget.dateOfBirth.split('T')[0] : '—' }}</p></div>
-          </div>
-          <div class="flex justify-end pt-2">
-            <button class="rounded-full bg-gray-400 px-6 py-2.5 text-sm font-roboto font-medium text-white hover:bg-gray-500" @click="viewTarget = null">Close</button>
-          </div>
-        </div>
       </div>
     </div>
 
@@ -168,6 +144,7 @@
 
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { useVuelidate } from '@vuelidate/core'
 import { required, helpers } from '@vuelidate/validators'
 import { useStudentsStore } from '@/stores/students-store'
@@ -178,6 +155,7 @@ import classroomsApi from '@/api/classrooms'
 import ExportDropdown from '@/components/BaseComponents/ExportDropdown.vue'
 import ImportModal from '@/components/ImportModal.vue'
 
+const router = useRouter()
 const studentsStore = useStudentsStore()
 const userStore = useUsersStore()
 const toastStore = useToastStore()
@@ -188,7 +166,6 @@ const loading = ref(false)
 const showModal = ref(false)
 const showImport = ref(false)
 const editTarget = ref(null)
-const viewTarget = ref(null)
 const saving = ref(false)
 
 const form = reactive({ firstName: '', lastName: '', gender: '', dateOfBirth: '', classroomId: '' })

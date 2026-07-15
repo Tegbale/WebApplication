@@ -21,9 +21,21 @@ const routes = [
     meta: { middleware: [admin, auth] },
   },
   {
+    path: "/admin/teachers/:id",
+    name: "teacherDetail",
+    components: { default: () => import("../views/admin/TeacherDetailView.vue") },
+    meta: { middleware: [admin, auth] },
+  },
+  {
     path: "/admin/students",
     name: "adminStudents",
     components: { default: () => import("../views/admin/AdminStudentsView.vue") },
+    meta: { middleware: [admin, auth] },
+  },
+  {
+    path: "/admin/students/:id",
+    name: "studentDetail",
+    components: { default: () => import("../views/admin/StudentDetailView.vue") },
     meta: { middleware: [admin, auth] },
   },
   {
@@ -45,6 +57,12 @@ const routes = [
     meta: { middleware: [admin, auth] },
   },
   {
+    path: "/admin/users/:id",
+    name: "staffDetail",
+    components: { default: () => import("../views/admin/StaffDetailView.vue") },
+    meta: { middleware: [admin, auth] },
+  },
+  {
     path: "/admin/parents",
     name: "adminParents",
     components: { default: () => import("../views/admin/ParentsView.vue") },
@@ -54,6 +72,12 @@ const routes = [
     path: "/admin/events",
     name: "adminEvents",
     components: { default: () => import("../views/admin/EventsView.vue") },
+    meta: { middleware: [admin, auth] },
+  },
+  {
+    path: "/admin/posts",
+    name: "adminPosts",
+    components: { default: () => import("../views/admin/PostsView.vue") },
     meta: { middleware: [admin, auth] },
   },
   {

@@ -24,4 +24,12 @@ export default {
   changePassword(payload) {
     return api().patch('/auth/change-password', payload)
   },
+
+  updateProfile(payload) {
+    return api().patch('/auth/me', payload)
+  },
+
+  uploadAvatar(formData) {
+    return api().post('/auth/me/avatar', formData, { headers: { 'Content-Type': 'multipart/form-data' } })
+  },
 }

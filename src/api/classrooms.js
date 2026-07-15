@@ -24,8 +24,8 @@ export default {
     return api().post('/classrooms/bulk-import', formData, { headers: { 'Content-Type': 'multipart/form-data' } })
   },
 
-  assignTeacher(classroomId, teacherId) {
-    return api().post(`/classrooms/${classroomId}/teachers`, { teacherId })
+  assignTeacher(classroomId, userId) {
+    return api().post(`/classrooms/${classroomId}/teachers`, { userId })
   },
 
   removeTeacher(classroomId, teacherId) {
