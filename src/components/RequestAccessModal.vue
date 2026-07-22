@@ -18,6 +18,7 @@
                 <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
               </button>
             </div>
+
           </div>
 
           <!-- Success state -->
@@ -34,10 +35,15 @@
             </button>
           </div>
 
-          <!-- Form -->
-          <form v-else @submit.prevent="handleSubmit" class="px-8 py-6">
+          <!-- Step 1: School & contact details -->
+          <div v-else-if="step === 1" class="px-8 py-6">
+            <!-- Stepper -->
+            <div class="flex items-center gap-2 mb-5">
+              <div v-for="s in 2" :key="s" class="h-1 flex-1 rounded-full transition-colors duration-300" :class="s <= step ? 'bg-tegbale-blue' : 'bg-gray-200'"></div>
+            </div>
+            <p class="text-xs font-semibold font-roboto text-tegbale-navy-blue mb-1">Step 1 of 2</p>
             <p class="text-sm text-tegbale-text-gray font-roboto mb-5 leading-relaxed">
-              Fill in your school's details and we'll reach out to set up your account.
+              Fill in your school's details and contact information.
             </p>
 
             <div class="flex flex-col gap-3">
@@ -124,37 +130,61 @@
                 placeholder="Anything else you'd like us to know? (optional)"
                 class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm font-roboto text-gray-700 placeholder:text-tegbale-text-gray focus:border-tegbale-blue focus:outline-none focus:ring-2 focus:ring-tegbale-blue/20 resize-none"
               ></textarea>
+            </div>
 
-              <!-- Documents -->
-              <div class="rounded-xl border border-dashed border-gray-300 bg-gray-50 p-4">
-                <p class="text-xs font-semibold font-roboto text-tegbale-navy-blue mb-3">Required Documents</p>
-                <div class="space-y-3">
-                  <!-- CAC -->
-                  <div>
-                    <label class="text-xs font-roboto text-tegbale-text-gray block mb-1">
-                      CAC Certificate <span class="text-red-500">*</span>
-                    </label>
-                    <label class="flex items-center gap-2 cursor-pointer rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-sm font-roboto text-tegbale-text-gray hover:border-tegbale-blue transition-colors"
-                      :class="{ 'border-red-400': cacError }">
-                      <svg class="h-4 w-4 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                      <span class="truncate">{{ cacFile ? cacFile.name : 'Upload CAC document (PDF or image)' }}</span>
-                      <input type="file" class="hidden" accept=".pdf,.jpg,.jpeg,.png" @change="(e) => onFileChange(e, 'cac')" />
-                    </label>
-                    <p v-if="cacError" class="mt-1 pl-1 text-xs text-red-500">CAC certificate is required</p>
-                  </div>
-                  <!-- Govt Approval -->
-                  <div>
-                    <label class="text-xs font-roboto text-tegbale-text-gray block mb-1">
-                      Government Approval Document <span class="text-red-500">*</span>
-                    </label>
-                    <label class="flex items-center gap-2 cursor-pointer rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-sm font-roboto text-tegbale-text-gray hover:border-tegbale-blue transition-colors"
-                      :class="{ 'border-red-400': govtError }">
-                      <svg class="h-4 w-4 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                      <span class="truncate">{{ govtFile ? govtFile.name : 'Upload govt. approval doc (PDF or image)' }}</span>
-                      <input type="file" class="hidden" accept=".pdf,.jpg,.jpeg,.png" @change="(e) => onFileChange(e, 'govt')" />
-                    </label>
-                    <p v-if="govtError" class="mt-1 pl-1 text-xs text-red-500">Government approval document is required</p>
-                  </div>
+            <div class="flex items-center justify-end gap-3 mt-5">
+              <button type="button" @click="close" class="rounded-full border border-gray-200 px-6 py-2.5 text-sm font-roboto text-tegbale-text-gray hover:bg-gray-50 transition-colors">
+                Cancel
+              </button>
+              <button type="button" @click="goToStep2" class="rounded-full bg-tegbale-blue px-7 py-2.5 text-sm font-roboto font-semibold text-white hover:bg-blue-500 transition-colors">
+                Next
+              </button>
+            </div>
+          </div>
+
+          <!-- Step 2: Documents -->
+          <form v-else @submit.prevent="handleSubmit" class="px-8 py-6">
+            <!-- Stepper -->
+            <div class="flex items-center gap-2 mb-5">
+              <div v-for="s in 2" :key="s" class="h-1 flex-1 rounded-full transition-colors duration-300" :class="s <= step ? 'bg-tegbale-blue' : 'bg-gray-200'"></div>
+            </div>
+            <p class="text-xs font-semibold font-roboto text-tegbale-navy-blue mb-1">Step 2 of 2</p>
+            <p class="text-sm text-tegbale-text-gray font-roboto mb-5 leading-relaxed">
+              Upload the required documents to verify your school.
+            </p>
+
+            <div class="rounded-xl border border-dashed border-gray-300 bg-gray-50 p-4">
+              <p class="text-xs font-semibold font-roboto text-tegbale-navy-blue mb-3">Required Documents</p>
+              <div class="space-y-3">
+                <!-- CAC -->
+                <div>
+                  <label class="text-xs font-roboto text-tegbale-text-gray block mb-1">
+                    CAC Certificate <span class="text-red-500">*</span>
+                  </label>
+                  <label
+                    class="flex items-center gap-2 cursor-pointer rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-sm font-roboto text-tegbale-text-gray hover:border-tegbale-blue transition-colors"
+                    :class="{ 'border-red-400': cacError }"
+                  >
+                    <svg class="h-4 w-4 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                    <span class="truncate">{{ cacFile ? cacFile.name : 'Upload CAC document (PDF or image)' }}</span>
+                    <input type="file" class="hidden" accept=".pdf,.jpg,.jpeg,.png" @change="(e) => onFileChange(e, 'cac')" />
+                  </label>
+                  <p v-if="cacError" class="mt-1 pl-1 text-xs text-red-500">CAC certificate is required</p>
+                </div>
+                <!-- Govt Approval -->
+                <div>
+                  <label class="text-xs font-roboto text-tegbale-text-gray block mb-1">
+                    Government Approval Document <span class="text-red-500">*</span>
+                  </label>
+                  <label
+                    class="flex items-center gap-2 cursor-pointer rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-sm font-roboto text-tegbale-text-gray hover:border-tegbale-blue transition-colors"
+                    :class="{ 'border-red-400': govtError }"
+                  >
+                    <svg class="h-4 w-4 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                    <span class="truncate">{{ govtFile ? govtFile.name : 'Upload govt. approval doc (PDF or image)' }}</span>
+                    <input type="file" class="hidden" accept=".pdf,.jpg,.jpeg,.png" @change="(e) => onFileChange(e, 'govt')" />
+                  </label>
+                  <p v-if="govtError" class="mt-1 pl-1 text-xs text-red-500">Government approval document is required</p>
                 </div>
               </div>
             </div>
@@ -162,8 +192,8 @@
             <p v-if="errorMessage" class="mt-3 text-xs text-red-500 font-roboto">{{ errorMessage }}</p>
 
             <div class="flex items-center justify-end gap-3 mt-5">
-              <button type="button" @click="close" class="rounded-full border border-gray-200 px-6 py-2.5 text-sm font-roboto text-tegbale-text-gray hover:bg-gray-50 transition-colors">
-                Cancel
+              <button type="button" @click="step = 1" class="rounded-full border border-gray-200 px-6 py-2.5 text-sm font-roboto text-tegbale-text-gray hover:bg-gray-50 transition-colors">
+                Back
               </button>
               <button
                 type="submit"
@@ -189,6 +219,8 @@ import schoolRequestsApi from '@/api/schoolRequests'
 
 const props = defineProps({ show: Boolean })
 const emit = defineEmits(['close'])
+
+const step = ref(1)
 
 const form = reactive({
   schoolName: '',
@@ -225,11 +257,16 @@ const onFileChange = (event, type) => {
   else { govtFile.value = file; govtError.value = false }
 }
 
-const handleSubmit = async () => {
+const goToStep2 = async () => {
   const valid = await v$.value.$validate()
+  if (!valid) return
+  step.value = 2
+}
+
+const handleSubmit = async () => {
   cacError.value = !cacFile.value
   govtError.value = !govtFile.value
-  if (!valid || cacError.value || govtError.value) return
+  if (cacError.value || govtError.value) return
 
   isLoading.value = true
   errorMessage.value = ''
@@ -259,6 +296,7 @@ const handleSubmit = async () => {
 const close = () => {
   emit('close')
   setTimeout(() => {
+    step.value = 1
     submitted.value = false
     errorMessage.value = ''
     cacFile.value = null
