@@ -1,12 +1,12 @@
 import axios from 'axios'
 import { useUsersStore } from '@/stores/user-store'
 
+const BASE = (import.meta.env.VITE_API_URL ?? 'http://localhost:3001').replace(/\/+$/, '')
+
 const client = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000/api',
+  baseURL: `${BASE}/api/v1`,
 })
 
-// By the time any interceptor fires, all modules in the circular chain
-// (axios→store→api→axios) are fully initialized — safe to call useUsersStore() here.
 client.interceptors.request.use((config) => {
   const store = useUsersStore()
   if (store.accessToken) {
