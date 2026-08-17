@@ -82,6 +82,28 @@
           </tbody>
         </table>
       </div>
+
+      <div class="flex flex-wrap items-center justify-between gap-3 border-t border-gray-100 px-6 py-4">
+        <div class="flex items-center gap-2 text-sm font-roboto text-tegbale-text-gray">
+          <span>Rows per page:</span>
+          <div class="relative">
+            <select v-model="limit" class="appearance-none rounded-full border border-gray-200 bg-white pl-3 pr-7 py-1.5 text-sm font-roboto text-gray-700 focus:border-tegbale-blue focus:outline-none focus:ring-1 focus:ring-tegbale-blue/20">
+              <option :value="10">10</option>
+              <option :value="20">20</option>
+              <option :value="50">50</option>
+            </select>
+            <svg class="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-tegbale-text-gray" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
+            </svg>
+          </div>
+          <span v-if="studentsStore.meta?.total">of {{ studentsStore.meta.total }} student{{ studentsStore.meta.total !== 1 ? 's' : '' }}</span>
+        </div>
+        <div v-if="studentsStore.meta?.totalPages > 1" class="flex gap-2">
+          <button :disabled="page <= 1" @click="changePage(page - 1)" class="rounded-full border border-gray-200 px-4 py-1.5 text-sm font-roboto text-tegbale-text-gray hover:bg-gray-50 disabled:opacity-40">Prev</button>
+          <span class="flex items-center px-3 text-sm font-roboto text-tegbale-text-gray">{{ page }} / {{ studentsStore.meta.totalPages }}</span>
+          <button :disabled="page >= studentsStore.meta.totalPages" @click="changePage(page + 1)" class="rounded-full border border-gray-200 px-4 py-1.5 text-sm font-roboto text-tegbale-text-gray hover:bg-gray-50 disabled:opacity-40">Next</button>
+        </div>
+      </div>
     </div>
 
     <!-- Create/Edit modal -->
@@ -187,6 +209,8 @@ const saving = ref(false)
 const deleteTarget = ref(null)
 const deleteLoading = ref(false)
 
+const page = ref(1)
+const limit = ref(10)
 const search = ref('')
 let searchTimer = null
 
@@ -276,10 +300,11 @@ const confirmDelete = async () => {
 const fetchStudents = async () => {
   loading.value = true
   try {
-    await studentsStore.fetchAll({ schoolId: userStore.schoolId, ...(search.value && { search: search.value }) })
+    await studentsStore.fetchAll({ schoolId: userStore.schoolId, page: page.value, limit: limit.value, ...(search.value && { search: search.value }) })
     students.value = studentsStore.students ?? []
   } catch {} finally { loading.value = false }
 }
+const changePage = (p) => { page.value = p; fetchStudents() }
 
 const fetchClassrooms = async () => {
   try {
@@ -290,8 +315,10 @@ const fetchClassrooms = async () => {
 
 watch(search, () => {
   clearTimeout(searchTimer)
-  searchTimer = setTimeout(fetchStudents, 350)
+  searchTimer = setTimeout(() => { page.value = 1; fetchStudents() }, 350)
 })
+
+watch(limit, () => { page.value = 1; fetchStudents() })
 
 onMounted(() => { fetchStudents(); fetchClassrooms() })
 </script>

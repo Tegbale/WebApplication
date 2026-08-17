@@ -50,7 +50,7 @@
             </tr>
           </thead>
           <tbody class="divide-y divide-gray-50">
-            <tr v-for="(teacher, i) in filteredTeachers" :key="teacher.id" class="hover:bg-gray-50 transition-colors">
+            <tr v-for="(teacher, i) in paginatedTeachers" :key="teacher.id" class="hover:bg-gray-50 transition-colors">
               <td class="px-6 py-4 text-tegbale-text-gray">{{ i + 1 }}</td>
               <td class="px-6 py-4 text-tegbale-text-gray">{{ teacher.firstName }} {{ teacher.lastName }}</td>
               <td class="px-6 py-4 text-tegbale-text-gray hidden md:table-cell">{{ teacher.email }}</td>
@@ -79,6 +79,28 @@
             </tr>
           </tbody>
         </table>
+      </div>
+
+      <div class="flex flex-wrap items-center justify-between gap-3 border-t border-gray-100 px-6 py-4">
+        <div class="flex items-center gap-2 text-sm font-roboto text-tegbale-text-gray">
+          <span>Rows per page:</span>
+          <div class="relative">
+            <select v-model="perPage" class="appearance-none rounded-full border border-gray-200 bg-white pl-3 pr-7 py-1.5 text-sm font-roboto text-gray-700 focus:border-tegbale-blue focus:outline-none focus:ring-1 focus:ring-tegbale-blue/20">
+              <option :value="10">10</option>
+              <option :value="20">20</option>
+              <option :value="50">50</option>
+            </select>
+            <svg class="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-tegbale-text-gray" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
+            </svg>
+          </div>
+          <span v-if="filteredTeachers.length">of {{ filteredTeachers.length }} total</span>
+        </div>
+        <div v-if="totalClientPages > 1" class="flex gap-2">
+          <button :disabled="clientPage <= 1" @click="clientPage--" class="rounded-full border border-gray-200 px-4 py-1.5 text-sm font-roboto text-tegbale-text-gray hover:bg-gray-50 disabled:opacity-40">Prev</button>
+          <span class="flex items-center px-3 text-sm font-roboto text-tegbale-text-gray">{{ clientPage }} / {{ totalClientPages }}</span>
+          <button :disabled="clientPage >= totalClientPages" @click="clientPage++" class="rounded-full border border-gray-200 px-4 py-1.5 text-sm font-roboto text-tegbale-text-gray hover:bg-gray-50 disabled:opacity-40">Next</button>
+        </div>
       </div>
     </div>
 
@@ -147,7 +169,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted } from 'vue'
+import { ref, reactive, computed, watch, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useVuelidate } from '@vuelidate/core'
 import { required, email, helpers } from '@vuelidate/validators'
@@ -182,6 +204,16 @@ const filteredTeachers = computed(() => {
     t.email.toLowerCase().includes(q)
   )
 })
+
+const perPage = ref(10)
+const clientPage = ref(1)
+const totalClientPages = computed(() => Math.max(1, Math.ceil(filteredTeachers.value.length / perPage.value)))
+const paginatedTeachers = computed(() => {
+  const start = (clientPage.value - 1) * perPage.value
+  return filteredTeachers.value.slice(start, start + perPage.value)
+})
+
+watch([search, perPage], () => { clientPage.value = 1 })
 
 const rules = computed(() => ({
   firstName: { required: helpers.withMessage('First name is required', required) },

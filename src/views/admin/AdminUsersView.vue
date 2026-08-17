@@ -99,6 +99,28 @@
           </tbody>
         </table>
       </div>
+
+      <div class="flex flex-wrap items-center justify-between gap-3 border-t border-gray-100 px-6 py-4">
+        <div class="flex items-center gap-2 text-sm font-roboto text-tegbale-text-gray">
+          <span>Rows per page:</span>
+          <div class="relative">
+            <select v-model="limit" class="appearance-none rounded-full border border-gray-200 bg-white pl-3 pr-7 py-1.5 text-sm font-roboto text-gray-700 focus:border-tegbale-blue focus:outline-none focus:ring-1 focus:ring-tegbale-blue/20">
+              <option :value="10">10</option>
+              <option :value="20">20</option>
+              <option :value="50">50</option>
+            </select>
+            <svg class="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-tegbale-text-gray" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
+            </svg>
+          </div>
+          <span v-if="adminStore.meta?.total">of {{ adminStore.meta.total }} member{{ adminStore.meta.total !== 1 ? 's' : '' }}</span>
+        </div>
+        <div v-if="adminStore.meta?.totalPages > 1" class="flex gap-2">
+          <button :disabled="page <= 1" @click="changePage(page - 1)" class="rounded-full border border-gray-200 px-4 py-1.5 text-sm font-roboto text-tegbale-text-gray hover:bg-gray-50 disabled:opacity-40">Prev</button>
+          <span class="flex items-center px-3 text-sm font-roboto text-tegbale-text-gray">{{ page }} / {{ adminStore.meta.totalPages }}</span>
+          <button :disabled="page >= adminStore.meta.totalPages" @click="changePage(page + 1)" class="rounded-full border border-gray-200 px-4 py-1.5 text-sm font-roboto text-tegbale-text-gray hover:bg-gray-50 disabled:opacity-40">Next</button>
+        </div>
+      </div>
     </div>
 
     <!-- Create Modal -->
@@ -232,6 +254,8 @@ const formLoading = ref(false)
 const tempPassword = ref(null)
 const createdName = ref('')
 
+const page = ref(1)
+const limit = ref(10)
 const search = ref('')
 const roleFilter = ref('')
 let searchTimer = null
@@ -310,15 +334,22 @@ const handleToggle = async (id) => {
   }
 }
 
+const fetchStaff = () => adminStore.fetchAllStaff({
+  page: page.value,
+  limit: limit.value,
+  ...(search.value && { search: search.value }),
+  ...(roleFilter.value && { role: roleFilter.value }),
+})
+const changePage = (p) => { page.value = p; fetchStaff() }
+
 watch([search, roleFilter], () => {
   clearTimeout(searchTimer)
-  searchTimer = setTimeout(() => adminStore.fetchAllStaff({
-    ...(search.value && { search: search.value }),
-    ...(roleFilter.value && { role: roleFilter.value }),
-  }), 350)
+  searchTimer = setTimeout(() => { page.value = 1; fetchStaff() }, 350)
 })
 
-onMounted(async () => { try { await adminStore.fetchAllStaff() } catch {} })
+watch(limit, () => { page.value = 1; fetchStaff() })
+
+onMounted(async () => { try { await fetchStaff() } catch {} })
 </script>
 
 <style lang="scss" scoped></style>
