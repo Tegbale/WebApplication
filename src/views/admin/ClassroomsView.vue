@@ -88,7 +88,7 @@
 
     <!-- View modal -->
     <div v-if="viewTarget" class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4" @click.self="viewTarget = null">
-      <div class="w-full max-w-lg bg-white rounded-2xl shadow-xl">
+      <div class="w-full max-w-lg bg-white rounded-2xl shadow-xl max-h-[90vh] overflow-y-auto">
         <div class="flex items-center justify-between border-b border-gray-100 px-6 py-4">
           <h3 class="text-lg font-semibold text-tegbale-navy-blue font-roboto">View Classroom</h3>
           <button class="rounded-full p-1 text-tegbale-text-gray hover:bg-gray-100" @click="viewTarget = null">
@@ -101,15 +101,15 @@
             <p class="rounded-full border border-gray-200 px-4 py-2.5 text-gray-700">{{ viewTarget.name }}</p>
           </div>
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <div class="flex flex-col gap-1">
+            <div class="flex flex-col gap-1 min-w-0">
               <p class="text-xs text-tegbale-text-gray">Level</p>
-              <p class="rounded-full border border-gray-200 px-4 py-2.5 text-gray-700">{{ viewTarget.level || '—' }}</p>
+              <p class="rounded-full border border-gray-200 px-4 py-2.5 text-gray-700 break-words">{{ viewTarget.level || '—' }}</p>
             </div>
-            <div class="flex flex-col gap-1">
+            <div class="flex flex-col gap-1 min-w-0">
               <p class="text-xs text-tegbale-text-gray">Students</p>
               <p class="rounded-full border border-gray-200 px-4 py-2.5 text-gray-700">{{ viewTarget._count?.students ?? 0 }}</p>
             </div>
-            <div class="flex flex-col gap-1">
+            <div class="flex flex-col gap-1 min-w-0">
               <p class="text-xs text-tegbale-text-gray">Teachers</p>
               <p class="rounded-full border border-gray-200 px-4 py-2.5 text-gray-700">{{ viewTarget._count?.teachers ?? 0 }}</p>
             </div>
@@ -123,7 +123,7 @@
 
     <!-- Create/Edit modal -->
     <div v-if="showModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
-      <div class="w-full max-w-lg bg-white rounded-2xl shadow-xl">
+      <div class="w-full max-w-lg bg-white rounded-2xl shadow-xl max-h-[90vh] overflow-y-auto">
         <div class="flex items-center justify-between border-b border-gray-100 px-6 py-4">
           <h3 class="text-lg font-semibold text-tegbale-navy-blue font-roboto">{{ editTarget ? 'Edit Classroom' : 'Add Classroom' }}</h3>
           <button class="rounded-full p-1 text-tegbale-text-gray hover:bg-gray-100" @click="closeModal">
@@ -154,7 +154,7 @@
 
     <!-- Manage Teachers modal -->
     <div v-if="manageTarget" class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4" @click.self="manageTarget = null">
-      <div class="w-full max-w-lg bg-white rounded-2xl shadow-xl">
+      <div class="w-full max-w-lg bg-white rounded-2xl shadow-xl max-h-[90vh] overflow-y-auto">
         <div class="flex items-center justify-between border-b border-gray-100 px-6 py-4">
           <h3 class="text-lg font-semibold text-tegbale-navy-blue font-roboto">Manage Teachers — {{ manageTarget.name }}</h3>
           <button class="rounded-full p-1 text-tegbale-text-gray hover:bg-gray-100" @click="manageTarget = null">
