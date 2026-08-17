@@ -175,6 +175,16 @@
       </div>
     </div>
 
+    <!-- Delete Confirm -->
+    <ConfirmModal
+      :open="!!deleteTarget"
+      :title="`Delete &quot;${deleteTarget?.title}&quot;?`"
+      message="This event will be permanently removed and cannot be recovered."
+      :loading="deleteLoading"
+      @confirm="confirmDelete"
+      @cancel="deleteTarget = null"
+    />
+
     <!-- Edit Modal -->
     <div v-if="editTarget" class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
       <div class="w-full max-w-lg bg-white rounded-2xl shadow-xl max-h-[90vh] overflow-y-auto">
@@ -237,6 +247,7 @@ import { required, helpers } from '@vuelidate/validators'
 import { useEventsStore } from '@/stores/events-store'
 import { useToastStore } from '@/stores/toast-store'
 import ExportDropdown from '@/components/BaseComponents/ExportDropdown.vue'
+import ConfirmModal from '@/components/BaseComponents/ConfirmModal.vue'
 
 const eventsStore = useEventsStore()
 const toastStore = useToastStore()
@@ -247,6 +258,8 @@ const showCreate = ref(false)
 const viewTarget = ref(null)
 const editTarget = ref(null)
 const formLoading = ref(false)
+const deleteTarget = ref(null)
+const deleteLoading = ref(false)
 
 const form = reactive({ title: '', description: '', startDate: '', endDate: '', location: '' })
 const editForm = reactive({ title: '', description: '', startDate: '', endDate: '', location: '', status: 'UPCOMING' })
@@ -337,14 +350,18 @@ const saveEdit = async () => {
   } finally { formLoading.value = false }
 }
 
-const handleDelete = async (event) => {
-  if (!confirm(`Delete "${event.title}"? This cannot be undone.`)) return
+const handleDelete = (event) => { deleteTarget.value = event }
+
+const confirmDelete = async () => {
+  if (!deleteTarget.value) return
+  deleteLoading.value = true
   try {
-    await eventsStore.remove(event.id)
+    await eventsStore.remove(deleteTarget.value.id)
+    deleteTarget.value = null
     toastStore.showToast({ title: 'Done', message: 'Event deleted', type: 'success', timeout: 3000 })
   } catch {
     toastStore.showToast({ title: 'Error', message: 'Failed to delete event', type: 'error', timeout: 4000 })
-  }
+  } finally { deleteLoading.value = false }
 }
 
 onMounted(fetch)

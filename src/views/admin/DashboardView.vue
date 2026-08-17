@@ -337,6 +337,26 @@
 
       </div>
     </div>
+
+    <!-- Delete Post Confirm -->
+    <ConfirmModal
+      :open="!!deletePostTarget"
+      title="Delete this post?"
+      message="This post and all its comments will be permanently removed."
+      :loading="deletePostLoading"
+      @confirm="confirmDeletePost"
+      @cancel="deletePostTarget = null"
+    />
+
+    <!-- Delete Comment Confirm -->
+    <ConfirmModal
+      :open="!!deleteCommentTarget"
+      title="Delete this comment?"
+      message="This comment will be permanently removed."
+      :loading="deleteCommentLoading"
+      @confirm="confirmDeleteComment"
+      @cancel="deleteCommentTarget = null"
+    />
   </div>
 </template>
 
@@ -349,6 +369,7 @@ import { usePostsStore } from '@/stores/posts-store'
 import { useEventsStore } from '@/stores/events-store'
 import adminApi from '@/api/admin'
 import CommentThread from '@/components/CommentThread.vue'
+import ConfirmModal from '@/components/BaseComponents/ConfirmModal.vue'
 
 const userStore = useUsersStore()
 const schoolStore = useSchoolStore()
@@ -361,6 +382,12 @@ const now = new Date()
 const hour = now.getHours()
 const greeting = hour < 12 ? 'morning' : hour < 17 ? 'afternoon' : 'evening'
 const todayLabel = now.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
+
+// --- Delete confirm state ---
+const deletePostTarget = ref(null)
+const deletePostLoading = ref(false)
+const deleteCommentTarget = ref(null)
+const deleteCommentLoading = ref(false)
 
 // --- Stats ---
 const counts = reactive({ classrooms: 0, students: 0, teachers: 0, parents: 0 })
@@ -479,9 +506,13 @@ async function submitPost() {
   finally { postSubmitting.value = false }
 }
 
-async function deletePost(id) {
-  if (!confirm('Delete this post?')) return
-  await postsStore.remove(id)
+function deletePost(id) { deletePostTarget.value = id }
+
+async function confirmDeletePost() {
+  if (!deletePostTarget.value) return
+  deletePostLoading.value = true
+  try { await postsStore.remove(deletePostTarget.value); deletePostTarget.value = null }
+  finally { deletePostLoading.value = false }
 }
 
 async function toggleComments(post) {
@@ -506,7 +537,14 @@ async function submitComment(postId) {
 }
 
 function onReply({ postId, commentId }) { replyTargets[postId] = commentId; replyInputs[postId] = replyInputs[postId] ?? '' }
-async function onDeleteComment({ postId, commentId }) { if (!confirm('Delete this comment?')) return; await postsStore.removeComment(postId, commentId) }
+function onDeleteComment({ postId, commentId }) { deleteCommentTarget.value = { postId, commentId } }
+
+async function confirmDeleteComment() {
+  if (!deleteCommentTarget.value) return
+  deleteCommentLoading.value = true
+  try { await postsStore.removeComment(deleteCommentTarget.value.postId, deleteCommentTarget.value.commentId); deleteCommentTarget.value = null }
+  finally { deleteCommentLoading.value = false }
+}
 function clearReplyTarget(postId) { delete replyTargets[postId] }
 
 // --- Events helpers ---

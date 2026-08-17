@@ -139,6 +139,16 @@
       @close="showImport = false"
       @done="fetchStudents"
     />
+
+    <!-- Delete Confirm -->
+    <ConfirmModal
+      :open="!!deleteTarget"
+      title="Delete student?"
+      message="This student record will be permanently removed and cannot be recovered."
+      :loading="deleteLoading"
+      @confirm="confirmDelete"
+      @cancel="deleteTarget = null"
+    />
   </div>
 </template>
 
@@ -154,6 +164,7 @@ import studentsApi from '@/api/students'
 import classroomsApi from '@/api/classrooms'
 import ExportDropdown from '@/components/BaseComponents/ExportDropdown.vue'
 import ImportModal from '@/components/ImportModal.vue'
+import ConfirmModal from '@/components/BaseComponents/ConfirmModal.vue'
 
 const router = useRouter()
 const studentsStore = useStudentsStore()
@@ -167,6 +178,8 @@ const showModal = ref(false)
 const showImport = ref(false)
 const editTarget = ref(null)
 const saving = ref(false)
+const deleteTarget = ref(null)
+const deleteLoading = ref(false)
 
 const form = reactive({ firstName: '', lastName: '', gender: '', dateOfBirth: '', classroomId: '' })
 
@@ -236,15 +249,19 @@ const saveStudent = async () => {
   } finally { saving.value = false }
 }
 
-const deleteStudent = async (id) => {
-  if (!confirm('Delete this student? This cannot be undone.')) return
+const deleteStudent = (id) => { deleteTarget.value = id }
+
+const confirmDelete = async () => {
+  if (!deleteTarget.value) return
+  deleteLoading.value = true
   try {
-    await studentsStore.deleteStudent(id)
-    students.value = students.value.filter(s => s.id !== id)
+    await studentsStore.deleteStudent(deleteTarget.value)
+    students.value = students.value.filter(s => s.id !== deleteTarget.value)
+    deleteTarget.value = null
     toastStore.showToast({ title: 'Deleted', message: 'Student removed', type: 'success', timeout: 3000 })
   } catch {
     toastStore.showToast({ title: 'Error', message: 'Failed to delete student', type: 'error', timeout: 4000 })
-  }
+  } finally { deleteLoading.value = false }
 }
 
 const fetchStudents = async () => {
