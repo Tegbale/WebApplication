@@ -214,6 +214,16 @@
       @close="showImport = false"
       @done="fetchClassrooms"
     />
+
+    <!-- Delete Confirm -->
+    <ConfirmModal
+      :open="!!deleteTarget"
+      title="Delete classroom?"
+      message="This classroom will be permanently removed and cannot be recovered."
+      :loading="deleteLoading"
+      @confirm="confirmDelete"
+      @cancel="deleteTarget = null"
+    />
   </div>
 </template>
 
@@ -227,6 +237,7 @@ import classroomsApi from '@/api/classrooms'
 import adminApi from '@/api/admin'
 import ExportDropdown from '@/components/BaseComponents/ExportDropdown.vue'
 import ImportModal from '@/components/ImportModal.vue'
+import ConfirmModal from '@/components/BaseComponents/ConfirmModal.vue'
 
 const userStore = useUsersStore()
 const toastStore = useToastStore()
@@ -238,6 +249,8 @@ const showImport = ref(false)
 const editTarget = ref(null)
 const viewTarget = ref(null)
 const saving = ref(false)
+const deleteTarget = ref(null)
+const deleteLoading = ref(false)
 
 // Manage Teachers state
 const manageTarget = ref(null)
@@ -307,15 +320,19 @@ const saveClassroom = async () => {
   } finally { saving.value = false }
 }
 
-const deleteClassroom = async (id) => {
-  if (!confirm('Delete this classroom? This cannot be undone.')) return
+const deleteClassroom = (id) => { deleteTarget.value = id }
+
+const confirmDelete = async () => {
+  if (!deleteTarget.value) return
+  deleteLoading.value = true
   try {
-    await classroomsApi.remove(id)
+    await classroomsApi.remove(deleteTarget.value)
+    deleteTarget.value = null
     toastStore.showToast({ title: 'Deleted', message: 'Classroom removed', type: 'success', timeout: 3000 })
     await fetchClassrooms()
   } catch {
     toastStore.showToast({ title: 'Error', message: 'Failed to delete classroom', type: 'error', timeout: 4000 })
-  }
+  } finally { deleteLoading.value = false }
 }
 
 const openManageTeachers = async (classroom) => {
