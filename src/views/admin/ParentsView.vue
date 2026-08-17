@@ -25,7 +25,10 @@
     </div>
 
     <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
-      <div class="flex items-center justify-end px-4 py-3 border-b border-gray-50">
+      <div class="flex flex-wrap items-center gap-3 px-4 py-3 border-b border-gray-50">
+        <div class="flex-1 min-w-[160px] max-w-xs">
+          <SearchInput v-model="search" placeholder="Search parents..." />
+        </div>
         <ExportDropdown :rows="parentsStore.parents" :columns="exportColumns" filename="parents" :disabled="!parentsStore.parents.length" />
       </div>
 
@@ -260,7 +263,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, watch, onMounted } from 'vue'
 import { useVuelidate } from '@vuelidate/core'
 import { required, email, helpers } from '@vuelidate/validators'
 import { useParentsStore } from '@/stores/parents-store'
@@ -268,6 +271,7 @@ import { useToastStore } from '@/stores/toast-store'
 import studentsApi from '@/api/students'
 import parentsApi from '@/api/parents'
 import ExportDropdown from '@/components/BaseComponents/ExportDropdown.vue'
+import SearchInput from '@/components/BaseComponents/SearchInput.vue'
 import ImportModal from '@/components/ImportModal.vue'
 import TempPasswordModal from '@/components/TempPasswordModal.vue'
 
@@ -282,6 +286,9 @@ const viewTarget = ref(null)
 const formLoading = ref(false)
 const tempPassword = ref(null)
 const createdName = ref('')
+
+const search = ref('')
+let tableSearchTimer = null
 
 // Ward management state
 const showAssignWard = ref(false)
@@ -311,7 +318,7 @@ const exportColumns = [
   { header: 'Wards', value: (p) => p.wards?.length ?? 0 },
 ]
 
-const fetch = () => parentsStore.fetchAll({ page: page.value, limit })
+const fetch = () => parentsStore.fetchAll({ page: page.value, limit, ...(search.value && { search: search.value }) })
 const changePage = (p) => { page.value = p; fetch() }
 
 const openView = (parent) => {
@@ -391,6 +398,11 @@ const doRemoveWard = async (ward) => {
     toastStore.showToast({ title: 'Error', message: err?.response?.data?.message ?? 'Failed to remove ward', type: 'error', timeout: 4000 })
   } finally { wardBusy.value = false }
 }
+
+watch(search, () => {
+  clearTimeout(tableSearchTimer)
+  tableSearchTimer = setTimeout(() => { page.value = 1; fetch() }, 350)
+})
 
 onMounted(fetch)
 </script>

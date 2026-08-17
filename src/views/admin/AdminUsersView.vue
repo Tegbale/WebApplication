@@ -25,7 +25,20 @@
     </div>
 
     <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
-      <div class="flex items-center justify-end px-4 py-3 border-b border-gray-50">
+      <div class="flex flex-wrap items-center gap-3 px-4 py-3 border-b border-gray-50">
+        <div class="flex-1 min-w-[160px] max-w-xs">
+          <SearchInput v-model="search" placeholder="Search staff..." />
+        </div>
+        <div class="relative">
+          <select v-model="roleFilter" class="appearance-none rounded-full border border-gray-200 bg-white pl-4 pr-9 py-2.5 text-sm font-roboto text-gray-700 focus:border-tegbale-blue focus:outline-none focus:ring-1 focus:ring-tegbale-blue/20">
+            <option value="">All roles</option>
+            <option value="STAFF">Staff</option>
+            <option value="TEACHER">Teacher</option>
+          </select>
+          <svg class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-tegbale-text-gray" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
+          </svg>
+        </div>
         <ExportDropdown :rows="adminStore.staff" :columns="exportColumns" filename="staff" :disabled="!adminStore.staff.length" />
       </div>
 
@@ -194,7 +207,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted } from 'vue'
+import { ref, reactive, computed, watch, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useVuelidate } from '@vuelidate/core'
 import { required, email, helpers } from '@vuelidate/validators'
@@ -204,6 +217,7 @@ import adminApi from '@/api/admin'
 import ExportDropdown from '@/components/BaseComponents/ExportDropdown.vue'
 import ImportModal from '@/components/ImportModal.vue'
 import TempPasswordModal from '@/components/TempPasswordModal.vue'
+import SearchInput from '@/components/BaseComponents/SearchInput.vue'
 
 const router = useRouter()
 const adminStore = useAdminsStore()
@@ -215,6 +229,10 @@ const editTarget = ref(null)
 const formLoading = ref(false)
 const tempPassword = ref(null)
 const createdName = ref('')
+
+const search = ref('')
+const roleFilter = ref('')
+let searchTimer = null
 
 const form = reactive({ firstName: '', lastName: '', email: '', phone: '', role: '' })
 const editForm = reactive({ firstName: '', lastName: '', phone: '' })
@@ -289,6 +307,14 @@ const handleToggle = async (id) => {
     toastStore.showToast({ title: 'Error', message: 'Failed to update status', type: 'error', timeout: 4000 })
   }
 }
+
+watch([search, roleFilter], () => {
+  clearTimeout(searchTimer)
+  searchTimer = setTimeout(() => adminStore.fetchAllStaff({
+    ...(search.value && { search: search.value }),
+    ...(roleFilter.value && { role: roleFilter.value }),
+  }), 350)
+})
 
 onMounted(async () => { try { await adminStore.fetchAllStaff() } catch {} })
 </script>

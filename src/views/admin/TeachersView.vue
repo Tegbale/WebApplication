@@ -25,8 +25,11 @@
     </div>
 
     <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
-      <div class="flex items-center justify-end px-4 py-3 border-b border-gray-50">
-        <ExportDropdown :rows="teachers" :columns="exportColumns" filename="teachers" :disabled="!teachers.length" />
+      <div class="flex flex-wrap items-center gap-3 px-4 py-3 border-b border-gray-50">
+        <div class="flex-1 min-w-[160px] max-w-xs">
+          <SearchInput v-model="search" placeholder="Search teachers..." />
+        </div>
+        <ExportDropdown :rows="filteredTeachers" :columns="exportColumns" filename="teachers" :disabled="!filteredTeachers.length" />
       </div>
 
       <div v-if="loading" class="p-6 space-y-3">
@@ -45,7 +48,7 @@
             </tr>
           </thead>
           <tbody class="divide-y divide-gray-50">
-            <tr v-for="(teacher, i) in teachers" :key="teacher.id" class="hover:bg-gray-50 transition-colors">
+            <tr v-for="(teacher, i) in filteredTeachers" :key="teacher.id" class="hover:bg-gray-50 transition-colors">
               <td class="px-6 py-4 text-tegbale-text-gray">{{ i + 1 }}</td>
               <td class="px-6 py-4 text-tegbale-text-gray">{{ teacher.firstName }} {{ teacher.lastName }}</td>
               <td class="px-6 py-4 text-tegbale-text-gray hidden md:table-cell">{{ teacher.email }}</td>
@@ -69,8 +72,8 @@
                 </div>
               </td>
             </tr>
-            <tr v-if="!teachers.length">
-              <td colspan="5" class="px-6 py-12 text-center text-tegbale-text-gray">No teachers found</td>
+            <tr v-if="!filteredTeachers.length">
+              <td colspan="5" class="px-6 py-12 text-center text-tegbale-text-gray">{{ search ? 'No teachers match your search' : 'No teachers found' }}</td>
             </tr>
           </tbody>
         </table>
@@ -151,6 +154,7 @@ import { useToastStore } from '@/stores/toast-store'
 import ExportDropdown from '@/components/BaseComponents/ExportDropdown.vue'
 import ImportModal from '@/components/ImportModal.vue'
 import TempPasswordModal from '@/components/TempPasswordModal.vue'
+import SearchInput from '@/components/BaseComponents/SearchInput.vue'
 
 const router = useRouter()
 
@@ -158,6 +162,7 @@ const toastStore = useToastStore()
 
 const teachers = ref([])
 const loading = ref(false)
+const search = ref('')
 const showModal = ref(false)
 const showImport = ref(false)
 const editingId = ref(null)
@@ -166,6 +171,15 @@ const tempPassword = ref(null)
 const createdName = ref('')
 
 const form = reactive({ firstName: '', lastName: '', email: '', phone: '' })
+
+const filteredTeachers = computed(() => {
+  if (!search.value) return teachers.value
+  const q = search.value.toLowerCase()
+  return teachers.value.filter(t =>
+    `${t.firstName} ${t.lastName}`.toLowerCase().includes(q) ||
+    t.email.toLowerCase().includes(q)
+  )
+})
 
 const rules = computed(() => ({
   firstName: { required: helpers.withMessage('First name is required', required) },

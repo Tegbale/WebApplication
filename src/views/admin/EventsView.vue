@@ -14,7 +14,22 @@
     </div>
 
     <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
-      <div class="flex items-center justify-end px-4 py-3 border-b border-gray-50">
+      <div class="flex flex-wrap items-center gap-3 px-4 py-3 border-b border-gray-50">
+        <div class="flex-1 min-w-[160px] max-w-xs">
+          <SearchInput v-model="search" placeholder="Search events..." />
+        </div>
+        <div class="relative">
+          <select v-model="statusFilter" class="appearance-none rounded-full border border-gray-200 bg-white pl-4 pr-9 py-2.5 text-sm font-roboto text-gray-700 focus:border-tegbale-blue focus:outline-none focus:ring-1 focus:ring-tegbale-blue/20">
+            <option value="">All statuses</option>
+            <option value="UPCOMING">Upcoming</option>
+            <option value="ONGOING">Ongoing</option>
+            <option value="COMPLETED">Completed</option>
+            <option value="CANCELLED">Cancelled</option>
+          </select>
+          <svg class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-tegbale-text-gray" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
+          </svg>
+        </div>
         <ExportDropdown
           :rows="eventsStore.events"
           :columns="exportColumns"
@@ -241,13 +256,14 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, watch, onMounted } from 'vue'
 import { useVuelidate } from '@vuelidate/core'
 import { required, helpers } from '@vuelidate/validators'
 import { useEventsStore } from '@/stores/events-store'
 import { useToastStore } from '@/stores/toast-store'
 import ExportDropdown from '@/components/BaseComponents/ExportDropdown.vue'
 import ConfirmModal from '@/components/BaseComponents/ConfirmModal.vue'
+import SearchInput from '@/components/BaseComponents/SearchInput.vue'
 
 const eventsStore = useEventsStore()
 const toastStore = useToastStore()
@@ -260,6 +276,10 @@ const editTarget = ref(null)
 const formLoading = ref(false)
 const deleteTarget = ref(null)
 const deleteLoading = ref(false)
+
+const search = ref('')
+const statusFilter = ref('')
+let searchTimer = null
 
 const form = reactive({ title: '', description: '', startDate: '', endDate: '', location: '' })
 const editForm = reactive({ title: '', description: '', startDate: '', endDate: '', location: '', status: 'UPCOMING' })
@@ -287,7 +307,12 @@ const exportColumns = [
   { header: 'Status', value: (e) => e.status },
 ]
 
-const fetch = () => eventsStore.fetchAll({ page: page.value, limit })
+const fetch = () => eventsStore.fetchAll({
+  page: page.value,
+  limit,
+  ...(search.value && { search: search.value }),
+  ...(statusFilter.value && { status: statusFilter.value }),
+})
 const changePage = (p) => { page.value = p; fetch() }
 
 const openCreate = () => {
@@ -363,6 +388,11 @@ const confirmDelete = async () => {
     toastStore.showToast({ title: 'Error', message: 'Failed to delete event', type: 'error', timeout: 4000 })
   } finally { deleteLoading.value = false }
 }
+
+watch([search, statusFilter], () => {
+  clearTimeout(searchTimer)
+  searchTimer = setTimeout(() => { page.value = 1; fetch() }, 350)
+})
 
 onMounted(fetch)
 </script>
