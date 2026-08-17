@@ -25,8 +25,11 @@
     </div>
 
     <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
-      <div class="flex items-center justify-end px-4 py-3 border-b border-gray-50">
-        <ExportDropdown :rows="classrooms" :columns="exportColumns" filename="classrooms" :disabled="!classrooms.length" />
+      <div class="flex flex-wrap items-center gap-3 px-4 py-3 border-b border-gray-50">
+        <div class="flex-1 min-w-[160px] max-w-xs">
+          <SearchInput v-model="search" placeholder="Search classrooms..." />
+        </div>
+        <ExportDropdown :rows="filteredClassrooms" :columns="exportColumns" filename="classrooms" :disabled="!filteredClassrooms.length" />
       </div>
 
       <div v-if="loading" class="p-6 space-y-3">
@@ -46,7 +49,7 @@
             </tr>
           </thead>
           <tbody class="divide-y divide-gray-50">
-            <tr v-for="(classroom, i) in classrooms" :key="classroom.id" class="hover:bg-gray-50 transition-colors">
+            <tr v-for="(classroom, i) in filteredClassrooms" :key="classroom.id" class="hover:bg-gray-50 transition-colors">
               <td class="px-6 py-4 text-tegbale-text-gray">{{ i + 1 }}</td>
               <td class="px-6 py-4 text-tegbale-text-gray">{{ classroom.name }}</td>
               <td class="px-6 py-4 text-tegbale-text-gray hidden md:table-cell">{{ classroom.level || '—' }}</td>
@@ -78,8 +81,8 @@
                 </div>
               </td>
             </tr>
-            <tr v-if="!classrooms.length">
-              <td colspan="6" class="px-6 py-16 text-center text-tegbale-text-gray">No classrooms added yet</td>
+            <tr v-if="!filteredClassrooms.length">
+              <td colspan="6" class="px-6 py-16 text-center text-tegbale-text-gray">{{ search ? 'No classrooms match your search' : 'No classrooms added yet' }}</td>
             </tr>
           </tbody>
         </table>
@@ -238,12 +241,14 @@ import adminApi from '@/api/admin'
 import ExportDropdown from '@/components/BaseComponents/ExportDropdown.vue'
 import ImportModal from '@/components/ImportModal.vue'
 import ConfirmModal from '@/components/BaseComponents/ConfirmModal.vue'
+import SearchInput from '@/components/BaseComponents/SearchInput.vue'
 
 const userStore = useUsersStore()
 const toastStore = useToastStore()
 
 const classrooms = ref([])
 const loading = ref(false)
+const search = ref('')
 const showModal = ref(false)
 const showImport = ref(false)
 const editTarget = ref(null)
@@ -264,6 +269,12 @@ const removingId = ref(null)
 const availableTeachers = computed(() => {
   const assignedUserIds = new Set(assignedTeachers.value.map(t => t.user.id))
   return allTeachers.value.filter(t => t.role === 'TEACHER' && !assignedUserIds.has(t.id))
+})
+
+const filteredClassrooms = computed(() => {
+  if (!search.value) return classrooms.value
+  const q = search.value.toLowerCase()
+  return classrooms.value.filter(c => c.name.toLowerCase().includes(q))
 })
 
 const form = reactive({ name: '', level: '' })

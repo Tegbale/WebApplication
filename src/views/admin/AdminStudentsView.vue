@@ -25,7 +25,10 @@
     </div>
 
     <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
-      <div class="flex items-center justify-end px-4 py-3 border-b border-gray-50">
+      <div class="flex flex-wrap items-center gap-3 px-4 py-3 border-b border-gray-50">
+        <div class="flex-1 min-w-[160px] max-w-xs">
+          <SearchInput v-model="search" placeholder="Search students..." />
+        </div>
         <ExportDropdown :rows="students" :columns="exportColumns" filename="students" :disabled="!students.length" />
       </div>
 
@@ -153,7 +156,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, watch, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useVuelidate } from '@vuelidate/core'
 import { required, helpers } from '@vuelidate/validators'
@@ -165,6 +168,7 @@ import classroomsApi from '@/api/classrooms'
 import ExportDropdown from '@/components/BaseComponents/ExportDropdown.vue'
 import ImportModal from '@/components/ImportModal.vue'
 import ConfirmModal from '@/components/BaseComponents/ConfirmModal.vue'
+import SearchInput from '@/components/BaseComponents/SearchInput.vue'
 
 const router = useRouter()
 const studentsStore = useStudentsStore()
@@ -180,6 +184,9 @@ const editTarget = ref(null)
 const saving = ref(false)
 const deleteTarget = ref(null)
 const deleteLoading = ref(false)
+
+const search = ref('')
+let searchTimer = null
 
 const form = reactive({ firstName: '', lastName: '', gender: '', dateOfBirth: '', classroomId: '' })
 
@@ -267,7 +274,7 @@ const confirmDelete = async () => {
 const fetchStudents = async () => {
   loading.value = true
   try {
-    await studentsStore.fetchAll({ schoolId: userStore.schoolId })
+    await studentsStore.fetchAll({ schoolId: userStore.schoolId, ...(search.value && { search: search.value }) })
     students.value = studentsStore.students ?? []
   } catch {} finally { loading.value = false }
 }
@@ -278,6 +285,11 @@ const fetchClassrooms = async () => {
     classrooms.value = res.data.data ?? []
   } catch {}
 }
+
+watch(search, () => {
+  clearTimeout(searchTimer)
+  searchTimer = setTimeout(fetchStudents, 350)
+})
 
 onMounted(() => { fetchStudents(); fetchClassrooms() })
 </script>
