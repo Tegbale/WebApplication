@@ -30,12 +30,14 @@
             <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
           </svg>
         </div>
-        <ExportDropdown
-          :rows="eventsStore.events"
-          :columns="exportColumns"
-          filename="events"
-          :disabled="!eventsStore.events.length"
-        />
+        <div class="ml-auto shrink-0">
+          <ExportDropdown
+            :rows="eventsStore.events"
+            :columns="exportColumns"
+            filename="events"
+            :disabled="!eventsStore.events.length"
+          />
+        </div>
       </div>
 
       <div v-if="eventsStore.loading && !eventsStore.events.length" class="p-6 space-y-3">

@@ -29,7 +29,9 @@
         <div class="flex-1 min-w-[160px] max-w-xs">
           <SearchInput v-model="search" placeholder="Search students..." />
         </div>
-        <ExportDropdown :rows="students" :columns="exportColumns" filename="students" :disabled="!students.length" />
+        <div class="ml-auto shrink-0">
+          <ExportDropdown :rows="students" :columns="exportColumns" filename="students" :disabled="!students.length" />
+        </div>
       </div>
 
       <div v-if="loading" class="p-6 space-y-3">

@@ -39,7 +39,9 @@
             <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
           </svg>
         </div>
-        <ExportDropdown :rows="adminStore.staff" :columns="exportColumns" filename="staff" :disabled="!adminStore.staff.length" />
+        <div class="ml-auto shrink-0">
+          <ExportDropdown :rows="adminStore.staff" :columns="exportColumns" filename="staff" :disabled="!adminStore.staff.length" />
+        </div>
       </div>
 
       <div v-if="adminStore.loading && !adminStore.staff.length" class="p-6 space-y-3">
