@@ -104,23 +104,23 @@
         <div class="px-6 py-5 space-y-5 text-sm font-roboto">
           <!-- Info fields -->
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div class="flex flex-col gap-1">
+            <div class="flex flex-col gap-1 min-w-0">
               <p class="text-xs text-tegbale-text-gray">First Name</p>
-              <p class="rounded-full border border-gray-200 px-4 py-2.5 text-gray-700">{{ viewTarget.user.firstName }}</p>
+              <p class="rounded-full border border-gray-200 px-4 py-2.5 text-gray-700 break-words">{{ viewTarget.user.firstName }}</p>
             </div>
-            <div class="flex flex-col gap-1">
+            <div class="flex flex-col gap-1 min-w-0">
               <p class="text-xs text-tegbale-text-gray">Last Name</p>
-              <p class="rounded-full border border-gray-200 px-4 py-2.5 text-gray-700">{{ viewTarget.user.lastName }}</p>
+              <p class="rounded-full border border-gray-200 px-4 py-2.5 text-gray-700 break-words">{{ viewTarget.user.lastName }}</p>
             </div>
-            <div class="flex flex-col gap-1">
+            <div class="flex flex-col gap-1 min-w-0 sm:col-span-2">
               <p class="text-xs text-tegbale-text-gray">Email Address</p>
-              <p class="rounded-full border border-gray-200 px-4 py-2.5 text-gray-700">{{ viewTarget.user.email }}</p>
+              <p class="rounded-full border border-gray-200 px-4 py-2.5 text-gray-700 break-all">{{ viewTarget.user.email }}</p>
             </div>
-            <div class="flex flex-col gap-1">
+            <div class="flex flex-col gap-1 min-w-0">
               <p class="text-xs text-tegbale-text-gray">Phone</p>
-              <p class="rounded-full border border-gray-200 px-4 py-2.5 text-gray-700">{{ viewTarget.user.phone || '—' }}</p>
+              <p class="rounded-full border border-gray-200 px-4 py-2.5 text-gray-700 break-words">{{ viewTarget.user.phone || '—' }}</p>
             </div>
-            <div class="flex flex-col gap-1">
+            <div class="flex flex-col gap-1 min-w-0">
               <p class="text-xs text-tegbale-text-gray">Status</p>
               <p class="rounded-full border px-4 py-2.5" :class="viewTarget.user.isActive ? 'border-green-200 text-green-600' : 'border-red-200 text-red-500'">
                 {{ viewTarget.user.isActive ? 'Active' : 'Inactive' }}
