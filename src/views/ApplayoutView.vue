@@ -174,7 +174,9 @@ const onClickOutside = (e) => {
 }
 onMounted(() => {
   document.addEventListener('mousedown', onClickOutside)
-  notifStore.fetchUnreadCount()
+  if (userStore.accessToken) {
+    notifStore.fetchUnreadCount()
+  }
 })
 onUnmounted(() => document.removeEventListener('mousedown', onClickOutside))
 
