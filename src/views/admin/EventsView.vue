@@ -14,13 +14,30 @@
     </div>
 
     <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
-      <div class="flex items-center justify-end px-4 py-3 border-b border-gray-50">
-        <ExportDropdown
-          :rows="eventsStore.events"
-          :columns="exportColumns"
-          filename="events"
-          :disabled="!eventsStore.events.length"
-        />
+      <div class="flex flex-wrap items-center gap-3 px-4 py-3 border-b border-gray-50">
+        <div class="flex-1 min-w-[160px] max-w-xs">
+          <SearchInput v-model="search" placeholder="Search events..." />
+        </div>
+        <div class="relative">
+          <select v-model="statusFilter" class="appearance-none rounded-full border border-gray-200 bg-white pl-4 pr-9 py-2.5 text-sm font-roboto text-gray-700 focus:border-tegbale-blue focus:outline-none focus:ring-1 focus:ring-tegbale-blue/20">
+            <option value="">All statuses</option>
+            <option value="UPCOMING">Upcoming</option>
+            <option value="ONGOING">Ongoing</option>
+            <option value="COMPLETED">Completed</option>
+            <option value="CANCELLED">Cancelled</option>
+          </select>
+          <svg class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-tegbale-text-gray" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
+          </svg>
+        </div>
+        <div class="ml-auto shrink-0">
+          <ExportDropdown
+            :rows="eventsStore.events"
+            :columns="exportColumns"
+            filename="events"
+            :disabled="!eventsStore.events.length"
+          />
+        </div>
       </div>
 
       <div v-if="eventsStore.loading && !eventsStore.events.length" class="p-6 space-y-3">
@@ -78,9 +95,13 @@
         </table>
       </div>
 
-      <div v-if="eventsStore.meta.totalPages > 1" class="flex items-center justify-between border-t border-gray-100 px-6 py-4">
-        <p class="text-sm text-tegbale-text-gray font-roboto">{{ eventsStore.meta.total }} event{{ eventsStore.meta.total !== 1 ? 's' : '' }}</p>
-        <div class="flex gap-2">
+      <div class="flex flex-wrap items-center justify-between gap-3 border-t border-gray-100 px-6 py-4">
+        <div class="flex items-center gap-2 text-sm font-roboto text-tegbale-text-gray">
+          <span>Rows per page:</span>
+          <PerPageSelect v-model="limit" />
+          <span v-if="eventsStore.meta.total">of {{ eventsStore.meta.total }} event{{ eventsStore.meta.total !== 1 ? 's' : '' }}</span>
+        </div>
+        <div v-if="eventsStore.meta.totalPages > 1" class="flex gap-2">
           <button :disabled="page <= 1" @click="changePage(page - 1)" class="rounded-full border border-gray-200 px-4 py-1.5 text-sm font-roboto text-tegbale-text-gray hover:bg-gray-50 disabled:opacity-40">Prev</button>
           <span class="flex items-center px-3 text-sm font-roboto text-tegbale-text-gray">{{ page }} / {{ eventsStore.meta.totalPages }}</span>
           <button :disabled="page >= eventsStore.meta.totalPages" @click="changePage(page + 1)" class="rounded-full border border-gray-200 px-4 py-1.5 text-sm font-roboto text-tegbale-text-gray hover:bg-gray-50 disabled:opacity-40">Next</button>
@@ -175,6 +196,16 @@
       </div>
     </div>
 
+    <!-- Delete Confirm -->
+    <ConfirmModal
+      :open="!!deleteTarget"
+      :title="`Delete &quot;${deleteTarget?.title}&quot;?`"
+      message="This event will be permanently removed and cannot be recovered."
+      :loading="deleteLoading"
+      @confirm="confirmDelete"
+      @cancel="deleteTarget = null"
+    />
+
     <!-- Edit Modal -->
     <div v-if="editTarget" class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
       <div class="w-full max-w-lg bg-white rounded-2xl shadow-xl max-h-[90vh] overflow-y-auto">
@@ -231,22 +262,31 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, watch, onMounted } from 'vue'
 import { useVuelidate } from '@vuelidate/core'
 import { required, helpers } from '@vuelidate/validators'
 import { useEventsStore } from '@/stores/events-store'
 import { useToastStore } from '@/stores/toast-store'
 import ExportDropdown from '@/components/BaseComponents/ExportDropdown.vue'
+import ConfirmModal from '@/components/BaseComponents/ConfirmModal.vue'
+import SearchInput from '@/components/BaseComponents/SearchInput.vue'
+import PerPageSelect from '@/components/BaseComponents/PerPageSelect.vue'
 
 const eventsStore = useEventsStore()
 const toastStore = useToastStore()
 
 const page = ref(1)
-const limit = 20
+const limit = ref(10)
 const showCreate = ref(false)
 const viewTarget = ref(null)
 const editTarget = ref(null)
 const formLoading = ref(false)
+const deleteTarget = ref(null)
+const deleteLoading = ref(false)
+
+const search = ref('')
+const statusFilter = ref('')
+let searchTimer = null
 
 const form = reactive({ title: '', description: '', startDate: '', endDate: '', location: '' })
 const editForm = reactive({ title: '', description: '', startDate: '', endDate: '', location: '', status: 'UPCOMING' })
@@ -274,7 +314,12 @@ const exportColumns = [
   { header: 'Status', value: (e) => e.status },
 ]
 
-const fetch = () => eventsStore.fetchAll({ page: page.value, limit })
+const fetch = () => eventsStore.fetchAll({
+  page: page.value,
+  limit: limit.value,
+  ...(search.value && { search: search.value }),
+  ...(statusFilter.value && { status: statusFilter.value }),
+})
 const changePage = (p) => { page.value = p; fetch() }
 
 const openCreate = () => {
@@ -285,7 +330,12 @@ const openCreate = () => {
 const closeCreate = () => { showCreate.value = false; cv$.value.$reset() }
 
 const openEdit = (event) => {
-  const toLocal = (d) => d ? new Date(d).toISOString().slice(0, 16) : ''
+  const pad = (n) => String(n).padStart(2, '0')
+  const toLocal = (d) => {
+    if (!d) return ''
+    const dt = new Date(d)
+    return `${dt.getFullYear()}-${pad(dt.getMonth() + 1)}-${pad(dt.getDate())}T${pad(dt.getHours())}:${pad(dt.getMinutes())}`
+  }
   Object.assign(editForm, {
     title: event.title,
     description: event.description || '',
@@ -337,15 +387,26 @@ const saveEdit = async () => {
   } finally { formLoading.value = false }
 }
 
-const handleDelete = async (event) => {
-  if (!confirm(`Delete "${event.title}"? This cannot be undone.`)) return
+const handleDelete = (event) => { deleteTarget.value = event }
+
+const confirmDelete = async () => {
+  if (!deleteTarget.value) return
+  deleteLoading.value = true
   try {
-    await eventsStore.remove(event.id)
+    await eventsStore.remove(deleteTarget.value.id)
+    deleteTarget.value = null
     toastStore.showToast({ title: 'Done', message: 'Event deleted', type: 'success', timeout: 3000 })
   } catch {
     toastStore.showToast({ title: 'Error', message: 'Failed to delete event', type: 'error', timeout: 4000 })
-  }
+  } finally { deleteLoading.value = false }
 }
+
+watch([search, statusFilter], () => {
+  clearTimeout(searchTimer)
+  searchTimer = setTimeout(() => { page.value = 1; fetch() }, 350)
+})
+
+watch(limit, () => { page.value = 1; fetch() })
 
 onMounted(fetch)
 </script>

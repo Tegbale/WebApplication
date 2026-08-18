@@ -25,8 +25,13 @@
     </div>
 
     <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
-      <div class="flex items-center justify-end px-4 py-3 border-b border-gray-50">
-        <ExportDropdown :rows="classrooms" :columns="exportColumns" filename="classrooms" :disabled="!classrooms.length" />
+      <div class="flex flex-wrap items-center gap-3 px-4 py-3 border-b border-gray-50">
+        <div class="flex-1 min-w-[160px] max-w-xs">
+          <SearchInput v-model="search" placeholder="Search classrooms..." />
+        </div>
+        <div class="ml-auto shrink-0">
+          <ExportDropdown :rows="filteredClassrooms" :columns="exportColumns" filename="classrooms" :disabled="!filteredClassrooms.length" />
+        </div>
       </div>
 
       <div v-if="loading" class="p-6 space-y-3">
@@ -46,7 +51,7 @@
             </tr>
           </thead>
           <tbody class="divide-y divide-gray-50">
-            <tr v-for="(classroom, i) in classrooms" :key="classroom.id" class="hover:bg-gray-50 transition-colors">
+            <tr v-for="(classroom, i) in paginatedClassrooms" :key="classroom.id" class="hover:bg-gray-50 transition-colors">
               <td class="px-6 py-4 text-tegbale-text-gray">{{ i + 1 }}</td>
               <td class="px-6 py-4 text-tegbale-text-gray">{{ classroom.name }}</td>
               <td class="px-6 py-4 text-tegbale-text-gray hidden md:table-cell">{{ classroom.level || '—' }}</td>
@@ -78,17 +83,30 @@
                 </div>
               </td>
             </tr>
-            <tr v-if="!classrooms.length">
-              <td colspan="6" class="px-6 py-16 text-center text-tegbale-text-gray">No classrooms added yet</td>
+            <tr v-if="!filteredClassrooms.length">
+              <td colspan="6" class="px-6 py-16 text-center text-tegbale-text-gray">{{ search ? 'No classrooms match your search' : 'No classrooms added yet' }}</td>
             </tr>
           </tbody>
         </table>
+      </div>
+
+      <div class="flex flex-wrap items-center justify-between gap-3 border-t border-gray-100 px-6 py-4">
+        <div class="flex items-center gap-2 text-sm font-roboto text-tegbale-text-gray">
+          <span>Rows per page:</span>
+          <PerPageSelect v-model="perPage" />
+          <span v-if="filteredClassrooms.length">of {{ filteredClassrooms.length }} total</span>
+        </div>
+        <div v-if="totalClientPages > 1" class="flex gap-2">
+          <button :disabled="clientPage <= 1" @click="clientPage--" class="rounded-full border border-gray-200 px-4 py-1.5 text-sm font-roboto text-tegbale-text-gray hover:bg-gray-50 disabled:opacity-40">Prev</button>
+          <span class="flex items-center px-3 text-sm font-roboto text-tegbale-text-gray">{{ clientPage }} / {{ totalClientPages }}</span>
+          <button :disabled="clientPage >= totalClientPages" @click="clientPage++" class="rounded-full border border-gray-200 px-4 py-1.5 text-sm font-roboto text-tegbale-text-gray hover:bg-gray-50 disabled:opacity-40">Next</button>
+        </div>
       </div>
     </div>
 
     <!-- View modal -->
     <div v-if="viewTarget" class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4" @click.self="viewTarget = null">
-      <div class="w-full max-w-lg bg-white rounded-2xl shadow-xl">
+      <div class="w-full max-w-lg bg-white rounded-2xl shadow-xl max-h-[90vh] overflow-y-auto">
         <div class="flex items-center justify-between border-b border-gray-100 px-6 py-4">
           <h3 class="text-lg font-semibold text-tegbale-navy-blue font-roboto">View Classroom</h3>
           <button class="rounded-full p-1 text-tegbale-text-gray hover:bg-gray-100" @click="viewTarget = null">
@@ -101,15 +119,15 @@
             <p class="rounded-full border border-gray-200 px-4 py-2.5 text-gray-700">{{ viewTarget.name }}</p>
           </div>
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <div class="flex flex-col gap-1">
+            <div class="flex flex-col gap-1 min-w-0">
               <p class="text-xs text-tegbale-text-gray">Level</p>
-              <p class="rounded-full border border-gray-200 px-4 py-2.5 text-gray-700">{{ viewTarget.level || '—' }}</p>
+              <p class="rounded-full border border-gray-200 px-4 py-2.5 text-gray-700 break-words">{{ viewTarget.level || '—' }}</p>
             </div>
-            <div class="flex flex-col gap-1">
+            <div class="flex flex-col gap-1 min-w-0">
               <p class="text-xs text-tegbale-text-gray">Students</p>
               <p class="rounded-full border border-gray-200 px-4 py-2.5 text-gray-700">{{ viewTarget._count?.students ?? 0 }}</p>
             </div>
-            <div class="flex flex-col gap-1">
+            <div class="flex flex-col gap-1 min-w-0">
               <p class="text-xs text-tegbale-text-gray">Teachers</p>
               <p class="rounded-full border border-gray-200 px-4 py-2.5 text-gray-700">{{ viewTarget._count?.teachers ?? 0 }}</p>
             </div>
@@ -123,7 +141,7 @@
 
     <!-- Create/Edit modal -->
     <div v-if="showModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
-      <div class="w-full max-w-lg bg-white rounded-2xl shadow-xl">
+      <div class="w-full max-w-lg bg-white rounded-2xl shadow-xl max-h-[90vh] overflow-y-auto">
         <div class="flex items-center justify-between border-b border-gray-100 px-6 py-4">
           <h3 class="text-lg font-semibold text-tegbale-navy-blue font-roboto">{{ editTarget ? 'Edit Classroom' : 'Add Classroom' }}</h3>
           <button class="rounded-full p-1 text-tegbale-text-gray hover:bg-gray-100" @click="closeModal">
@@ -154,7 +172,7 @@
 
     <!-- Manage Teachers modal -->
     <div v-if="manageTarget" class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4" @click.self="manageTarget = null">
-      <div class="w-full max-w-lg bg-white rounded-2xl shadow-xl">
+      <div class="w-full max-w-lg bg-white rounded-2xl shadow-xl max-h-[90vh] overflow-y-auto">
         <div class="flex items-center justify-between border-b border-gray-100 px-6 py-4">
           <h3 class="text-lg font-semibold text-tegbale-navy-blue font-roboto">Manage Teachers — {{ manageTarget.name }}</h3>
           <button class="rounded-full p-1 text-tegbale-text-gray hover:bg-gray-100" @click="manageTarget = null">
@@ -214,11 +232,21 @@
       @close="showImport = false"
       @done="fetchClassrooms"
     />
+
+    <!-- Delete Confirm -->
+    <ConfirmModal
+      :open="!!deleteTarget"
+      title="Delete classroom?"
+      message="This classroom will be permanently removed and cannot be recovered."
+      :loading="deleteLoading"
+      @confirm="confirmDelete"
+      @cancel="deleteTarget = null"
+    />
   </div>
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted } from 'vue'
+import { ref, reactive, computed, watch, onMounted } from 'vue'
 import { useVuelidate } from '@vuelidate/core'
 import { required, helpers } from '@vuelidate/validators'
 import { useUsersStore } from '@/stores/user-store'
@@ -227,17 +255,23 @@ import classroomsApi from '@/api/classrooms'
 import adminApi from '@/api/admin'
 import ExportDropdown from '@/components/BaseComponents/ExportDropdown.vue'
 import ImportModal from '@/components/ImportModal.vue'
+import ConfirmModal from '@/components/BaseComponents/ConfirmModal.vue'
+import SearchInput from '@/components/BaseComponents/SearchInput.vue'
+import PerPageSelect from '@/components/BaseComponents/PerPageSelect.vue'
 
 const userStore = useUsersStore()
 const toastStore = useToastStore()
 
 const classrooms = ref([])
 const loading = ref(false)
+const search = ref('')
 const showModal = ref(false)
 const showImport = ref(false)
 const editTarget = ref(null)
 const viewTarget = ref(null)
 const saving = ref(false)
+const deleteTarget = ref(null)
+const deleteLoading = ref(false)
 
 // Manage Teachers state
 const manageTarget = ref(null)
@@ -252,6 +286,22 @@ const availableTeachers = computed(() => {
   const assignedUserIds = new Set(assignedTeachers.value.map(t => t.user.id))
   return allTeachers.value.filter(t => t.role === 'TEACHER' && !assignedUserIds.has(t.id))
 })
+
+const filteredClassrooms = computed(() => {
+  if (!search.value) return classrooms.value
+  const q = search.value.toLowerCase()
+  return classrooms.value.filter(c => c.name.toLowerCase().includes(q))
+})
+
+const perPage = ref(10)
+const clientPage = ref(1)
+const totalClientPages = computed(() => Math.max(1, Math.ceil(filteredClassrooms.value.length / perPage.value)))
+const paginatedClassrooms = computed(() => {
+  const start = (clientPage.value - 1) * perPage.value
+  return filteredClassrooms.value.slice(start, start + perPage.value)
+})
+
+watch([search, perPage], () => { clientPage.value = 1 })
 
 const form = reactive({ name: '', level: '' })
 
@@ -307,15 +357,19 @@ const saveClassroom = async () => {
   } finally { saving.value = false }
 }
 
-const deleteClassroom = async (id) => {
-  if (!confirm('Delete this classroom? This cannot be undone.')) return
+const deleteClassroom = (id) => { deleteTarget.value = id }
+
+const confirmDelete = async () => {
+  if (!deleteTarget.value) return
+  deleteLoading.value = true
   try {
-    await classroomsApi.remove(id)
+    await classroomsApi.remove(deleteTarget.value)
+    deleteTarget.value = null
     toastStore.showToast({ title: 'Deleted', message: 'Classroom removed', type: 'success', timeout: 3000 })
     await fetchClassrooms()
   } catch {
     toastStore.showToast({ title: 'Error', message: 'Failed to delete classroom', type: 'error', timeout: 4000 })
-  }
+  } finally { deleteLoading.value = false }
 }
 
 const openManageTeachers = async (classroom) => {

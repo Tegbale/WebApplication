@@ -25,8 +25,13 @@
     </div>
 
     <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
-      <div class="flex items-center justify-end px-4 py-3 border-b border-gray-50">
-        <ExportDropdown :rows="parentsStore.parents" :columns="exportColumns" filename="parents" :disabled="!parentsStore.parents.length" />
+      <div class="flex flex-wrap items-center gap-3 px-4 py-3 border-b border-gray-50">
+        <div class="flex-1 min-w-[160px] max-w-xs">
+          <SearchInput v-model="search" placeholder="Search parents..." />
+        </div>
+        <div class="ml-auto shrink-0">
+          <ExportDropdown :rows="parentsStore.parents" :columns="exportColumns" filename="parents" :disabled="!parentsStore.parents.length" />
+        </div>
       </div>
 
       <div v-if="parentsStore.loading && !parentsStore.parents.length" class="p-6 space-y-3">
@@ -82,9 +87,13 @@
         </table>
       </div>
 
-      <div v-if="parentsStore.meta.totalPages > 1" class="flex items-center justify-between border-t border-gray-100 px-6 py-4">
-        <p class="text-sm text-tegbale-text-gray font-roboto">{{ parentsStore.meta.total }} parent{{ parentsStore.meta.total !== 1 ? 's' : '' }}</p>
-        <div class="flex gap-2">
+      <div class="flex flex-wrap items-center justify-between gap-3 border-t border-gray-100 px-6 py-4">
+        <div class="flex items-center gap-2 text-sm font-roboto text-tegbale-text-gray">
+          <span>Rows per page:</span>
+          <PerPageSelect v-model="limit" />
+          <span v-if="parentsStore.meta.total">of {{ parentsStore.meta.total }} parent{{ parentsStore.meta.total !== 1 ? 's' : '' }}</span>
+        </div>
+        <div v-if="parentsStore.meta.totalPages > 1" class="flex gap-2">
           <button :disabled="page <= 1" @click="changePage(page - 1)" class="rounded-full border border-gray-200 px-4 py-1.5 text-sm font-roboto text-tegbale-text-gray hover:bg-gray-50 disabled:opacity-40">Prev</button>
           <span class="flex items-center px-3 text-sm font-roboto text-tegbale-text-gray">{{ page }} / {{ parentsStore.meta.totalPages }}</span>
           <button :disabled="page >= parentsStore.meta.totalPages" @click="changePage(page + 1)" class="rounded-full border border-gray-200 px-4 py-1.5 text-sm font-roboto text-tegbale-text-gray hover:bg-gray-50 disabled:opacity-40">Next</button>
@@ -104,23 +113,23 @@
         <div class="px-6 py-5 space-y-5 text-sm font-roboto">
           <!-- Info fields -->
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div class="flex flex-col gap-1">
+            <div class="flex flex-col gap-1 min-w-0">
               <p class="text-xs text-tegbale-text-gray">First Name</p>
-              <p class="rounded-full border border-gray-200 px-4 py-2.5 text-gray-700">{{ viewTarget.user.firstName }}</p>
+              <p class="rounded-full border border-gray-200 px-4 py-2.5 text-gray-700 break-words">{{ viewTarget.user.firstName }}</p>
             </div>
-            <div class="flex flex-col gap-1">
+            <div class="flex flex-col gap-1 min-w-0">
               <p class="text-xs text-tegbale-text-gray">Last Name</p>
-              <p class="rounded-full border border-gray-200 px-4 py-2.5 text-gray-700">{{ viewTarget.user.lastName }}</p>
+              <p class="rounded-full border border-gray-200 px-4 py-2.5 text-gray-700 break-words">{{ viewTarget.user.lastName }}</p>
             </div>
-            <div class="flex flex-col gap-1">
+            <div class="flex flex-col gap-1 min-w-0 sm:col-span-2">
               <p class="text-xs text-tegbale-text-gray">Email Address</p>
-              <p class="rounded-full border border-gray-200 px-4 py-2.5 text-gray-700">{{ viewTarget.user.email }}</p>
+              <p class="rounded-full border border-gray-200 px-4 py-2.5 text-gray-700 break-all">{{ viewTarget.user.email }}</p>
             </div>
-            <div class="flex flex-col gap-1">
+            <div class="flex flex-col gap-1 min-w-0">
               <p class="text-xs text-tegbale-text-gray">Phone</p>
-              <p class="rounded-full border border-gray-200 px-4 py-2.5 text-gray-700">{{ viewTarget.user.phone || '—' }}</p>
+              <p class="rounded-full border border-gray-200 px-4 py-2.5 text-gray-700 break-words">{{ viewTarget.user.phone || '—' }}</p>
             </div>
-            <div class="flex flex-col gap-1">
+            <div class="flex flex-col gap-1 min-w-0">
               <p class="text-xs text-tegbale-text-gray">Status</p>
               <p class="rounded-full border px-4 py-2.5" :class="viewTarget.user.isActive ? 'border-green-200 text-green-600' : 'border-red-200 text-red-500'">
                 {{ viewTarget.user.isActive ? 'Active' : 'Inactive' }}
@@ -260,7 +269,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, watch, onMounted } from 'vue'
 import { useVuelidate } from '@vuelidate/core'
 import { required, email, helpers } from '@vuelidate/validators'
 import { useParentsStore } from '@/stores/parents-store'
@@ -268,20 +277,25 @@ import { useToastStore } from '@/stores/toast-store'
 import studentsApi from '@/api/students'
 import parentsApi from '@/api/parents'
 import ExportDropdown from '@/components/BaseComponents/ExportDropdown.vue'
+import SearchInput from '@/components/BaseComponents/SearchInput.vue'
 import ImportModal from '@/components/ImportModal.vue'
 import TempPasswordModal from '@/components/TempPasswordModal.vue'
+import PerPageSelect from '@/components/BaseComponents/PerPageSelect.vue'
 
 const parentsStore = useParentsStore()
 const toastStore = useToastStore()
 
 const page = ref(1)
-const limit = 20
+const limit = ref(10)
 const showCreate = ref(false)
 const showImport = ref(false)
 const viewTarget = ref(null)
 const formLoading = ref(false)
 const tempPassword = ref(null)
 const createdName = ref('')
+
+const search = ref('')
+let tableSearchTimer = null
 
 // Ward management state
 const showAssignWard = ref(false)
@@ -311,7 +325,7 @@ const exportColumns = [
   { header: 'Wards', value: (p) => p.wards?.length ?? 0 },
 ]
 
-const fetch = () => parentsStore.fetchAll({ page: page.value, limit })
+const fetch = () => parentsStore.fetchAll({ page: page.value, limit: limit.value, ...(search.value && { search: search.value }) })
 const changePage = (p) => { page.value = p; fetch() }
 
 const openView = (parent) => {
@@ -391,6 +405,13 @@ const doRemoveWard = async (ward) => {
     toastStore.showToast({ title: 'Error', message: err?.response?.data?.message ?? 'Failed to remove ward', type: 'error', timeout: 4000 })
   } finally { wardBusy.value = false }
 }
+
+watch(search, () => {
+  clearTimeout(tableSearchTimer)
+  tableSearchTimer = setTimeout(() => { page.value = 1; fetch() }, 350)
+})
+
+watch(limit, () => { page.value = 1; fetch() })
 
 onMounted(fetch)
 </script>

@@ -25,8 +25,23 @@
     </div>
 
     <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
-      <div class="flex items-center justify-end px-4 py-3 border-b border-gray-50">
-        <ExportDropdown :rows="adminStore.staff" :columns="exportColumns" filename="staff" :disabled="!adminStore.staff.length" />
+      <div class="flex flex-wrap items-center gap-3 px-4 py-3 border-b border-gray-50">
+        <div class="flex-1 min-w-[160px] max-w-xs">
+          <SearchInput v-model="search" placeholder="Search staff..." />
+        </div>
+        <div class="relative">
+          <select v-model="roleFilter" class="appearance-none rounded-full border border-gray-200 bg-white pl-4 pr-9 py-2.5 text-sm font-roboto text-gray-700 focus:border-tegbale-blue focus:outline-none focus:ring-1 focus:ring-tegbale-blue/20">
+            <option value="">All roles</option>
+            <option value="STAFF">Staff</option>
+            <option value="TEACHER">Teacher</option>
+          </select>
+          <svg class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-tegbale-text-gray" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
+          </svg>
+        </div>
+        <div class="ml-auto shrink-0">
+          <ExportDropdown :rows="adminStore.staff" :columns="exportColumns" filename="staff" :disabled="!adminStore.staff.length" />
+        </div>
       </div>
 
       <div v-if="adminStore.loading && !adminStore.staff.length" class="p-6 space-y-3">
@@ -66,7 +81,7 @@
                   <button
                     :class="member.isActive ? 'text-red-400 hover:text-red-600' : 'text-tegbale-green hover:text-green-700'"
                     :title="member.isActive ? 'Deactivate' : 'Activate'"
-                    @click="handleToggle(member.id)"
+                    @click="handleToggle(member)"
                   >
                     <svg v-if="member.isActive" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/>
@@ -83,6 +98,19 @@
             </tr>
           </tbody>
         </table>
+      </div>
+
+      <div class="flex flex-wrap items-center justify-between gap-3 border-t border-gray-100 px-6 py-4">
+        <div class="flex items-center gap-2 text-sm font-roboto text-tegbale-text-gray">
+          <span>Rows per page:</span>
+          <PerPageSelect v-model="limit" />
+          <span v-if="adminStore.meta?.total">of {{ adminStore.meta.total }} member{{ adminStore.meta.total !== 1 ? 's' : '' }}</span>
+        </div>
+        <div v-if="adminStore.meta?.totalPages > 1" class="flex gap-2">
+          <button :disabled="page <= 1" @click="changePage(page - 1)" class="rounded-full border border-gray-200 px-4 py-1.5 text-sm font-roboto text-tegbale-text-gray hover:bg-gray-50 disabled:opacity-40">Prev</button>
+          <span class="flex items-center px-3 text-sm font-roboto text-tegbale-text-gray">{{ page }} / {{ adminStore.meta.totalPages }}</span>
+          <button :disabled="page >= adminStore.meta.totalPages" @click="changePage(page + 1)" class="rounded-full border border-gray-200 px-4 py-1.5 text-sm font-roboto text-tegbale-text-gray hover:bg-gray-50 disabled:opacity-40">Next</button>
+        </div>
       </div>
     </div>
 
@@ -141,7 +169,7 @@
 
     <!-- Edit Modal -->
     <div v-if="editTarget" class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4" @click.self="editTarget = null">
-      <div class="w-full max-w-lg bg-white rounded-2xl shadow-xl">
+      <div class="w-full max-w-lg bg-white rounded-2xl shadow-xl max-h-[90vh] overflow-y-auto">
         <div class="flex items-center justify-between border-b border-gray-100 px-6 py-4">
           <h3 class="text-lg font-semibold text-tegbale-navy-blue font-roboto">Edit Staff Member</h3>
           <button class="rounded-full p-1 text-tegbale-text-gray hover:bg-gray-100" @click="editTarget = null">
@@ -190,11 +218,22 @@
       :name="createdName"
       @close="tempPassword = null"
     />
+
+    <ConfirmModal
+      :open="!!toggleTarget"
+      :title="toggleTarget?.isActive ? 'Deactivate staff member?' : 'Activate staff member?'"
+      :message="toggleTarget?.isActive
+        ? 'This staff member will lose access to the platform immediately.'
+        : 'This staff member will regain access to the platform.'"
+      :loading="toggleLoading"
+      @confirm="confirmToggle"
+      @cancel="toggleTarget = null"
+    />
   </div>
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted } from 'vue'
+import { ref, reactive, computed, watch, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useVuelidate } from '@vuelidate/core'
 import { required, email, helpers } from '@vuelidate/validators'
@@ -204,6 +243,9 @@ import adminApi from '@/api/admin'
 import ExportDropdown from '@/components/BaseComponents/ExportDropdown.vue'
 import ImportModal from '@/components/ImportModal.vue'
 import TempPasswordModal from '@/components/TempPasswordModal.vue'
+import SearchInput from '@/components/BaseComponents/SearchInput.vue'
+import PerPageSelect from '@/components/BaseComponents/PerPageSelect.vue'
+import ConfirmModal from '@/components/BaseComponents/ConfirmModal.vue'
 
 const router = useRouter()
 const adminStore = useAdminsStore()
@@ -215,6 +257,12 @@ const editTarget = ref(null)
 const formLoading = ref(false)
 const tempPassword = ref(null)
 const createdName = ref('')
+
+const page = ref(1)
+const limit = ref(10)
+const search = ref('')
+const roleFilter = ref('')
+let searchTimer = null
 
 const form = reactive({ firstName: '', lastName: '', email: '', phone: '', role: '' })
 const editForm = reactive({ firstName: '', lastName: '', phone: '' })
@@ -281,16 +329,41 @@ const saveEdit = async () => {
   } finally { formLoading.value = false }
 }
 
-const handleToggle = async (id) => {
+const toggleTarget = ref(null)
+const toggleLoading = ref(false)
+
+const handleToggle = (member) => { toggleTarget.value = member }
+
+const confirmToggle = async () => {
+  if (!toggleTarget.value) return
+  toggleLoading.value = true
   try {
-    await adminStore.toggleStatus(id)
+    await adminStore.toggleStatus(toggleTarget.value.id)
     toastStore.showToast({ title: 'Done', message: 'Status updated', type: 'success', timeout: 3000 })
   } catch {
     toastStore.showToast({ title: 'Error', message: 'Failed to update status', type: 'error', timeout: 4000 })
+  } finally {
+    toggleLoading.value = false
+    toggleTarget.value = null
   }
 }
 
-onMounted(async () => { try { await adminStore.fetchAllStaff() } catch {} })
+const fetchStaff = () => adminStore.fetchAllStaff({
+  page: page.value,
+  limit: limit.value,
+  ...(search.value && { search: search.value }),
+  ...(roleFilter.value && { role: roleFilter.value }),
+})
+const changePage = (p) => { page.value = p; fetchStaff() }
+
+watch([search, roleFilter], () => {
+  clearTimeout(searchTimer)
+  searchTimer = setTimeout(() => { page.value = 1; fetchStaff() }, 350)
+})
+
+watch(limit, () => { page.value = 1; fetchStaff() })
+
+onMounted(async () => { try { await fetchStaff() } catch {} })
 </script>
 
 <style lang="scss" scoped></style>

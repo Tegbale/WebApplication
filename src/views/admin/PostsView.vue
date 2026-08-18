@@ -132,6 +132,16 @@
       </div>
     </div>
 
+    <!-- Delete Confirm -->
+    <ConfirmModal
+      :open="!!deleteTarget"
+      title="Delete this post?"
+      message="This post and all its comments will be permanently removed."
+      :loading="deleteLoading"
+      @confirm="confirmDeletePost"
+      @cancel="deleteTarget = null"
+    />
+
     <!-- Create Post Modal -->
     <div v-if="showCreate" class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
       <div class="w-full max-w-lg bg-white rounded-2xl shadow-xl">
@@ -169,6 +179,7 @@ import { ref, computed, reactive, onMounted } from 'vue'
 import { useUsersStore } from '@/stores/user-store'
 import { useToastStore } from '@/stores/toast-store'
 import postsApi from '@/api/posts'
+import ConfirmModal from '@/components/BaseComponents/ConfirmModal.vue'
 
 const userStore = useUsersStore()
 const toastStore = useToastStore()
@@ -184,6 +195,8 @@ const showCreate = ref(false)
 const newContent = ref('')
 const createError = ref('')
 const creating = ref(false)
+const deleteTarget = ref(null)
+const deleteLoading = ref(false)
 
 const openPostId = ref(null)
 const comments = reactive({})
@@ -242,17 +255,21 @@ const createPost = async () => {
   } finally { creating.value = false }
 }
 
-const deletePost = async (post) => {
-  if (!confirm(`Delete this post? This cannot be undone.`)) return
+const deletePost = (post) => { deleteTarget.value = post }
+
+const confirmDeletePost = async () => {
+  if (!deleteTarget.value) return
+  deleteLoading.value = true
   try {
-    await postsApi.deletePost(post.id)
-    posts.value = posts.value.filter(p => p.id !== post.id)
+    await postsApi.deletePost(deleteTarget.value.id)
+    posts.value = posts.value.filter(p => p.id !== deleteTarget.value.id)
     total.value -= 1
-    if (openPostId.value === post.id) openPostId.value = null
+    if (openPostId.value === deleteTarget.value.id) openPostId.value = null
+    deleteTarget.value = null
     toastStore.showToast({ title: 'Deleted', message: 'Post removed', type: 'success', timeout: 3000 })
   } catch {
     toastStore.showToast({ title: 'Error', message: 'Failed to delete post', type: 'error', timeout: 3000 })
-  }
+  } finally { deleteLoading.value = false }
 }
 
 const toggleComments = async (postId) => {

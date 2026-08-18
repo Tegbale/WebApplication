@@ -25,8 +25,13 @@
     </div>
 
     <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
-      <div class="flex items-center justify-end px-4 py-3 border-b border-gray-50">
-        <ExportDropdown :rows="teachers" :columns="exportColumns" filename="teachers" :disabled="!teachers.length" />
+      <div class="flex flex-wrap items-center gap-3 px-4 py-3 border-b border-gray-50">
+        <div class="flex-1 min-w-[160px] max-w-xs">
+          <SearchInput v-model="search" placeholder="Search teachers..." />
+        </div>
+        <div class="ml-auto shrink-0">
+          <ExportDropdown :rows="filteredTeachers" :columns="exportColumns" filename="teachers" :disabled="!filteredTeachers.length" />
+        </div>
       </div>
 
       <div v-if="loading" class="p-6 space-y-3">
@@ -45,7 +50,7 @@
             </tr>
           </thead>
           <tbody class="divide-y divide-gray-50">
-            <tr v-for="(teacher, i) in teachers" :key="teacher.id" class="hover:bg-gray-50 transition-colors">
+            <tr v-for="(teacher, i) in paginatedTeachers" :key="teacher.id" class="hover:bg-gray-50 transition-colors">
               <td class="px-6 py-4 text-tegbale-text-gray">{{ i + 1 }}</td>
               <td class="px-6 py-4 text-tegbale-text-gray">{{ teacher.firstName }} {{ teacher.lastName }}</td>
               <td class="px-6 py-4 text-tegbale-text-gray hidden md:table-cell">{{ teacher.email }}</td>
@@ -61,7 +66,7 @@
                   <button
                     :class="teacher.isActive ? 'text-red-400 hover:text-red-600' : 'text-tegbale-green hover:text-green-700'"
                     :title="teacher.isActive ? 'Deactivate' : 'Activate'"
-                    @click="handleToggle(teacher.id)"
+                    @click="handleToggle(teacher)"
                   >
                     <svg v-if="teacher.isActive" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/></svg>
                     <svg v-else class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
@@ -69,17 +74,30 @@
                 </div>
               </td>
             </tr>
-            <tr v-if="!teachers.length">
-              <td colspan="5" class="px-6 py-12 text-center text-tegbale-text-gray">No teachers found</td>
+            <tr v-if="!filteredTeachers.length">
+              <td colspan="5" class="px-6 py-12 text-center text-tegbale-text-gray">{{ search ? 'No teachers match your search' : 'No teachers found' }}</td>
             </tr>
           </tbody>
         </table>
+      </div>
+
+      <div class="flex flex-wrap items-center justify-between gap-3 border-t border-gray-100 px-6 py-4">
+        <div class="flex items-center gap-2 text-sm font-roboto text-tegbale-text-gray">
+          <span>Rows per page:</span>
+          <PerPageSelect v-model="perPage" />
+          <span v-if="filteredTeachers.length">of {{ filteredTeachers.length }} total</span>
+        </div>
+        <div v-if="totalClientPages > 1" class="flex gap-2">
+          <button :disabled="clientPage <= 1" @click="clientPage--" class="rounded-full border border-gray-200 px-4 py-1.5 text-sm font-roboto text-tegbale-text-gray hover:bg-gray-50 disabled:opacity-40">Prev</button>
+          <span class="flex items-center px-3 text-sm font-roboto text-tegbale-text-gray">{{ clientPage }} / {{ totalClientPages }}</span>
+          <button :disabled="clientPage >= totalClientPages" @click="clientPage++" class="rounded-full border border-gray-200 px-4 py-1.5 text-sm font-roboto text-tegbale-text-gray hover:bg-gray-50 disabled:opacity-40">Next</button>
+        </div>
       </div>
     </div>
 
     <!-- Create/Edit modal -->
     <div v-if="showModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
-      <div class="w-full max-w-lg bg-white rounded-2xl shadow-xl">
+      <div class="w-full max-w-lg bg-white rounded-2xl shadow-xl max-h-[90vh] overflow-y-auto">
         <div class="flex items-center justify-between border-b border-gray-100 px-6 py-4">
           <h3 class="text-lg font-semibold text-tegbale-navy-blue font-roboto">{{ editingId ? 'Edit Teacher' : 'Add Teacher' }}</h3>
           <button class="rounded-full p-1 text-tegbale-text-gray hover:bg-gray-100" @click="closeModal">
@@ -138,11 +156,22 @@
       :name="createdName"
       @close="tempPassword = null"
     />
+
+    <ConfirmModal
+      :open="!!toggleTarget"
+      :title="toggleTarget?.isActive ? 'Deactivate teacher?' : 'Activate teacher?'"
+      :message="toggleTarget?.isActive
+        ? 'This teacher will lose access to the platform immediately.'
+        : 'This teacher will regain access to the platform.'"
+      :loading="toggleLoading"
+      @confirm="confirmToggle"
+      @cancel="toggleTarget = null"
+    />
   </div>
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted } from 'vue'
+import { ref, reactive, computed, watch, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useVuelidate } from '@vuelidate/core'
 import { required, email, helpers } from '@vuelidate/validators'
@@ -151,6 +180,9 @@ import { useToastStore } from '@/stores/toast-store'
 import ExportDropdown from '@/components/BaseComponents/ExportDropdown.vue'
 import ImportModal from '@/components/ImportModal.vue'
 import TempPasswordModal from '@/components/TempPasswordModal.vue'
+import SearchInput from '@/components/BaseComponents/SearchInput.vue'
+import PerPageSelect from '@/components/BaseComponents/PerPageSelect.vue'
+import ConfirmModal from '@/components/BaseComponents/ConfirmModal.vue'
 
 const router = useRouter()
 
@@ -158,6 +190,7 @@ const toastStore = useToastStore()
 
 const teachers = ref([])
 const loading = ref(false)
+const search = ref('')
 const showModal = ref(false)
 const showImport = ref(false)
 const editingId = ref(null)
@@ -166,6 +199,25 @@ const tempPassword = ref(null)
 const createdName = ref('')
 
 const form = reactive({ firstName: '', lastName: '', email: '', phone: '' })
+
+const filteredTeachers = computed(() => {
+  if (!search.value) return teachers.value
+  const q = search.value.toLowerCase()
+  return teachers.value.filter(t =>
+    `${t.firstName} ${t.lastName}`.toLowerCase().includes(q) ||
+    t.email.toLowerCase().includes(q)
+  )
+})
+
+const perPage = ref(10)
+const clientPage = ref(1)
+const totalClientPages = computed(() => Math.max(1, Math.ceil(filteredTeachers.value.length / perPage.value)))
+const paginatedTeachers = computed(() => {
+  const start = (clientPage.value - 1) * perPage.value
+  return filteredTeachers.value.slice(start, start + perPage.value)
+})
+
+watch([search, perPage], () => { clientPage.value = 1 })
 
 const rules = computed(() => ({
   firstName: { required: helpers.withMessage('First name is required', required) },
@@ -224,13 +276,23 @@ const saveTeacher = async () => {
   } finally { saving.value = false }
 }
 
-const handleToggle = async (id) => {
+const toggleTarget = ref(null)
+const toggleLoading = ref(false)
+
+const handleToggle = (teacher) => { toggleTarget.value = teacher }
+
+const confirmToggle = async () => {
+  if (!toggleTarget.value) return
+  toggleLoading.value = true
   try {
-    await adminApi.toggleStaffStatus(id)
+    await adminApi.toggleStaffStatus(toggleTarget.value.id)
     await fetchTeachers()
     toastStore.showToast({ title: 'Done', message: 'Status updated', type: 'success', timeout: 3000 })
   } catch {
     toastStore.showToast({ title: 'Error', message: 'Failed to update status', type: 'error', timeout: 4000 })
+  } finally {
+    toggleLoading.value = false
+    toggleTarget.value = null
   }
 }
 

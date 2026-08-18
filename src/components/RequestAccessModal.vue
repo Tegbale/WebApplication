@@ -251,8 +251,16 @@ const rules = {
 }
 const v$ = useVuelidate(rules, form)
 
+const MAX_FILE_SIZE = 5 * 1024 * 1024 // 5 MB
+
 const onFileChange = (event, type) => {
   const file = event.target.files[0] ?? null
+  if (file && file.size > MAX_FILE_SIZE) {
+    errorMessage.value = `"${file.name}" exceeds the 5 MB limit. Please compress the file and try again.`
+    event.target.value = ''
+    return
+  }
+  errorMessage.value = ''
   if (type === 'cac') { cacFile.value = file; cacError.value = false }
   else { govtFile.value = file; govtError.value = false }
 }
@@ -287,7 +295,7 @@ const handleSubmit = async () => {
     submittedSchoolName.value = form.schoolName
     submitted.value = true
   } catch (err) {
-    errorMessage.value = typeof err === 'string' ? err : 'Something went wrong. Please try again.'
+    errorMessage.value = typeof err === 'string' ? err : (err?.message ?? 'Something went wrong. Please try again.')
   } finally {
     isLoading.value = false
   }

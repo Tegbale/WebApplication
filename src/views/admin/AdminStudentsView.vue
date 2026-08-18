@@ -25,8 +25,13 @@
     </div>
 
     <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
-      <div class="flex items-center justify-end px-4 py-3 border-b border-gray-50">
-        <ExportDropdown :rows="students" :columns="exportColumns" filename="students" :disabled="!students.length" />
+      <div class="flex flex-wrap items-center gap-3 px-4 py-3 border-b border-gray-50">
+        <div class="flex-1 min-w-[160px] max-w-xs">
+          <SearchInput v-model="search" placeholder="Search students..." />
+        </div>
+        <div class="ml-auto shrink-0">
+          <ExportDropdown :rows="students" :columns="exportColumns" filename="students" :disabled="!students.length" />
+        </div>
       </div>
 
       <div v-if="loading" class="p-6 space-y-3">
@@ -77,11 +82,24 @@
           </tbody>
         </table>
       </div>
+
+      <div class="flex flex-wrap items-center justify-between gap-3 border-t border-gray-100 px-6 py-4">
+        <div class="flex items-center gap-2 text-sm font-roboto text-tegbale-text-gray">
+          <span>Rows per page:</span>
+          <PerPageSelect v-model="limit" />
+          <span v-if="studentsStore.meta?.total">of {{ studentsStore.meta.total }} student{{ studentsStore.meta.total !== 1 ? 's' : '' }}</span>
+        </div>
+        <div v-if="studentsStore.meta?.totalPages > 1" class="flex gap-2">
+          <button :disabled="page <= 1" @click="changePage(page - 1)" class="rounded-full border border-gray-200 px-4 py-1.5 text-sm font-roboto text-tegbale-text-gray hover:bg-gray-50 disabled:opacity-40">Prev</button>
+          <span class="flex items-center px-3 text-sm font-roboto text-tegbale-text-gray">{{ page }} / {{ studentsStore.meta.totalPages }}</span>
+          <button :disabled="page >= studentsStore.meta.totalPages" @click="changePage(page + 1)" class="rounded-full border border-gray-200 px-4 py-1.5 text-sm font-roboto text-tegbale-text-gray hover:bg-gray-50 disabled:opacity-40">Next</button>
+        </div>
+      </div>
     </div>
 
     <!-- Create/Edit modal -->
     <div v-if="showModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
-      <div class="w-full max-w-lg bg-white rounded-2xl shadow-xl">
+      <div class="w-full max-w-lg bg-white rounded-2xl shadow-xl max-h-[90vh] overflow-y-auto">
         <div class="flex items-center justify-between border-b border-gray-100 px-6 py-4">
           <h3 class="text-lg font-semibold text-tegbale-navy-blue font-roboto">{{ editTarget ? 'Edit Student' : 'Add Student' }}</h3>
           <button class="rounded-full p-1 text-tegbale-text-gray hover:bg-gray-100" @click="closeModal">
@@ -139,11 +157,21 @@
       @close="showImport = false"
       @done="fetchStudents"
     />
+
+    <!-- Delete Confirm -->
+    <ConfirmModal
+      :open="!!deleteTarget"
+      title="Delete student?"
+      message="This student record will be permanently removed and cannot be recovered."
+      :loading="deleteLoading"
+      @confirm="confirmDelete"
+      @cancel="deleteTarget = null"
+    />
   </div>
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, watch, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useVuelidate } from '@vuelidate/core'
 import { required, helpers } from '@vuelidate/validators'
@@ -154,6 +182,9 @@ import studentsApi from '@/api/students'
 import classroomsApi from '@/api/classrooms'
 import ExportDropdown from '@/components/BaseComponents/ExportDropdown.vue'
 import ImportModal from '@/components/ImportModal.vue'
+import ConfirmModal from '@/components/BaseComponents/ConfirmModal.vue'
+import SearchInput from '@/components/BaseComponents/SearchInput.vue'
+import PerPageSelect from '@/components/BaseComponents/PerPageSelect.vue'
 
 const router = useRouter()
 const studentsStore = useStudentsStore()
@@ -167,6 +198,13 @@ const showModal = ref(false)
 const showImport = ref(false)
 const editTarget = ref(null)
 const saving = ref(false)
+const deleteTarget = ref(null)
+const deleteLoading = ref(false)
+
+const page = ref(1)
+const limit = ref(10)
+const search = ref('')
+let searchTimer = null
 
 const form = reactive({ firstName: '', lastName: '', gender: '', dateOfBirth: '', classroomId: '' })
 
@@ -236,24 +274,29 @@ const saveStudent = async () => {
   } finally { saving.value = false }
 }
 
-const deleteStudent = async (id) => {
-  if (!confirm('Delete this student? This cannot be undone.')) return
+const deleteStudent = (id) => { deleteTarget.value = id }
+
+const confirmDelete = async () => {
+  if (!deleteTarget.value) return
+  deleteLoading.value = true
   try {
-    await studentsStore.deleteStudent(id)
-    students.value = students.value.filter(s => s.id !== id)
+    await studentsStore.deleteStudent(deleteTarget.value)
+    students.value = students.value.filter(s => s.id !== deleteTarget.value)
+    deleteTarget.value = null
     toastStore.showToast({ title: 'Deleted', message: 'Student removed', type: 'success', timeout: 3000 })
   } catch {
     toastStore.showToast({ title: 'Error', message: 'Failed to delete student', type: 'error', timeout: 4000 })
-  }
+  } finally { deleteLoading.value = false }
 }
 
 const fetchStudents = async () => {
   loading.value = true
   try {
-    await studentsStore.fetchAll({ schoolId: userStore.schoolId })
+    await studentsStore.fetchAll({ schoolId: userStore.schoolId, page: page.value, limit: limit.value, ...(search.value && { search: search.value }) })
     students.value = studentsStore.students ?? []
   } catch {} finally { loading.value = false }
 }
+const changePage = (p) => { page.value = p; fetchStudents() }
 
 const fetchClassrooms = async () => {
   try {
@@ -261,6 +304,13 @@ const fetchClassrooms = async () => {
     classrooms.value = res.data.data ?? []
   } catch {}
 }
+
+watch(search, () => {
+  clearTimeout(searchTimer)
+  searchTimer = setTimeout(() => { page.value = 1; fetchStudents() }, 350)
+})
+
+watch(limit, () => { page.value = 1; fetchStudents() })
 
 onMounted(() => { fetchStudents(); fetchClassrooms() })
 </script>
