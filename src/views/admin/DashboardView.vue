@@ -560,7 +560,7 @@ onMounted(async () => {
       const school = await schoolStore.fetchSchool(userStore.schoolId)
       counts.classrooms = school._count?.classrooms ?? 0
       counts.students = school._count?.students ?? 0
-      counts.teachers = school._count?.staff ?? 0
+      counts.teachers = school.teacherCount ?? 0
     }
   } catch {} finally { statsLoading.value = false }
 

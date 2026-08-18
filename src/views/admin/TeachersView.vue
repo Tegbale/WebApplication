@@ -66,7 +66,7 @@
                   <button
                     :class="teacher.isActive ? 'text-red-400 hover:text-red-600' : 'text-tegbale-green hover:text-green-700'"
                     :title="teacher.isActive ? 'Deactivate' : 'Activate'"
-                    @click="handleToggle(teacher.id)"
+                    @click="handleToggle(teacher)"
                   >
                     <svg v-if="teacher.isActive" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/></svg>
                     <svg v-else class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
@@ -84,16 +84,7 @@
       <div class="flex flex-wrap items-center justify-between gap-3 border-t border-gray-100 px-6 py-4">
         <div class="flex items-center gap-2 text-sm font-roboto text-tegbale-text-gray">
           <span>Rows per page:</span>
-          <div class="relative">
-            <select v-model="perPage" class="appearance-none rounded-full border border-gray-200 bg-white pl-3 pr-7 py-1.5 text-sm font-roboto text-gray-700 focus:border-tegbale-blue focus:outline-none focus:ring-1 focus:ring-tegbale-blue/20">
-              <option :value="10">10</option>
-              <option :value="20">20</option>
-              <option :value="50">50</option>
-            </select>
-            <svg class="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-tegbale-text-gray" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
-            </svg>
-          </div>
+          <PerPageSelect v-model="perPage" />
           <span v-if="filteredTeachers.length">of {{ filteredTeachers.length }} total</span>
         </div>
         <div v-if="totalClientPages > 1" class="flex gap-2">
@@ -165,6 +156,17 @@
       :name="createdName"
       @close="tempPassword = null"
     />
+
+    <ConfirmModal
+      :open="!!toggleTarget"
+      :title="toggleTarget?.isActive ? 'Deactivate teacher?' : 'Activate teacher?'"
+      :message="toggleTarget?.isActive
+        ? 'This teacher will lose access to the platform immediately.'
+        : 'This teacher will regain access to the platform.'"
+      :loading="toggleLoading"
+      @confirm="confirmToggle"
+      @cancel="toggleTarget = null"
+    />
   </div>
 </template>
 
@@ -179,6 +181,8 @@ import ExportDropdown from '@/components/BaseComponents/ExportDropdown.vue'
 import ImportModal from '@/components/ImportModal.vue'
 import TempPasswordModal from '@/components/TempPasswordModal.vue'
 import SearchInput from '@/components/BaseComponents/SearchInput.vue'
+import PerPageSelect from '@/components/BaseComponents/PerPageSelect.vue'
+import ConfirmModal from '@/components/BaseComponents/ConfirmModal.vue'
 
 const router = useRouter()
 
@@ -272,13 +276,23 @@ const saveTeacher = async () => {
   } finally { saving.value = false }
 }
 
-const handleToggle = async (id) => {
+const toggleTarget = ref(null)
+const toggleLoading = ref(false)
+
+const handleToggle = (teacher) => { toggleTarget.value = teacher }
+
+const confirmToggle = async () => {
+  if (!toggleTarget.value) return
+  toggleLoading.value = true
   try {
-    await adminApi.toggleStaffStatus(id)
+    await adminApi.toggleStaffStatus(toggleTarget.value.id)
     await fetchTeachers()
     toastStore.showToast({ title: 'Done', message: 'Status updated', type: 'success', timeout: 3000 })
   } catch {
     toastStore.showToast({ title: 'Error', message: 'Failed to update status', type: 'error', timeout: 4000 })
+  } finally {
+    toggleLoading.value = false
+    toggleTarget.value = null
   }
 }
 
