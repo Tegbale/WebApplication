@@ -5,6 +5,10 @@ export default {
     return api().get('/notifications', { params })
   },
 
+  getUnreadCount() {
+    return api().get('/notifications/unread-count')
+  },
+
   markRead(id) {
     return api().patch(`/notifications/${id}/read`)
   },

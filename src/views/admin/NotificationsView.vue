@@ -97,9 +97,11 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useToastStore } from '@/stores/toast-store'
+import { useNotificationsStore } from '@/stores/notifications-store'
 import notificationsApi from '@/api/notifications'
 
 const toastStore = useToastStore()
+const notifStore = useNotificationsStore()
 
 const notifications = ref([])
 const loading = ref(false)
@@ -144,6 +146,7 @@ const markOne = async (n) => {
   try {
     await notificationsApi.markRead(n.id)
     n.isRead = true
+    notifStore.fetchUnreadCount()
   } catch {
     toastStore.showToast({ title: 'Error', message: 'Failed to mark notification', type: 'error', timeout: 3000 })
   } finally { markingId.value = null }
@@ -154,6 +157,7 @@ const markAll = async () => {
   try {
     await notificationsApi.markAllRead()
     notifications.value.forEach(n => { n.isRead = true })
+    notifStore.setUnreadCount(0)
     toastStore.showToast({ title: 'Done', message: 'All notifications marked as read', type: 'success', timeout: 3000 })
   } catch {
     toastStore.showToast({ title: 'Error', message: 'Failed to mark all as read', type: 'error', timeout: 3000 })

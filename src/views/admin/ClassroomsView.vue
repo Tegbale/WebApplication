@@ -93,16 +93,7 @@
       <div class="flex flex-wrap items-center justify-between gap-3 border-t border-gray-100 px-6 py-4">
         <div class="flex items-center gap-2 text-sm font-roboto text-tegbale-text-gray">
           <span>Rows per page:</span>
-          <div class="relative">
-            <select v-model="perPage" class="appearance-none rounded-full border border-gray-200 bg-white pl-3 pr-7 py-1.5 text-sm font-roboto text-gray-700 focus:border-tegbale-blue focus:outline-none focus:ring-1 focus:ring-tegbale-blue/20">
-              <option :value="10">10</option>
-              <option :value="20">20</option>
-              <option :value="50">50</option>
-            </select>
-            <svg class="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-tegbale-text-gray" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
-            </svg>
-          </div>
+          <PerPageSelect v-model="perPage" />
           <span v-if="filteredClassrooms.length">of {{ filteredClassrooms.length }} total</span>
         </div>
         <div v-if="totalClientPages > 1" class="flex gap-2">
@@ -266,6 +257,7 @@ import ExportDropdown from '@/components/BaseComponents/ExportDropdown.vue'
 import ImportModal from '@/components/ImportModal.vue'
 import ConfirmModal from '@/components/BaseComponents/ConfirmModal.vue'
 import SearchInput from '@/components/BaseComponents/SearchInput.vue'
+import PerPageSelect from '@/components/BaseComponents/PerPageSelect.vue'
 
 const userStore = useUsersStore()
 const toastStore = useToastStore()
