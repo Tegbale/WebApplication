@@ -114,7 +114,7 @@ const handleLogin = async () => {
     toastStore.showToast({ title: 'Welcome', message: 'Logged in successfully', type: 'success', timeout: 3000 })
     router.push('/admin/dashboard')
   } catch (error) {
-    toastStore.showToast({ title: 'Login Failed', message: typeof error === 'string' ? error : 'Invalid email or password', type: 'error', timeout: 4000 })
+    toastStore.showToast({ title: 'Login Failed', message: error instanceof Error ? error.message : 'Invalid email or password', type: 'error', timeout: 4000 })
   } finally {
     isLoading.value = false
   }
