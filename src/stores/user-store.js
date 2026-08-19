@@ -25,6 +25,9 @@ export const useUsersStore = defineStore('user', {
     async login(payload) {
       const { data } = await userApi.login(payload)
       const { accessToken, refreshToken, user } = data.data
+      if (user.role === 'SUPER_ADMIN') {
+        throw new Error('Access denied. Please use the Super Admin portal.')
+      }
       this.accessToken = accessToken
       this.refreshToken = refreshToken
       this._setUser(user)
